@@ -1,0 +1,30 @@
+server:
+  port: 4444
+
+spring:
+  application:
+    name: project
+  datasource:
+    url: jdbc:postgresql://localhost:5432/all-on-sport?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true?createDatabaseIfNotExist=true
+    username: postgres
+    password: postgres
+    driver-class-name: "org.postgresql.Driver"
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 15
+      minimum-idle: 10
+      initialization-fail-timeout: 1
+      leak-detection-threshold: 0
+      pool-name: "[HikariPool-adjutor-pool]"
+      register-mbeans: true
+  jpa:
+    show-sql: true
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    hibernate:
+      ddlAuto: none
+  liquibase:
+    change-log: classpath:database/db.changelog.yml
+    enabled: true
+    contexts: prod, dev
+
