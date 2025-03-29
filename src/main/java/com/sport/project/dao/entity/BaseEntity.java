@@ -1,9 +1,6 @@
 package com.sport.project.dao.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.NonNull;
 
 public abstract class BaseEntity<ID extends Number> implements Entity<ID> {
@@ -16,9 +13,8 @@ public abstract class BaseEntity<ID extends Number> implements Entity<ID> {
 
     public BaseEntity() {}
 
-    public BaseEntity(ID id, String fsp, String login, String passwordHash)
+    public BaseEntity(String fsp, String login, String passwordHash)
     {
-        this.setId(id);
         this.setFsp(fsp);
         this.setLogin(login);
         this.setPasswordHash(passwordHash);

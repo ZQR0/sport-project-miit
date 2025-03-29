@@ -1,7 +1,7 @@
 databaseChangeLog:
   - include:
-      file: schemas.sql
+      file: object/teacher.sql
       relativeToChangeLogFile: true
   - include:
-      file: release/release.changelog.yml
+      file: object/student.sql
       relativeToChangeLogFile: true

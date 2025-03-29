@@ -20,14 +20,13 @@ public class StudentEntity extends BaseEntity<Integer> {
     private Map<Date, Boolean> exist = new HashMap<>();
     private TeacherEntity teacher;
 
-    public StudentEntity(Integer id,
-                         String fsp,
+    public StudentEntity(String fsp,
                          Map<Date, Boolean> exist,
                          String login,
                          String passwordHash,
                          TeacherEntity teacher)
     {
-        super(id, fsp, login, passwordHash);
+        super(fsp, login, passwordHash);
         this.setExist(exist);
         this.setTeacher(teacher);
     }
@@ -68,6 +67,60 @@ public class StudentEntity extends BaseEntity<Integer> {
 
     public void setTeacher(@NonNull TeacherEntity newTeacher) {
         this.teacher = newTeacher;
+    }
+
+    public static StudentEntityBuilder builder() {
+        return new StudentEntityBuilder();
+    }
+
+    public static final class StudentEntityBuilder {
+        private String fsp;
+        private Integer healthGroup;
+        private Map<Date, Boolean> exist;
+        private String login;
+        private String passwordHash;
+        private TeacherEntity teacher;
+
+        public StudentEntityBuilder fsp(String fsp) {
+            this.fsp = fsp;
+            return this;
+        }
+
+        public StudentEntityBuilder healthGroup(Integer healthGroup) {
+            this.healthGroup = healthGroup;
+            return this;
+        }
+
+        public StudentEntityBuilder exist(Map<Date, Boolean> exist) {
+            this.exist = exist;
+            return this;
+        }
+
+        public StudentEntityBuilder login(String login) {
+            this.login = login;
+            return this;
+        }
+
+        public StudentEntityBuilder passwordHash(String passwordHash) {
+            this.passwordHash = passwordHash;
+            return this;
+        }
+
+        public StudentEntityBuilder teacher(TeacherEntity teacher) {
+            this.teacher = teacher;
+            return this;
+        }
+
+        public StudentEntity build() {
+            return new StudentEntity(
+                    this.fsp,
+                    this.exist,
+                    this.login,
+                    this.passwordHash,
+                    this.teacher
+            );
+        }
+
     }
 
 }

@@ -20,13 +20,13 @@ public class TeacherEntity extends BaseEntity<Integer> {
     private List<StudentEntity> students = new ArrayList<>();
 
 
-    public TeacherEntity(Integer id,
-                         String fsp,
+    public TeacherEntity(String fsp,
                          boolean isModerator,
                          Map<Date, String> schedule,
                          String login,
-                         String passwordHash) throws InvalidParamPassedException {
-        super(id, fsp, login, passwordHash);
+                         String passwordHash)
+    {
+        super(fsp, login, passwordHash);
         this.setModerator(isModerator);
         this.setSchedule(schedule);
     }
@@ -92,17 +92,12 @@ public class TeacherEntity extends BaseEntity<Integer> {
 
     public static final class TeacherEntityBuilder {
 
-        private Integer teacherId;
         private String fsp;
         private boolean isModerator;
         private Map<Date, String> schedule;
         private String login;
         private String passwordHash;
 
-        public TeacherEntityBuilder teacherId(@NonNull Integer teacherId) {
-            this.teacherId = teacherId;
-            return this;
-        }
 
         public TeacherEntityBuilder fsp(String fsp) {
             this.fsp = fsp;
@@ -129,9 +124,8 @@ public class TeacherEntity extends BaseEntity<Integer> {
             return this;
         }
 
-        public TeacherEntity build() throws InvalidParamPassedException{
+        public TeacherEntity build() {
             return new TeacherEntity(
-                    this.teacherId,
                     this.fsp,
                     this.isModerator,
                     this.schedule,

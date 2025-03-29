@@ -1,4 +1,4 @@
 --liquibase formatted sql
 
---changeset yaroslav:schema-1
+--changeset yaroslav:schema-2
 CREATE SCHEMA IF NOT EXISTS "sport_schema";
