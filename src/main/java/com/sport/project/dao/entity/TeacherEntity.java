@@ -1,6 +1,5 @@
 package com.sport.project.dao.entity;
 
-import com.sport.project.exception.InvalidParamPassedException;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
