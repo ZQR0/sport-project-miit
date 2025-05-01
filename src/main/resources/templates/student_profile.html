@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title th:text="'Профиль ' + ${student.fsp}"></title>
+</head>
+<body>
+    <div class="profile_container">
+        <div class="student_id" th:text="'ID студента: ' + ${student.id}"></div>
+        <div class="student_fsp" th:text="'ФИО студента: ' + ${student.fsp}"></div>
+        <div class="student_login" th:text="'Логин студента' + ${student.login}"></div>
+        <div class="student_health_group" th:text="'Группа здоровья: ' + ${student.healthGroup}"></div>
+    </div>
+</body>
+</html>

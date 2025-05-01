@@ -1,5 +1,9 @@
 server:
   port: 4444
+  error:
+    path: "/error"
+    whitelabel:
+      enabled: false
 
 spring:
   application:
