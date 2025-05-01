@@ -5,12 +5,13 @@ import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping(path = "/students")
 @RequiredArgsConstructor
 public class StudentController {
