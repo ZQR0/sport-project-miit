@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
 @Entity(name = "student_entity")
 @Table(schema = "sport_schema", name = "student_table")
 @NoArgsConstructor
-public class StudentEntity extends BaseEntity<Integer> {
+public class StudentEntity extends BaseEntity<Integer> implements Serializable {
 
     private Integer healthGroup;
     private Map<Date, Boolean> exist = new HashMap<>();

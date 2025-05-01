@@ -7,12 +7,13 @@ import lombok.NonNull;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Entity(name = "teacher_entity")
 @Table(schema = "sport_schema", name = "teacher_table")
 @NoArgsConstructor
-public class TeacherEntity extends BaseEntity<Integer> {
+public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
 
     private boolean isModerator;
     private Map<Date, String> schedule = new HashMap<>();
