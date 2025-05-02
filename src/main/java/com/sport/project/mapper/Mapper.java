@@ -4,6 +4,7 @@ import com.sport.project.dao.entity.StudentEntity;
 import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dto.StudentDTO;
 import com.sport.project.dto.TeacherDTO;
+import com.sport.project.dto.UserDetailsImpl;
 
 public class Mapper {
 
@@ -31,4 +32,24 @@ public class Mapper {
                 .build();
     }
 
+    public static UserDetailsImpl mapUserDetails(TeacherEntity entity) {
+        String role = (entity.isModerator() ? "moderator" : "teacher");
+        return UserDetailsImpl.builder()
+                .id(entity.getId())
+                .fsp(entity.getFsp())
+                .login(entity.getLogin())
+                .passwordHash(entity.getPasswordHash())
+                .role(role)
+                .build();
+    }
+
+    public static UserDetailsImpl mapUserDetails(StudentEntity entity) {
+        return UserDetailsImpl.builder()
+                .id(entity.getId())
+                .fsp(entity.getFsp())
+                .login(entity.getLogin())
+                .passwordHash(entity.getPasswordHash())
+                .role("student")
+                .build();
+    }
 }
