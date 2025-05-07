@@ -12,5 +12,4 @@ public interface TeacherService {
     TeacherDTO findByFSP(String fsp) throws EntityNotFoundException;
     List<TeacherDTO> findAllModerators();
     List<TeacherDTO> findAll();
-    TeacherDTO create(TeacherEntity entity);
 }

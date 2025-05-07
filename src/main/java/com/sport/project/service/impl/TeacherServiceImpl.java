@@ -9,24 +9,30 @@ import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.TeacherService;
-import com.sport.project.service.interfaces.TeacherBusiness;
-import com.sport.project.service.interfaces.TeacherCreationService;
-import com.sport.project.service.interfaces.TeacherDeletingService;
-import com.sport.project.service.interfaces.TeacherUpdatingService;
+import com.sport.project.service.interfaces.teacher.TeacherBusiness;
+import com.sport.project.service.interfaces.teacher.TeacherCreationService;
+import com.sport.project.service.interfaces.teacher.TeacherDeletingService;
+import com.sport.project.service.interfaces.teacher.TeacherUpdatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TeacherServiceImpl implements TeacherService, TeacherCreationService, TeacherUpdatingService, TeacherDeletingService, TeacherBusiness {
+public class TeacherServiceImpl implements TeacherService, TeacherCreationService,
+        TeacherUpdatingService,
+        TeacherDeletingService,
+        TeacherBusiness {
 
     private final TeacherRepositoryImpl repository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public TeacherDTO findById(Integer id) throws EntityNotFoundException {
@@ -77,54 +83,89 @@ public class TeacherServiceImpl implements TeacherService, TeacherCreationServic
                 .toList();
     }
 
-    @Override
-    public TeacherDTO create(TeacherEntity entity) {
-        TeacherEntity teacherEntity = this.repository.save(entity);
-        return Mapper.map(teacherEntity);
-    }
 
     @Override
-    public Map<Date, String> updateSchedule(Map<Date, String> newSchedule) {
-        return Map.of();
+    public Map<Date, String> updateSchedule(Date date, String lessonName, TeacherEntity entity) {
+        Map<Date, String> schedule = entity.getSchedule();
+        schedule.putIfAbsent(date, lessonName);
+
+        entity.setSchedule(schedule);
+        this.repository.save(entity);
+        return schedule;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public boolean noticeStudent(StudentEntity student) throws EntityNotFoundException {
-        return false;
+    public boolean noticeStudent(@NonNull StudentEntity student, @NonNull Date date) throws EntityNotFoundException {
+        Map<Date, Boolean> existMap = student.getExist();
+        existMap.putIfAbsent(date, true);
+
+        return existMap.containsKey(date);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public TeacherDTO createTeacher(TeacherCreationDTO dto) throws EntityAlreadyExistsException {
-        return null;
+    public TeacherDTO createTeacher(@NonNull TeacherCreationDTO dto) throws EntityAlreadyExistsException {
+
+        Optional<TeacherEntity> optionalTeacherEntity = this.repository.findByLogin(dto.getLogin());
+        if (optionalTeacherEntity.isPresent()) throw new EntityAlreadyExistsException(String.format("Teacher with login %s already exists"));
+
+        Map<Date, String> emptySchedule = new HashMap<>();
+        TeacherEntity entity = TeacherEntity.builder()
+                .fsp(dto.getFsp())
+                .login(dto.getLogin())
+                .passwordHash(this.passwordEncoder.encode(dto.getPassword()))
+                .isModerator(false)
+                .schedule(emptySchedule)
+                .build();
+
+        TeacherEntity saved = this.repository.save(entity);
+        return Mapper.map(saved);
     }
 
     @Override
     public void deleteById(int id) throws EntityNotFoundException {
-
+        log.info("No available to use this method (ID)");
     }
 
     @Override
     public void deleteByFSP(String fsp) throws EntityNotFoundException {
-
+        log.info("No available to use this method (FSP)");
     }
 
     @Override
     public void deleteByLogin(String login) throws EntityNotFoundException {
-
+        log.info("No available to use this method (LOGIN)");
     }
 
-    @Override
-    public void updateFSP(String newFSP, TeacherEntity entity) throws EntityNotFoundException {
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Override
+    public void updateFSP(String newFSP, String login) throws EntityNotFoundException {
+        TeacherEntity entity = this.repository.findByFSP(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("TeacherEntity with login %s not found")));
+
+        entity.setFsp(newFSP);
+        this.repository.save(entity);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public void updateLogin(String newLogin, TeacherEntity entity) throws EntityNotFoundException {
+    public void updateLogin(String newLogin, String login) throws EntityNotFoundException {
+        TeacherEntity entity = this.repository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("TeacherEntity with login %s not found", login)));
 
+        entity.setLogin(newLogin);
+        this.repository.save(entity);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public void updateIsModerator(boolean isModerator, TeacherEntity entity) throws EntityNotFoundException {
+    public void updateIsModerator(boolean isModerator, int id) throws EntityNotFoundException {
+        TeacherEntity entity = this.repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("TeacherEntity with id %s not found", id)));
 
+        entity.setModerator(isModerator);
+        this.repository.save(entity);
     }
 }

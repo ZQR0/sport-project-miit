@@ -1,4 +1,4 @@
-package com.sport.project.service.interfaces;
+package com.sport.project.service.interfaces.student;
 
 import com.sport.project.dao.entity.StudentEntity;
 

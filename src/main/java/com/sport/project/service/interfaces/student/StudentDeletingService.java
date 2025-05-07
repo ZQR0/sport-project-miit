@@ -1,8 +1,8 @@
-package com.sport.project.service.interfaces;
+package com.sport.project.service.interfaces.student;
 
 import com.sport.project.exception.EntityNotFoundException;
 
-public interface TeacherDeletingService {
+public interface StudentDeletingService {
     void deleteById(int id) throws EntityNotFoundException;
     void deleteByFSP(String fsp) throws EntityNotFoundException;
     void deleteByLogin(String login) throws EntityNotFoundException;

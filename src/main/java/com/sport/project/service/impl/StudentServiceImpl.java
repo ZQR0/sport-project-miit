@@ -3,23 +3,25 @@ package com.sport.project.service.impl;
 import com.sport.project.dao.entity.StudentEntity;
 import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.impl.StudentRepositoryImpl;
+import com.sport.project.dao.repository.impl.TeacherRepositoryImpl;
 import com.sport.project.dto.StudentCreationDTO;
 import com.sport.project.dto.StudentDTO;
 import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.StudentService;
-import com.sport.project.service.interfaces.StudentBusiness;
-import com.sport.project.service.interfaces.StudentCreationService;
-import com.sport.project.service.interfaces.StudentDeletingService;
-import com.sport.project.service.interfaces.StudentUpdatingService;
+import com.sport.project.service.interfaces.student.StudentBusiness;
+import com.sport.project.service.interfaces.student.StudentCreationService;
+import com.sport.project.service.interfaces.student.StudentDeletingService;
+import com.sport.project.service.interfaces.student.StudentUpdatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,8 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
         StudentCreationService, StudentDeletingService {
 
     private final StudentRepositoryImpl repository;
+    private final PasswordEncoder passwordEncoder;
+    private final TeacherRepositoryImpl teacherRepository;
 
     @Override
     public StudentDTO findById(Integer id) throws EntityNotFoundException {
@@ -67,59 +71,105 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
                 .toList();
     }
 
-    @Override
-    public StudentDTO create(StudentEntity entity) {
-        StudentEntity studentEntity = this.repository.save(entity);
-        return Mapper.map(studentEntity);
-    }
 
     @Override
     public Map<Date, String> getStudentSchedule(StudentEntity student) {
-        return Map.of();
+        return student.getTeacher().getSchedule();
     }
 
-    @Override
-    public StudentDTO createStudentByModerator(StudentCreationDTO dto, TeacherEntity moderator) throws EntityAlreadyExistsException {
-        return null;
-    }
 
-    @Override
-    public StudentDTO createStudent(StudentCreationDTO dto) throws EntityAlreadyExistsException {
-        return null;
-    }
 
     @Override
     public void deleteById(int id) throws EntityNotFoundException {
-
+        log.info("Not available to use this method now [deleteById]");
     }
 
     @Override
     public void deleteByFSP(String fsp) throws EntityNotFoundException {
-
+        log.info("Not available to use this method now [deleteByFSP]");
     }
 
     @Override
     public void deleteByLogin(String login) throws EntityNotFoundException {
-
+        log.info("Not available to use this method now [deleteByLogin]");
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public boolean updateFSP(String newFSP, StudentEntity entity) throws EntityNotFoundException {
-        return false;
+    public void updateFSP(String newFSP, String login) throws EntityNotFoundException {
+        StudentEntity entity = this.repository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
+
+        entity.setFsp(newFSP);
+        this.repository.save(entity);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public boolean updateLogin(String newLogin, StudentEntity entity) throws EntityNotFoundException {
-        return false;
+    public void updateLogin(String newLogin, String login) throws EntityNotFoundException {
+        StudentEntity entity = this.repository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
+
+        entity.setLogin(newLogin);
+        this.repository.save(entity);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public boolean updateHealthGroup(int newHealthGroup, StudentEntity entity) throws EntityNotFoundException {
-        return false;
+    public void updateHealthGroup(int newHealthGroup, String login) throws EntityNotFoundException {
+        StudentEntity entity = this.repository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
+
+        entity.setHealthGroup(newHealthGroup);
+        this.repository.save(entity);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public boolean updateStudentTeacher(int newTeacherId, StudentEntity entity) throws EntityNotFoundException {
-        return false;
+    public void updateStudentTeacher(TeacherEntity teacher, String login) throws EntityNotFoundException {
+        StudentEntity entity = this.repository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
+        entity.setTeacher(teacher);
+
+        this.repository.save(entity);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Override
+    public StudentDTO createStudent(StudentCreationDTO dto) throws EntityAlreadyExistsException {
+        Map<Date, Boolean> exist = new HashMap<>();
+
+        String login = dto.getLogin();
+        Optional<StudentEntity> optionalStudentEntity = this.repository.findByLogin(login);
+        if (optionalStudentEntity.isPresent()) throw new EntityAlreadyExistsException(String.format("StudentEntity with login %s already exists", login));
+
+        TeacherEntity teacher;
+        try {
+            teacher = findTeacherById(dto.getTeacherId());
+        } catch (EntityNotFoundException ex) {
+            log.error(ex.getMessage());
+            return null;
+        }
+
+
+        StudentEntity entity = StudentEntity.builder()
+                .fsp(dto.getFsp())
+                .login(login)
+                .passwordHash(this.passwordEncoder.encode(dto.getPassword()))
+                .healthGroup(dto.getHealthGroup())
+                .exist(exist)
+                .teacher(teacher)
+                .build();
+
+        return Mapper.map(entity);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    private TeacherEntity findTeacherById(int id) throws EntityNotFoundException {
+        TeacherEntity teacher = this.teacherRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("TeacherEntity with id %s not found", id)));
+        return teacher;
+    }
+
+
 }

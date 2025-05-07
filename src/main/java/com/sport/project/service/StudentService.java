@@ -11,5 +11,4 @@ public interface StudentService {
     StudentDTO findByLogin(String login) throws EntityNotFoundException;
     StudentDTO findByFSP(String fsp) throws EntityNotFoundException;
     List<StudentDTO> findAll();
-    StudentDTO create(StudentEntity entity);
 }

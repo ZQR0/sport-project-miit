@@ -1,4 +1,4 @@
-package com.sport.project.service.interfaces;
+package com.sport.project.service.interfaces.teacher;
 
 import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
