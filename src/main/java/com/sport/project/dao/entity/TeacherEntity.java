@@ -8,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity(name = "teacher_entity")
@@ -16,13 +17,13 @@ import java.util.*;
 public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
 
     private boolean isModerator;
-    private Map<Date, String> schedule = new HashMap<>();
+    private Map<LocalDate, String> schedule = new HashMap<>();
     private List<StudentEntity> students = new ArrayList<>();
 
 
     public TeacherEntity(String fsp,
                          boolean isModerator,
-                         Map<Date, String> schedule,
+                         Map<LocalDate, String> schedule,
                          String login,
                          String passwordHash)
     {
@@ -40,6 +41,23 @@ public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
         return this.id;
     }
 
+    @Column(name = "fsp", unique = true, nullable = false)
+    @Override
+    public String getFsp() {
+        return this.fsp;
+    }
+
+    @Column(name = "login", unique = true, nullable = false)
+    @Override
+    public String getLogin() {
+        return this.login;
+    }
+
+    @Column(name = "password_hash", nullable = false)
+    @Override
+    public String getPasswordHash() {
+        return this.passwordHash;
+    }
 
     @Column(name = "is_moderator", nullable = false)
     public Boolean isModerator() {
@@ -59,12 +77,12 @@ public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "schedule", columnDefinition = "JSONB", nullable = false)
-    public Map<Date, String> getSchedule() {
+    public Map<LocalDate, String> getSchedule() {
         return this.schedule;
     }
 
 
-    public void setSchedule(@NonNull Map<Date, String> schedule) {
+    public void setSchedule(@NonNull Map<LocalDate, String> schedule) {
         this.schedule = schedule;
     }
 
@@ -94,7 +112,7 @@ public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
 
         private String fsp;
         private boolean isModerator;
-        private Map<Date, String> schedule;
+        private Map<LocalDate, String> schedule;
         private String login;
         private String passwordHash;
 
@@ -109,7 +127,7 @@ public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
             return this;
         }
 
-        public TeacherEntityBuilder schedule(Map<Date, String> schedule) {
+        public TeacherEntityBuilder schedule(Map<LocalDate, String> schedule) {
             this.schedule = schedule;
             return this;
         }

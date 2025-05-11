@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class TeacherDTO {
     private boolean isModerator;
 
     @JsonProperty(namespace = "schedule", required = true)
-    private Map<Date, String> schedule;
+    private Map<LocalDate, String> schedule;
 
     @JsonProperty(namespace = "students", required = true)
     private List<StudentEntity> students;

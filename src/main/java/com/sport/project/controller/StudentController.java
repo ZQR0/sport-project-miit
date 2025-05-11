@@ -4,6 +4,7 @@ import com.sport.project.dto.StudentDTO;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import java.util.List;
 @Controller
 @RequestMapping(path = "/students")
 @RequiredArgsConstructor
+@Slf4j
 public class StudentController {
 
     private final StudentService studentService;
@@ -24,7 +26,7 @@ public class StudentController {
     {
         StudentDTO student = this.studentService.findById(id);
         model.addAttribute("student", student);
-        return "student";
+        return "student_profile";
     }
 
     @GetMapping(path = "find-by-login", params = "login", produces = MediaType.TEXT_HTML_VALUE)
@@ -33,16 +35,17 @@ public class StudentController {
     {
         StudentDTO student = this.studentService.findByLogin(login);
         model.addAttribute("student", student);
-        return "student";
+        return "student_profile";
     }
 
     @GetMapping(path = "find-by-fsp", params = "fsp", produces = MediaType.TEXT_HTML_VALUE)
     public String findStudentByFSPEndpoint(Model model, @RequestParam(name = "fsp") String fsp)
             throws EntityNotFoundException
     {
-        StudentDTO student = this.studentService.findByFSP(fsp);
+        String newFsp = fsp.replaceAll("_", " ");
+        StudentDTO student = this.studentService.findByFSP(newFsp);
         model.addAttribute("student", student);
-        return "student";
+        return "student_profile";
     }
 
     @GetMapping(path = "find-all")

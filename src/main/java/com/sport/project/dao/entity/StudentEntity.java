@@ -8,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +19,11 @@ import java.util.Map;
 public class StudentEntity extends BaseEntity<Integer> implements Serializable {
 
     private Integer healthGroup;
-    private Map<Date, Boolean> exist = new HashMap<>();
+    private Map<LocalDate, Boolean> exist = new HashMap<>();
     private TeacherEntity teacher;
 
     public StudentEntity(String fsp,
-                         Map<Date, Boolean> exist,
+                         Map<LocalDate, Boolean> exist,
                          String login,
                          String passwordHash,
                          TeacherEntity teacher)
@@ -40,6 +41,24 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
         return this.id;
     }
 
+    @Column(name = "fsp", unique = true, nullable = false)
+    @Override
+    public String getFsp() {
+        return this.fsp;
+    }
+
+    @Column(name = "login", unique = true, nullable = false)
+    @Override
+    public String getLogin() {
+        return this.login;
+    }
+
+    @Column(name = "password_hash", nullable = false)
+    @Override
+    public String getPasswordHash() {
+        return this.passwordHash;
+    }
+
 
     @Column(name = "healthGroup", nullable = false)
     public Integer getHealthGroup() {
@@ -52,11 +71,11 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "exist", nullable = false, columnDefinition = "JSONB")
-    public Map<Date, Boolean> getExist() {
+    public Map<LocalDate, Boolean> getExist() {
         return this.exist;
     }
 
-    public void setExist(@NonNull Map<Date, Boolean> exist) {
+    public void setExist(@NonNull Map<LocalDate, Boolean> exist) {
         this.exist = exist;
     }
 
@@ -77,7 +96,7 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
     public static final class StudentEntityBuilder {
         private String fsp;
         private Integer healthGroup;
-        private Map<Date, Boolean> exist;
+        private Map<LocalDate, Boolean> exist;
         private String login;
         private String passwordHash;
         private TeacherEntity teacher;
@@ -92,7 +111,7 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
             return this;
         }
 
-        public StudentEntityBuilder exist(Map<Date, Boolean> exist) {
+        public StudentEntityBuilder exist(Map<LocalDate, Boolean> exist) {
             this.exist = exist;
             return this;
         }

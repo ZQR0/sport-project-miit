@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -85,8 +86,8 @@ public class TeacherServiceImpl implements TeacherService, TeacherCreationServic
 
 
     @Override
-    public Map<Date, String> updateSchedule(Date date, String lessonName, TeacherEntity entity) {
-        Map<Date, String> schedule = entity.getSchedule();
+    public Map<LocalDate, String> updateSchedule(LocalDate date, String lessonName, TeacherEntity entity) {
+        Map<LocalDate, String> schedule = entity.getSchedule();
         schedule.putIfAbsent(date, lessonName);
 
         entity.setSchedule(schedule);
@@ -96,8 +97,8 @@ public class TeacherServiceImpl implements TeacherService, TeacherCreationServic
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public boolean noticeStudent(@NonNull StudentEntity student, @NonNull Date date) throws EntityNotFoundException {
-        Map<Date, Boolean> existMap = student.getExist();
+    public boolean noticeStudent(@NonNull StudentEntity student, @NonNull LocalDate date) throws EntityNotFoundException {
+        Map<LocalDate, Boolean> existMap = student.getExist();
         existMap.putIfAbsent(date, true);
 
         return existMap.containsKey(date);
@@ -110,7 +111,7 @@ public class TeacherServiceImpl implements TeacherService, TeacherCreationServic
         Optional<TeacherEntity> optionalTeacherEntity = this.repository.findByLogin(dto.getLogin());
         if (optionalTeacherEntity.isPresent()) throw new EntityAlreadyExistsException(String.format("Teacher with login %s already exists"));
 
-        Map<Date, String> emptySchedule = new HashMap<>();
+        Map<LocalDate, String> emptySchedule = new HashMap<>();
         TeacherEntity entity = TeacherEntity.builder()
                 .fsp(dto.getFsp())
                 .login(dto.getLogin())

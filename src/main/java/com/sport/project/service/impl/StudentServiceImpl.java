@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -40,6 +41,8 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
         StudentEntity studentEntity = this.repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Teacher entity with id %s not found", id)));
 
+        log.info(studentEntity.getFsp());
+        log.info(studentEntity.getLogin());
         return Mapper.map(studentEntity);
     }
 
@@ -73,7 +76,7 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
 
 
     @Override
-    public Map<Date, String> getStudentSchedule(StudentEntity student) {
+    public Map<LocalDate, String> getStudentSchedule(StudentEntity student) {
         return student.getTeacher().getSchedule();
     }
 
@@ -137,7 +140,7 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
     public StudentDTO createStudent(StudentCreationDTO dto) throws EntityAlreadyExistsException {
-        Map<Date, Boolean> exist = new HashMap<>();
+        Map<LocalDate, Boolean> exist = new HashMap<>();
 
         String login = dto.getLogin();
         Optional<StudentEntity> optionalStudentEntity = this.repository.findByLogin(login);

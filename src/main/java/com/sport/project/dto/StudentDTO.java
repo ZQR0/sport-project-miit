@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class StudentDTO {
     private Integer healthGroup;
 
     @JsonProperty(namespace = "exist", required = true)
-    private Map<Date, Boolean> exist;
+    private Map<LocalDate, Boolean> exist;
 
     @JsonProperty(namespace = "teacherId", required = true)
     private Integer teacherId;

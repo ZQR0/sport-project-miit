@@ -23,23 +23,14 @@ public abstract class BaseEntity<ID extends Number> implements Entity<ID> {
     @Override
     public abstract ID getId();
 
-    @Column(name = "fsp", unique = true, nullable = false)
     @Override
-    public String getFsp() {
-        return this.fsp;
-    }
+    public abstract String getFsp();
 
-    @Column(name = "login", unique = true, nullable = false)
     @Override
-    public String getLogin() {
-        return this.login;
-    }
+    public abstract String getLogin();
 
-    @Column(name = "password_hash", nullable = false)
     @Override
-    public String getPasswordHash() {
-        return this.passwordHash;
-    }
+    public abstract String getPasswordHash();
 
 
     private void setId(@NonNull ID id) {

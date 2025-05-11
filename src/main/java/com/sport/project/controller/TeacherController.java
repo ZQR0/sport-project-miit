@@ -23,21 +23,21 @@ public class TeacherController {
     public String findById(@RequestParam(name = "id") Integer id, Model model) throws EntityNotFoundException {
         TeacherDTO teacher = this.service.findById(id);
         model.addAttribute("teacher", teacher);
-        return "teacher";
+        return "teacher_page";
     }
 
     @GetMapping(path = "/find-by-id", params = "login")
     public String findByLogin(@RequestParam(name = "login") String login, Model model) throws EntityNotFoundException {
         TeacherDTO teacher = this.service.findByLogin(login);
         model.addAttribute("teacher", teacher);
-        return "teacher";
+        return "teacher_page";
     }
 
     @GetMapping(path = "/find-by-id", params = "fsp")
     public String findByFSP(@RequestParam(name = "fsp") String fsp, Model model) throws EntityNotFoundException {
         TeacherDTO teacher = this.service.findByLogin(fsp);
         model.addAttribute("teacher", teacher);
-        return "teacher";
+        return "teacher_page";
     }
 
     @GetMapping(path = "/find-all")

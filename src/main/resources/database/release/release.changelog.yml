@@ -5,3 +5,9 @@ databaseChangeLog:
   - include:
       file: object/student.sql
       relativeToChangeLogFile: true
+  - include:
+      file: data/default_teacher.sql
+      relativeToChangeLogFile: true
+  - include:
+      file: data/default_student.sql
+      relativeToChangeLogFile: true
