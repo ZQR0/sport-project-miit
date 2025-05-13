@@ -11,7 +11,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,6 +20,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    private static final String SESSION_COOKIE = "JSESSION";
+
     private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
@@ -28,9 +29,21 @@ public class WebSecurityConfig {
         throws Exception
     {
         httpSecurity
-                .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
                 .authenticationManager(authenticationManager());
+
+        httpSecurity.authorizeHttpRequests(authz -> {
+            authz.requestMatchers("/index").permitAll();
+            authz.anyRequest().authenticated();
+        });
+
+        httpSecurity.logout(out -> {
+            out.logoutUrl("/logout")
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
+                    .deleteCookies(SESSION_COOKIE)
+                    .logoutSuccessUrl("/login");
+        });
 
         return httpSecurity.build();
     }

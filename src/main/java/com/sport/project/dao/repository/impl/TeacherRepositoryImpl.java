@@ -2,6 +2,7 @@ package com.sport.project.dao.repository.impl;
 
 import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.TeacherRepository;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
@@ -46,10 +47,14 @@ public class TeacherRepositoryImpl extends AbstractRepositoryImpl<TeacherEntity,
     @Override
     public Optional<TeacherEntity> findByLogin(String login) {
         if (login != null) {
-            String queryString = "SELECT e FROM teacher_entity e WHERE e.login=:login;";
-            TypedQuery<TeacherEntity> query = this.entityManager.createQuery(queryString, TeacherEntity.class);
-            query.setParameter("login", login);
-            return Optional.of(query.getSingleResult());
+            try {
+                String queryString = "SELECT e FROM teacher_entity e WHERE e.login =: login";
+                TypedQuery<TeacherEntity> query = this.entityManager.createQuery(queryString, TeacherEntity.class);
+                query.setParameter("login", login);
+                return Optional.of(query.getSingleResult());
+            } catch (NoResultException ex) {
+                return Optional.empty();
+            }
         }
 
         return Optional.empty();

@@ -1,15 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head lang="ru">
-    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/student_profile.css}">
     <title th:text="'Профиль ' + ${student.fsp}"></title>
 </head>
 <body>
-    <div class="profile_container">
-        <div class="student_id" th:text="'ID студента: ' + ${student.id}"></div>
-        <div class="student_fsp" th:text="'ФИО студента: ' + ${student.fsp}"></div>
-        <div class="student_login" th:text="'Логин студента' + ${student.login}"></div>
-        <div class="student_health_group" th:text="'Группа здоровья: ' + ${student.healthGroup}"></div>
+    <div class="header">
+        <div class="title">ВСЕ НА СПОРТ</div>
+        <div class="if_authorized" sec:authorize="isAuthenticated()">
+            <!-- Если пользователь авторизован -->
+            <div class="authorized_username">
+                Приветствуем вас, <span sec:authentication="name"></span>!
+            </div>
+            <div class="logout_container">
+                <a class="logout_link" href="/logout">Выйти</a>
+            </div>
+        </div>
     </div>
+
+    <div class="profile_container">
+        <div class="main_title" th:text="${student.fsp}"></div>
+        <div class="main_profile_container">
+            <div class="login_string" th:text="'Логин: ' + ${student.login}"></div>
+            <div class="health_group_string" th:text="'Группа здоровья: ' + ${student.healthGroup}"></div>
+            <div class="university_string">Университет: РУТ (МИИТ)</div>
+        </div>
+
+        <h2>Посещения</h2>
+        <table class="schedule_table">
+            <thead>
+            <tr>
+                <th>День недели</th>
+                <th>Посетил</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Проходим по карте расписания -->
+            <tr th:each="entry : ${student.exist}">
+                <td th:text="${entry.key}"></td>
+                <td>
+                    <ul>
+                        <!-- Перечисляем занятия в списке -->
+                        <li th:each="lesson : ${entry.value}" th:text="${lesson}"></li>
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="notice_link" href="/student/notice" sec:authorize="hasAuthority('teacher')">
+        <div class="notice_button">Отметить</div>
+    </a>
+
 </body>
 </html>

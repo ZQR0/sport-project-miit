@@ -1,14 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head lang="ru">
-    <meta charset="UTF-8">
-    <title th:text="'Профиль ' + ${teacher.fsp}"></title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/teacher_profile.css}">
+    <title th:text="'Профиль преподавателя ' + ${teacher.fsp}"></title>
 </head>
 <body>
+<div class="header">
+    <div class="title">ВСЕ НА СПОРТ</div>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <!-- Если пользователь авторизован -->
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
 <div class="profile_container">
-    <div class="student_id" th:text="'ID препода: ' + ${teacher.id}"></div>
-    <div class="student_fsp" th:text="'ФИО препода: ' + ${teacher.fsp}"></div>
-    <div class="student_login" th:text="'Логин препода: ' + ${teacher.login}"></div>
+    <div class="main_title" th:text="${teacher.fsp}"></div>
+    <div class="main_profile_container">
+        <div class="department_string">Преподаватель "Кафедра Физкультуры"</div>
+    </div>
+
+    <h2>Расписание занятий:</h2>
+    <table class="schedule_table">
+        <thead>
+        <tr>
+            <th>День недели</th>
+            <th>Занятия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Проходим по карте расписания -->
+        <tr th:each="entry : ${teacher.schedule}">
+            <td th:text="${entry.key}"></td>
+            <td>
+                <ul>
+                    <!-- Перечисляем занятия в списке -->
+                    <li th:each="lesson : ${entry.value}" th:text="${lesson}"></li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>
