@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/students_style.css}">
+    <title>Управление студентами</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <h2 class="student_title">Добавить студента</h2>
+    <form action="#" th:action="@{/students/create}" method="post" class="add-form" enctype="multipart/form-data">
+        <label for="studentLogin">Логин:</label>
+        <input type="text" id="studentLogin" name="login" required><br>
+        <label for="studentFullName">ФИО:</label>
+        <input type="text" id="studentFullName" name="fsp" required><br>
+        <label for="studentPassword">Пароль:</label>
+        <input type="password" id="studentPassword" name="password" required><br>
+        <label for="studentHealthGroup">Группа здоровья:</label>
+        <input type="text" id="studentHealthGroup" name="health_group" required><br>
+        <label for="teacherId">Преподаватель ID:</label>
+        <input type="number" id="teacherId" name="teacher_id" required><br>
+        <button type="submit" class="submit-button">Создать студента</button>
+    </form>
+
+    <h2 class="users_list_title">Список студентов</h2>
+    <table class="user-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>ФИО</th>
+            <th>Логин</th>
+            <th>Группа здоровья</th>
+            <th>Преподаватель</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${studentsList}">
+            <td th:text="${student.id}"></td>
+            <td th:text="${student.fsp}"></td>
+            <td th:text="${student.login}"></td>
+            <td th:text="${student.healthGroup}"></td>
+            <td th:text="${student.teacherId}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

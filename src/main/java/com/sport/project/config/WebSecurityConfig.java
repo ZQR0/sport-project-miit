@@ -1,6 +1,5 @@
 package com.sport.project.config;
 
-import com.sport.project.dto.UserDetailsImpl;
 import com.sport.project.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +33,9 @@ public class WebSecurityConfig {
 
         httpSecurity.authorizeHttpRequests(authz -> {
             authz.requestMatchers("/index").permitAll();
+            authz.requestMatchers("/styles/**").permitAll();
+            authz.requestMatchers("/admin/**").hasAuthority("teacher");
+            authz.requestMatchers("/error").permitAll();
             authz.anyRequest().authenticated();
         });
 

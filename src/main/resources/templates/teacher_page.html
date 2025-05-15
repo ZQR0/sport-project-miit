@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="title">ВСЕ НА СПОРТ</div>
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
     <div class="if_authorized" sec:authorize="isAuthenticated()">
         <!-- Если пользователь авторизован -->
         <div class="authorized_username">
@@ -23,6 +23,7 @@
 <div class="profile_container">
     <div class="main_title" th:text="${teacher.fsp}"></div>
     <div class="main_profile_container">
+        <div class="login_string" th:text="'Логин: ' + ${teacher.login}"></div>
         <div class="department_string">Преподаватель "Кафедра Физкультуры"</div>
     </div>
 

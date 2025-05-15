@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/teachers_style.css}">
+    <title>Управление преподавателями</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <h2 class="teacher_title">Добавить преподавателя</h2>
+    <form action="#" th:action="@{/teachers/create}" method="post" class="add-form">
+        <label for="teacherLogin">Логин:</label>
+        <input type="text" id="teacherLogin" name="login" required><br>
+        <label for="teacherFullName">ФИО:</label>
+        <input type="text" id="teacherFullName" name="fsp" required><br>
+        <label for="teacherPassword">Пароль:</label>
+        <input type="password" id="teacherPassword" name="password" required><br>
+        <label for="isModerator">Модератор</label>
+        <input type="checkbox" id="isModerator" name="is_moderator" value="true"><br>
+        <button type="submit" class="submit-button">Создать преподавателя</button>
+    </form>
+
+    <h2 class="users_list_title">Список преподавателей</h2>
+    <table class="user-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>ФИО</th>
+            <th>Логин</th>
+            <th>Роль</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="teacher : ${teachersList}">
+            <td th:text="${teacher.id}"></td>
+            <td th:text="${teacher.fsp}"></td>
+            <td th:text="${teacher.login}"></td>
+            <td th:if="${teacher.isModerator}" th:text="'Модератор'">Модератор</td>
+            <td th:if="${!teacher.isModerator}" th:text="'Преподаватель'">Пользователь</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

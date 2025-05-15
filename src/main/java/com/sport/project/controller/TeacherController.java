@@ -1,39 +1,66 @@
 package com.sport.project.controller;
 
+import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
+import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.impl.TeacherServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
-@RequestMapping(path = "/teacher")
+@RequestMapping(path = "/teachers")
 @RequiredArgsConstructor
+@Slf4j
 public class TeacherController {
 
     private final TeacherServiceImpl service;
 
     @GetMapping(path = "/find-by-id", params = "id")
-    public String findById(@RequestParam(name = "id") Integer id, Model model) throws EntityNotFoundException {
-        TeacherDTO teacher = this.service.findById(id);
-        model.addAttribute("teacher", teacher);
-        return "teacher_page";
+    public String findById(@RequestParam(name = "id") Integer id, Model model, HttpServletResponse response) {
+        try {
+            TeacherDTO teacher = this.service.findById(id);
+            model.addAttribute("teacher", teacher);
+            return "teacher_page";
+        } catch (EntityNotFoundException ex) {
+            log.info(ex.getMessage());
+            try {
+                response.sendRedirect("/error");
+            } catch (IOException exception) {
+                log.info(exception.getMessage());
+            }
+        }
+
+        return null;
     }
 
-    @GetMapping(path = "/find-by-id", params = "login")
-    public String findByLogin(@RequestParam(name = "login") String login, Model model) throws EntityNotFoundException {
-        TeacherDTO teacher = this.service.findByLogin(login);
-        model.addAttribute("teacher", teacher);
-        return "teacher_page";
+    @GetMapping(path = "/find-by-login", params = "login")
+    public String findByLogin(@RequestParam(name = "login") String login, Model model, HttpServletResponse response) {
+        try {
+            TeacherDTO teacher = this.service.findByLogin(login);
+            model.addAttribute("teacher", teacher);
+            return "teacher_page";
+        } catch (EntityNotFoundException ex) {
+            log.info(ex.getMessage());
+            try {
+                response.sendRedirect("/error");
+            } catch (IOException exception) {
+                log.info(exception.getMessage());
+            }
+        }
+
+        return null;
     }
 
-    @GetMapping(path = "/find-by-id", params = "fsp")
+    @GetMapping(path = "/find-by-fsp", params = "fsp")
     public String findByFSP(@RequestParam(name = "fsp") String fsp, Model model) throws EntityNotFoundException {
         TeacherDTO teacher = this.service.findByLogin(fsp);
         model.addAttribute("teacher", teacher);
@@ -52,5 +79,17 @@ public class TeacherController {
         List<TeacherDTO> teachers = this.service.findAllModerators();
         model.addAttribute("teachers", teachers);
         return "teachers";
+    }
+
+    @PostMapping(path = "create", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public void createEndpoint(TeacherCreationDTO dto, HttpServletResponse response)
+            throws EntityAlreadyExistsException
+    {
+        TeacherDTO created = this.service.createTeacher(dto);
+        try {
+            response.sendRedirect(String.format("/teachers/find-by-login?login=%s", dto.getLogin()));
+        } catch (IOException ex) {
+            log.info(ex.getMessage());
+        }
     }
 }

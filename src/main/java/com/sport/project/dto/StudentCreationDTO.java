@@ -19,7 +19,6 @@ public class StudentCreationDTO {
     @JsonProperty(namespace = "password", required = true)
     private String password;
 
-    @JsonProperty(namespace = "health_group", required = true)
     private Integer healthGroup;
 
     @JsonProperty(namespace = "teacher_id", required = true)

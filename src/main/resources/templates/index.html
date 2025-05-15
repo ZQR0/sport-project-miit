@@ -1,11 +1,80 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
     <meta charset="UTF-8">
-    <title>Главная страница</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" th:href="@{/styles/index.css}">
+    <title>Главная страница</title>
 </head>
 <body>
-    <div class="container">Hello</div>
+<div class="page-wrapper">
+    <div class="header">
+        <a class="title">ВСЕ НА СПОРТ</a>
+        <div class="auth-block" sec:authorize="!isAuthenticated()">
+            <a class="login-link" href="/login">Войти</a>
+        </div>
+        <div class="if_authorized" sec:authorize="isAuthenticated()">
+            <div class="authorized_username">
+                Приветствуем вас, <span sec:authentication="name"></span>!
+            </div>
+            <div class="logout_container">
+                <a class="logout_link" href="/logout">Выйти</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-form-container">
+        <form action="#" method="GET" id="searchForm">
+            <label for="roleSelect" class="roleSelect">Выберите роль:</label>
+            <select id="roleSelect" name="role">
+                <option value="students">Студенты</option>
+                <option value="teachers">Преподаватели</option>
+            </select>
+
+            <input type="text" placeholder="Введите логин..." id="loginInput" name="login" required/>
+            <button type="submit">Искать</button>
+        </form>
+    </div>
+
+    <div class="main-container">
+        <section class="hero-section">
+            <h1>Добро пожаловать!</h1>
+            <p>Здесь собраны все необходимые инструменты и сервисы для управления спортивной активностью.</p>
+        </section>
+
+        <section class="features">
+            <div class="feature-item">
+                <h2>Планирование тренировок</h2>
+                <p>Создавайте индивидуальные планы тренировок и следите за прогрессом.</p>
+            </div>
+            <div class="feature-item">
+                <h2>Отчеты и статистика</h2>
+                <p>Получайте детальные отчёты о своей активности и достижениях.</p>
+            </div>
+            <div class="feature-item">
+                <h2>Комьюнити спортсменов</h2>
+                <p>Поддерживайте контакт с единомышленниками и обменивайтесь опытом.</p>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>© Все права не защищены, бери на здоровье, 2025</p>
+    </footer>
+</div>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // предотвращаем стандартную отправку формы
+
+        const role = document.querySelector('#roleSelect').value;
+        const login = document.querySelector('#loginInput').value.trim();
+
+        if (!login) return alert("Введите логин");
+
+        window.location.href = '/' + role + '/find-by-login?login=' + encodeURIComponent(login);
+    });
+</script>
 </body>
 </html>

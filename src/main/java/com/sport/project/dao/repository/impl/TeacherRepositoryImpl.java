@@ -23,7 +23,7 @@ public class TeacherRepositoryImpl extends AbstractRepositoryImpl<TeacherEntity,
 
     @Override
     public List<TeacherEntity> findAll() {
-        String queryString = "SELECT * FROM teacher_entity e;";
+        String queryString = "SELECT e FROM teacher_entity e";
         TypedQuery<TeacherEntity> query = this.entityManager.createQuery(queryString, TeacherEntity.class);
         if (query.getResultList() == null || query.getResultList().isEmpty()) {
             return  Collections.emptyList();

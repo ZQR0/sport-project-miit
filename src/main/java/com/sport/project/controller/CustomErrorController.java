@@ -12,4 +12,9 @@ public class CustomErrorController {
         return "error";
     }
 
+    @GetMapping(path = "/already-exists")
+    public String handleAlreadyExists() {
+        return "already_exists";
+    }
+
 }

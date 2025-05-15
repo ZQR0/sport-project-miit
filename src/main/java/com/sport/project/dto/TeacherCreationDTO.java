@@ -19,7 +19,6 @@ public class TeacherCreationDTO {
     @JsonProperty(namespace = "password", required = true)
     private String password;
 
-    @JsonProperty(namespace = "is_moderator", required = true)
-    private boolean isModerator;
+    private Boolean isModerator;
 
 }

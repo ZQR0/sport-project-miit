@@ -1,0 +1,130 @@
+/* admin_style.css */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 14px;
+    background: #F7F2F2;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    border: 1px solid rgba(38,36,36,1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    margin-top: 0px;
+    top: 0px;
+}
+
+.title {
+    color: rgba(29,108,255,1);
+    font-family: 'K2D', sans-serif;
+    font-weight: normal;
+    font-size: 30px;
+    max-width: 50%;
+    text-align: left;
+    text-decoration: none;
+}
+
+.if_authorized {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.authorized_username,
+.logout_container {
+    margin-bottom: 5px;
+}
+
+.logout_link {
+    color: white;
+    text-decoration: none;
+    background-color: #4979F2;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.content-container {
+    padding-top: 119px; /* Высота шапки */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-table {
+    width: 90%;
+    max-width: 635px;
+    margin: 20px auto;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+.user-table th, .user-table td {
+    border: 1px solid rgba(38,36,36,1);
+    padding: 8px;
+    text-align: center;
+}
+
+.add-form {
+    width: 90%;
+    max-width: 635px;
+    margin: 20px auto;
+    line-height: 1.5;
+}
+
+.add-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.add-form input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(38,36,36,1);
+    border-radius: 4px;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    background-color: #4979F2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 1s ease-in-out;
+}
+
+.submit-button:hover {
+    background-color: #4929F2;
+    border-radius: 20px;
+}
+
+.teacher_title {
+    font-family: 'K2D', sans-serif;
+    font-weight: normal;
+}
+
+.student_title {
+    font-family: 'K2D', sans-serif;
+    font-weight: normal;
+}
+
+.users_list_title {
+    font-family: 'K2D', sans-serif;
+    font-weight: normal;
+}

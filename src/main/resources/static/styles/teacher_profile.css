@@ -31,6 +31,7 @@ body {
     font-size: 30px;
     max-width: 50%;
     text-align: left;
+    text-decoration: none;
 }
 
 .authorized_username,

@@ -26,11 +26,13 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
                          Map<LocalDate, Boolean> exist,
                          String login,
                          String passwordHash,
-                         TeacherEntity teacher)
+                         TeacherEntity teacher,
+                         Integer healthGroup)
     {
         super(fsp, login, passwordHash);
         this.setExist(exist);
         this.setTeacher(teacher);
+        this.setHealthGroup(healthGroup);
     }
 
     @Id
@@ -65,7 +67,7 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
         return healthGroup;
     }
 
-    public void setHealthGroup(@NonNull Integer healthGroup) {
+    public void setHealthGroup(Integer healthGroup) {
         this.healthGroup = healthGroup;
     }
 
@@ -75,7 +77,7 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
         return this.exist;
     }
 
-    public void setExist(@NonNull Map<LocalDate, Boolean> exist) {
+    public void setExist(Map<LocalDate, Boolean> exist) {
         this.exist = exist;
     }
 
@@ -137,7 +139,8 @@ public class StudentEntity extends BaseEntity<Integer> implements Serializable {
                     this.exist,
                     this.login,
                     this.passwordHash,
-                    this.teacher
+                    this.teacher,
+                    this.healthGroup
             );
         }
 

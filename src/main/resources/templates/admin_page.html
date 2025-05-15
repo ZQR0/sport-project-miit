@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/admin_style.css}">
+    <title>Административная панель</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <!-- Если пользователь авторизован -->
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+
+<!--    <h2 class="users_list_title">Список преподавателей</h2>-->
+<!--    <table class="users-list-table">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>ФИО</th>-->
+<!--            <th>Логин</th>-->
+<!--            <th>Роль</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="teacher : ${teachersList}">-->
+<!--            <td th:text="${teacher.id}"></td>-->
+<!--            <td th:text="${teacher.fsp}"></td>-->
+<!--            <td th:text="${teacher.login}"></td>-->
+<!--            <td th:if="${teacher.isModerator}" th:text="'Модератор'">Модератор</td>-->
+<!--            <td th:if="${!teacher.isModerator}" th:text="'Пользователь'">Пользователь</td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+    <!-- Список студентов -->
+<!--    <h2 class="users_list_title">Список студентов</h2>-->
+<!--    <table class="users-list-table">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>ID</th>-->
+<!--            <th>ФИО</th>-->
+<!--            <th>Логин</th>-->
+<!--            <th>Группа здоровья</th>-->
+<!--            <th>Преподаватель</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr th:each="student : ${studentsList}">-->
+<!--            <td th:text="${student.id}"></td>-->
+<!--            <td th:text="${student.fsp}"></td>-->
+<!--            <td th:text="${student.login}"></td>-->
+<!--            <td th:text="${student.healthGroup}"></td>-->
+<!--            <td th:text="${student.teacherFSP}"></td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+    <!-- Форма добавления преподавателя -->
+    <h2 class="teacher_title">Добавить преподавателя</h2>
+    <form action="#" th:action="@{/teachers/create}" method="post" class="add-form">
+
+        <label for="teacherLogin">Логин:</label>
+        <input type="text" id="teacherLogin" name="login" required><br>
+
+        <label for="teacherFullName">ФИО:</label>
+        <input type="text" id="teacherFullName" name="fsp" required><br>
+
+        <label for="teacherPassword">Пароль:</label>
+        <input type="password" id="teacherPassword" name="password" required><br>
+
+        <label for="isModerator">Модератор</label>
+        <input type="checkbox" id="isModerator" name="isModerator" value="false"><br>
+
+        <button type="submit" class="submit-button">Создать преподавателя</button>
+    </form>
+
+    <!-- Форма добавления студента -->
+    <h2 class="student_title">Добавить студента</h2>
+    <form action="#" th:action="@{/students/create}" method="post" class="add-form" enctype="multipart/form-data">
+
+        <label for="studentLogin">Логин:</label>
+        <input type="text" id="studentLogin" name="login" required><br>
+
+        <label for="studentFullName">ФИО:</label>
+        <input type="text" id="studentFullName" name="fsp" required><br>
+
+        <label for="studentPassword">Пароль:</label>
+        <input type="password" id="studentPassword" name="password" required><br>
+
+        <label for="studentHealthGroup">Группа здоровья:</label>
+        <input type="number" id="studentHealthGroup" name="healthGroup" required><br>
+
+        <label for="teacherId">Преподаватель ID:</label>
+        <input type="number" id="teacherId" name="teacherId" required><br>
+
+        <button type="submit" class="submit-button">Создать студента</button>
+    </form>
+</div>
+<script>
+    function updateForm() {
+        const checkbox = document.getElementById('isModerator');
+        if (!checkbox.checked) {
+            // Если чекбокс не установлен — устанавливаем null
+            checkbox.value = 'false';
+        } else {
+            checkbox.value = 'true';
+        }
+    }
+</script>
+</body>
+</html>

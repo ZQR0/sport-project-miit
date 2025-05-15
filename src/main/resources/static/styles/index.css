@@ -1,3 +1,246 @@
-.container {
-    font-size: 180px;
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 14px;
+    background: #F7F2F2;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Минимальная высота равна высоте экрана */
+    justify-content: space-between; /* Равномерно распределяем пространство */
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between;
+}
+
+.header {
+    width: 100%;
+    height: 100px;
+    position: relative; /* Устраняем фиксацию */
+    border: 1px solid rgba(38,36,36,1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+}
+
+.title {
+    color: rgba(29,108,255,1);
+    font-family: K2D;
+    font-weight: Regular;
+    font-size: 30px;
+    max-width: 50%;
+    text-align: left;
+    text-decoration: none;
+}
+
+.auth-block {
+    display: flex;
+    align-items: center;
+}
+
+.login-link {
+    color: white;
+    text-decoration: none;
+    background-color: #4979F2;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+.login-link:hover {
+    background-color: #3d6efc;
+}
+
+.if_authorized {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.authorized_username,
+.logout_container {
+    margin-bottom: 5px;
+}
+
+.logout_link {
+    color: white;
+    text-decoration: none;
+    background-color: #4979F2;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.logout_link:hover {
+    background-color: #3d6efc;
+}
+
+.main-container {
+    padding-top: 100px; /* Сохраняем отступ от шапки */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #EFEFEF;
+    width: 100%;
+}
+
+.features {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    padding: 50px 0;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.feature-item {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.feature-item h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.feature-item p {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.feature-item:hover {
+    transform: scale(1.05);
+}
+
+.search-form-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.search-form-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.search-form-container label {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.search-form-container select,
+.search-form-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.search-form-container button {
+    background-color: #4979F2;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-form-container button:hover {
+    background-color: #3d6efc;
+}
+
+@media screen and (max-width: 768px) {
+    .search-form-container {
+        max-width: 90%;
+    }
+
+    .search-form-container select,
+    .search-form-container input[type="text"],
+    .search-form-container button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+.footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    background-color: #4979F2;
+    color: white;
+}
+
+.roleSelect {
+    font-family: K2D;
+    font-weight: Regular;
+}
+
+/* Мобильная версия (экраны менее 768 пикселей) */
+@media screen and (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+    }
+
+    .title {
+        max-width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .auth-block {
+        margin-top: 10px;
+        align-items: center;
+    }
+
+    .login-link, .logout_link {
+        padding: 8px 15px;
+        font-size: 16px;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-item {
+        padding: 15px;
+    }
+
+    .feature-item h2 {
+        font-size: 20px;
+    }
+
+    .feature-item p {
+        font-size: 14px;
+    }
+
+    .footer {
+        padding: 15px 0;
+    }
 }

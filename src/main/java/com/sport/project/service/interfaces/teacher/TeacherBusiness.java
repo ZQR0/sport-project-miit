@@ -10,5 +10,5 @@ import java.util.Map;
 
 public interface TeacherBusiness {
     Map<LocalDate, String> updateSchedule(LocalDate date, String lessonName, TeacherEntity entity);
-    boolean noticeStudent(StudentEntity student, LocalDate date) throws EntityNotFoundException;
+    boolean noticeStudent(String login) throws EntityNotFoundException;
 }

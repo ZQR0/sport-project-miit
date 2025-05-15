@@ -14,6 +14,7 @@ import com.sport.project.service.interfaces.student.StudentBusiness;
 import com.sport.project.service.interfaces.student.StudentCreationService;
 import com.sport.project.service.interfaces.student.StudentDeletingService;
 import com.sport.project.service.interfaces.student.StudentUpdatingService;
+import com.sport.project.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,7 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
     private final StudentRepositoryImpl repository;
     private final PasswordEncoder passwordEncoder;
     private final TeacherRepositoryImpl teacherRepository;
+    private final UserUtils userUtils;
 
     @Override
     public StudentDTO findById(Integer id) throws EntityNotFoundException {
@@ -51,7 +53,7 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
         if (login == null) throw new EntityNotFoundException("Null login provided");
 
         StudentEntity studentEntity = this.repository.findByLogin(login)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Student entity with login %s not found")));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student entity with login %s not found", login)));
 
         return Mapper.map(studentEntity);
     }
@@ -137,23 +139,25 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
         this.repository.save(entity);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
     public StudentDTO createStudent(StudentCreationDTO dto) throws EntityAlreadyExistsException {
         Map<LocalDate, Boolean> exist = new HashMap<>();
 
         String login = dto.getLogin();
-        Optional<StudentEntity> optionalStudentEntity = this.repository.findByLogin(login);
-        if (optionalStudentEntity.isPresent()) throw new EntityAlreadyExistsException(String.format("StudentEntity with login %s already exists", login));
+        if (this.userUtils.isTeacherExistsByLogin(login) || this.userUtils.isStudentExistsByLogin(login)) {
+            throw new EntityAlreadyExistsException(String.format("User with login %s already exists"));
+        }
 
         TeacherEntity teacher;
         try {
             teacher = findTeacherById(dto.getTeacherId());
+            log.info(teacher.getFsp());
         } catch (EntityNotFoundException ex) {
             log.error(ex.getMessage());
             return null;
         }
 
+        log.info(String.valueOf(dto.getHealthGroup()));
 
         StudentEntity entity = StudentEntity.builder()
                 .fsp(dto.getFsp())
@@ -164,15 +168,18 @@ public class StudentServiceImpl implements StudentService, StudentBusiness, Stud
                 .teacher(teacher)
                 .build();
 
+        this.repository.save(entity);
+
         return Mapper.map(entity);
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     private TeacherEntity findTeacherById(int id) throws EntityNotFoundException {
         TeacherEntity teacher = this.teacherRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("TeacherEntity with id %s not found", id)));
         return teacher;
     }
+
+
 
 
 }

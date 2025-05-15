@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="title">ВСЕ НА СПОРТ</div>
+        <a class="title" href="/index">ВСЕ НА СПОРТ</a>
         <div class="if_authorized" sec:authorize="isAuthenticated()">
             <!-- Если пользователь авторизован -->
             <div class="authorized_username">
@@ -25,6 +25,7 @@
         <div class="main_profile_container">
             <div class="login_string" th:text="'Логин: ' + ${student.login}"></div>
             <div class="health_group_string" th:text="'Группа здоровья: ' + ${student.healthGroup}"></div>
+            <div class="teacher_of_student" th:text="'Преподаватель: ' + ${teacher.fsp}"></div>
             <div class="university_string">Университет: РУТ (МИИТ)</div>
         </div>
 
