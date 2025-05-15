@@ -52,9 +52,15 @@
         </table>
     </div>
 
-    <a class="notice_link" href="/student/notice" sec:authorize="hasAuthority('teacher')">
-        <div class="notice_button">Отметить</div>
-    </a>
+    <div style="display:none;" sec:authorize="hasAuthority('teacher')">
+        <form action="#" th:action="@{'/teachers/notice'}" method="POST">
+            <input type="hidden" name="login" th:value="${param.login}" />
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <button type="submit" class="notice_button">Отметить</button>
+        </form>
+    </div>
+
+    <a class="notice_link" onclick="document.querySelector('.notice_button').click(); return false;">Отметить</a>
 
 </body>
 </html>

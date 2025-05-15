@@ -103,6 +103,33 @@ body {
     margin-bottom: 100px; /* Добавляем отступ снизу кнопки */
 }
 
+.notice_button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #4CAF50; /* Зелёный оттенок */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.notice_button:hover {
+    background-color: #45A049; /* Более тёмный зелёный оттенок при наведении */
+    transform: scale(1.05); /* Немного увеличиваем размер при наведении */
+}
+
+.notice_button:focus {
+    outline: none; /* Убираем контур выделения */
+}
+
+.notice_button:active {
+    transform: translateY(2px); /* Эффект нажатия */
+}
+
 @media screen and (max-width: 768px) {
     .header {
         flex-wrap: wrap;

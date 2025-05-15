@@ -101,7 +101,7 @@ public class TeacherController {
     public void updateSchedule(
             @RequestParam(name = "date") String rawDate,
             @RequestParam(name = "lesson") String lesson,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response) {
 
         // Преобразование строки даты в LocalDate
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -114,6 +114,25 @@ public class TeacherController {
         String login = AuthorizedUserUtils.getCurrentUser().getLogin();
 
         // Перенаправляем обратно на профиль учителя
-        response.sendRedirect(String.format("/teachers/find-by-login?login=%s", login));
+        try {
+            response.sendRedirect(String.format("/teachers/find-by-login?login=%s", login));
+        } catch (IOException ex) {
+            log.info(ex.getMessage());
+        }
+    }
+
+    @PostMapping(path = "/notice")
+    public void noticeEndpoint(HttpServletResponse response, @RequestParam(name = "login") String login)
+        throws EntityNotFoundException
+    {
+        if (this.service.noticeStudent(login)) {
+            try {
+                response.sendRedirect(String.format("/students/find-by-login?login=%s", login));
+            } catch (IOException ex) {
+                log.info(ex.getMessage());
+            }
+        } else {
+            log.error("Can not notice student");
+        }
     }
 }
