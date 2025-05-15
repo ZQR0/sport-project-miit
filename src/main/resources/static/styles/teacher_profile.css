@@ -73,6 +73,60 @@ body {
     font-weight: Regular;
 }
 
+/* Стили для формы обновления расписания */
+.update_form_wrapper {
+    background: #EFEFEF;
+    width: 90%;
+    max-width: 635px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid rgba(38,36,36,1);
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+    text-align: center;
+}
+
+.update_form_wrapper label {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: rgba(29,108,255,1); /* Цвет текста */
+}
+
+.update_form_wrapper input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+}
+
+.update_schedule_button {
+    background-color: #4CAF50; /* Зеленое оформление */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease-in-out;
+    border-radius: 5px;
+}
+
+.update_schedule_button:hover {
+    background-color: #45A049; /* Темнее зеленое при наведении */
+}
+
+@media screen and (max-width: 768px) {
+    .update_form_wrapper {
+        width: 100%;
+    }
+
+    .update_form_wrapper input[type="text"] {
+        width: 100%;
+    }
+}
+
 @media screen and (max-width: 768px) {
     body {
         font-size: 12px;

@@ -91,13 +91,18 @@ public class TeacherServiceImpl implements TeacherService,
 
 
     @Override
-    public Map<LocalDate, String> updateSchedule(LocalDate date, String lessonName, TeacherEntity entity) {
-        Map<LocalDate, String> schedule = entity.getSchedule();
-        schedule.putIfAbsent(date, lessonName);
+    public void updateSchedule(LocalDate date, String lessonName) {
+        UserDetailsImpl userDetails = AuthorizedUserUtils.getCurrentUser();
+        if (userDetails != null) {
+            TeacherEntity teacher = this.teacherRepository.findByLogin(userDetails.getLogin()).get();
+            Map<LocalDate, String> schedule = teacher.getSchedule();
+            schedule.put(date, lessonName);
+            teacher.setSchedule(schedule);
+            this.teacherRepository.save(teacher);
+            log.info("Schedule updated");
+        }
 
-        entity.setSchedule(schedule);
-        this.teacherRepository.save(entity);
-        return schedule;
+        log.info("Schedule not updated");
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

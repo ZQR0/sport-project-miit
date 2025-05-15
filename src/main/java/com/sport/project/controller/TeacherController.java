@@ -2,9 +2,11 @@ package com.sport.project.controller;
 
 import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
+import com.sport.project.dto.UserDetailsImpl;
 import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.impl.TeacherServiceImpl;
+import com.sport.project.utils.AuthorizedUserUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -91,5 +95,25 @@ public class TeacherController {
         } catch (IOException ex) {
             log.info(ex.getMessage());
         }
+    }
+
+    @PostMapping(path = "/update-schedule", params = {"date", "lesson"})
+    public void updateSchedule(
+            @RequestParam(name = "date") String rawDate,
+            @RequestParam(name = "lesson") String lesson,
+            HttpServletResponse response) throws IOException {
+
+        // Преобразование строки даты в LocalDate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate date = LocalDate.parse(rawDate, formatter);
+
+        // Передача дат и уроков сервису
+        service.updateSchedule(date, lesson);
+
+        // Получаем логин текущего пользователя
+        String login = AuthorizedUserUtils.getCurrentUser().getLogin();
+
+        // Перенаправляем обратно на профиль учителя
+        response.sendRedirect(String.format("/teachers/find-by-login?login=%s", login));
     }
 }

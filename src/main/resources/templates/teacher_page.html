@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head lang="ru">
+    <meta charset="UTF-8" />
     <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" th:href="@{/styles/teacher_profile.css}">
@@ -49,5 +50,21 @@
         </tbody>
     </table>
 </div>
+
+<!-- Новый блок формы, отдельная секция вне профиля -->
+<div class="update_form_wrapper" sec:authorize="hasAuthority('teacher')">
+<th:if test="${#parameters.containsKey('login') and #parameters['login'][0].equals(#authentication.name)}">
+    <form action="#" th:action="@{/teachers/update-schedule}" method="POST" id="updateScheduleForm">
+        <label for="date">Дата занятия (DD-MM-YYYY)</label><br/>
+        <input type="text" id="date" name="date" placeholder="DD-MM-YYYY"><br/><br/> <!-- переименовали subjectDate в date -->
+
+        <label for="lesson">Название предмета</label><br/>
+        <input type="text" id="lesson" name="lesson" placeholder="Название предмета"><br/><br/> <!-- переименовали subjectName в lesson -->
+
+        <button type="submit" class="update_schedule_button">Обновить расписание</button>
+    </form>
+</th:if>
+</div>
+
 </body>
 </html>
