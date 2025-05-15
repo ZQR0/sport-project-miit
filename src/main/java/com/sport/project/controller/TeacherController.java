@@ -24,23 +24,23 @@ public class TeacherController {
 
     private final TeacherServiceImpl service;
 
-    @GetMapping(path = "/find-by-id", params = "id")
-    public String findById(@RequestParam(name = "id") Integer id, Model model, HttpServletResponse response) {
-        try {
-            TeacherDTO teacher = this.service.findById(id);
-            model.addAttribute("teacher", teacher);
-            return "teacher_page";
-        } catch (EntityNotFoundException ex) {
-            log.info(ex.getMessage());
-            try {
-                response.sendRedirect("/error");
-            } catch (IOException exception) {
-                log.info(exception.getMessage());
-            }
-        }
-
-        return null;
-    }
+//    @GetMapping(path = "/find-by-id", params = "id")
+//    public String findById(@RequestParam(name = "id") Integer id, Model model, HttpServletResponse response) {
+//        try {
+//            TeacherDTO teacher = this.service.findById(id);
+//            model.addAttribute("teacher", teacher);
+//            return "teacher_page";
+//        } catch (EntityNotFoundException ex) {
+//            log.info(ex.getMessage());
+//            try {
+//                response.sendRedirect("/error");
+//            } catch (IOException exception) {
+//                log.info(exception.getMessage());
+//            }
+//        }
+//
+//        return null;
+//    }
 
     @GetMapping(path = "/find-by-login", params = "login")
     public String findByLogin(@RequestParam(name = "login") String login, Model model, HttpServletResponse response) {

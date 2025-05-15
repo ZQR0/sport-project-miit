@@ -28,25 +28,25 @@ public class StudentController {
     private final StudentServiceImpl studentService;
     private final TeacherServiceImpl teacherService;
 
-    @GetMapping(path = "find-by-id", params = "id", produces = MediaType.TEXT_HTML_VALUE)
-    public String findStudentByIdEndpoint(Model model, @RequestParam(name = "id") Integer id, HttpServletResponse response)
-            throws EntityNotFoundException
-    {
-        try {
-            StudentDTO student = this.studentService.findById(id);
-            model.addAttribute("student", student);
-            return "student_profile";
-        } catch (EntityNotFoundException e) {
-            log.info(e.getMessage());
-            try {
-                response.sendRedirect("/error");
-            } catch (IOException ex) {
-                log.info(ex.getMessage());
-            }
-        }
-
-        return null;
-    }
+//    @GetMapping(path = "find-by-id", params = "id", produces = MediaType.TEXT_HTML_VALUE)
+//    public String findStudentByIdEndpoint(Model model, @RequestParam(name = "id") Integer id, HttpServletResponse response)
+//            throws EntityNotFoundException
+//    {
+//        try {
+//            StudentDTO student = this.studentService.findById(id);
+//            model.addAttribute("student", student);
+//            return "student_profile";
+//        } catch (EntityNotFoundException e) {
+//            log.info(e.getMessage());
+//            try {
+//                response.sendRedirect("/error");
+//            } catch (IOException ex) {
+//                log.info(ex.getMessage());
+//            }
+//        }
+//
+//        return null;
+//    }
 
     @GetMapping(path = "find-by-login", params = "login", produces = MediaType.TEXT_HTML_VALUE)
     public String findStudentByLoginEndpoint(Model model, @RequestParam(name = "login") String login, HttpServletResponse response)
