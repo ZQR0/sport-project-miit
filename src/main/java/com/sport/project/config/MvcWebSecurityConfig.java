@@ -24,7 +24,7 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
+    public SecurityFilterChain mvcFilterChain(HttpSecurity httpSecurity)
         throws Exception
     {
         httpSecurity

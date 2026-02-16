@@ -13,18 +13,18 @@ spring:
     enabled: true
     contexts: prod, dev
   datasource:
-    url: jdbc:postgresql://localhost:5432/all-on-sport?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true?createDatabaseIfNotExist=true
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://postgres:${POSTGRES_DB_PORT}/${POSTGRES_DB?createDatabaseIfNotExist=true
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: "org.postgresql.Driver"
     hikari:
-      jdbc-url: jdbc:postgresql://localhost:5432/all-on-sport?useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true?createDatabaseIfNotExist=true
+      jdbc-url: jdbc:postgresql://postgres:${POSTGRES_DB_PORT}/${POSTGRES_DB?createDatabaseIfNotExist=true
       driver-class-name: "org.postgresql.Driver"
-      username: postgres
-      password: postgres
+      username: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
       connection-timeout: 30000
-      #maximum-pool-size: 15
-      #minimum-idle: 10
+      maximum-pool-size: 15
+      minimum-idle: 10
       initialization-fail-timeout: 1
       leak-detection-threshold: 0
       pool-name: "[HikariPool-all-on-sport-pool]"
