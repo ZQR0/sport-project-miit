@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS groups (
 
     CONSTRAINT groups_name_length_malo CHECK(LENGTH(name) <= 15),
     CONSTRAINT institute_length_mnogo CHECK (LENGTH(institute) <= 100),
-    CONSTRAINT name_correct CHECK (name ~ '^[А-Я]{3}[а-я]-[0-9]{3}$'),
+    CONSTRAINT name_correct CHECK (name ~ '^[А-Я]{3}[а-я]?-[0-9]{3}$'),
     CONSTRAINT name_unique UNIQUE(name)
 );
 
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS disciplines (
     discipline_id   INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name            VARCHAR    NOT NULL,
 
-    CONSTRAINT disciplines_name_length_malo CHECK (LENGTH(name) <= 15),
+    CONSTRAINT disciplines_name_length_malo CHECK (LENGTH(name) <= 100),
     CONSTRAINT disciplines_name_unique UNIQUE(name)
 );
 
