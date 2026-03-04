@@ -13,6 +13,28 @@ CREATE TABLE IF NOT EXISTS groups (
     CONSTRAINT name_unique UNIQUE(name)
 );
 
+CREATE TABLE IF NOT EXISTS sections (
+    section_id     INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name           VARCHAR     NOT NULL,
+    description    VARCHAR     NOT NULL,
+
+    CONSTRAINT sections_name_length_malo CHECK (LENGTH(name) <= 100),
+    CONSTRAINT sections_name_unique UNIQUE(name),
+
+    CONSTRAINT sections_description_length_exceeding CHECK (LENGTH(description) <= 100)
+);
+
+CREATE TABLE IF NOT EXISTS health_groups (
+    health_group_id     INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name                VARCHAR     NOT NULL,
+    description         VARCHAR     NOT NULL,
+
+    CONSTRAINT health_groups_name_length_malo CHECK (LENGTH(name) <= 100),
+    CONSTRAINT health_groups_unique UNIQUE(name),
+
+    CONSTRAINT health_groups_description_length_exceeding CHECK (LENGTH(description) <= 100)
+);
+
 CREATE TABLE IF NOT EXISTS disciplines (
     discipline_id   INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name            VARCHAR    NOT NULL,
@@ -30,7 +52,7 @@ CREATE TABLE IF NOT EXISTS students (
     first_name      VARCHAR(50) NOT NULL,
     patronymic      VARCHAR(50) NOT NULL,
     birthday        DATE        NOT NULL,
-    health_group    VARCHAR(10) NOT NULL,
+    health_group    INTEGER     NOT NULL,
     group_id        INTEGER     NOT NULL,
     section_id      INTEGER,
 
@@ -41,8 +63,9 @@ CREATE TABLE IF NOT EXISTS students (
     CONSTRAINT students_health_group_length_malo CHECK (LENGTH(health_group) <= 10),
     CONSTRAINT students_login_unique UNIQUE(login),
 
+    CONSTRAINT students_health_group_foreign_key FOREIGN KEY (health_group) REFERENCES health_groups(health_group_id) ON DELETE RESTRICT,
     CONSTRAINT students_group_id_foreign_key FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE RESTRICT,
-    CONSTRAINT students_section_id_foreign_key FOREIGN KEY (section_id) REFERENCES disciplines(discipline_id) ON DELETE SET NULL
+    CONSTRAINT students_section_id_foreign_key FOREIGN KEY (section_id) REFERENCES sections(section_id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS teachers (
