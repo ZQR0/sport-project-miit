@@ -93,7 +93,7 @@ INSERT INTO lessons (discipline_id, date_of_lesson, teacher_id) VALUES
     (1, '2024-10-11', 5),
     (1, '2024-10-18', 5);
 
-INSERT INTO visits (student_id, lesson_id, is_present) VALUES
+INSERT INTO visits (student_id, lesson_id, is_exists) VALUES
     -- Урок 1: Физическая культура и спорт (02.09.2024) - преподаватель Иванов
     -- Присутствуют: все, кроме студентов 3 и 8
     (1, 1, true), (2, 1, true), (3, 1, false), (4, 1, true), (5, 1, true),

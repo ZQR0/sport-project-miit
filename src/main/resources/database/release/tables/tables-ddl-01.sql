@@ -2,6 +2,8 @@
 
 --changeset olesya:ddl-01
 -- дописать ограничения на длину всех типов VARCHAR
+--DROP TABLE IF EXISTS disciplines, groups, health_groups, lessons, sections, students, teachers, visits;
+
 CREATE TABLE IF NOT EXISTS groups (
     group_id    INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name        VARCHAR(8)      NOT NULL,
@@ -60,7 +62,6 @@ CREATE TABLE IF NOT EXISTS students (
     CONSTRAINT students_last_name_length_malo CHECK (LENGTH(last_name) <= 50),
     CONSTRAINT students_first_name_length_malo CHECK (LENGTH(first_name) <= 50),
     CONSTRAINT students_patronymic_length_malo CHECK (LENGTH(patronymic) <= 50),
-    CONSTRAINT students_health_group_length_malo CHECK (LENGTH(health_group) <= 10),
     CONSTRAINT students_login_unique UNIQUE(login),
 
     CONSTRAINT students_health_group_foreign_key FOREIGN KEY (health_group) REFERENCES health_groups(health_group_id) ON DELETE RESTRICT,
@@ -100,7 +101,7 @@ CREATE TABLE IF NOT EXISTS visits (
     visit_id    INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     student_id  INTEGER,
     lesson_id   INTEGER,
-    exists      BOOLEAN,
+    is_exists   BOOLEAN,
 
     CONSTRAINT student_id_foreign_key FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
     CONSTRAINT lesson_id_foreign_key FOREIGN KEY (lesson_id) REFERENCES lessons(lesson_id) ON DELETE CASCADE
