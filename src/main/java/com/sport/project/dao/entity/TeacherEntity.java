@@ -12,8 +12,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-//@Entity(name = "teacher_entity")
-//@Table(schema = "sport_schema", name = "teacher_table")
+@Entity(name = "teacher_entity")
+@Table(schema = "sport_schema", name = "teacher_table")
 @NoArgsConstructor
 public class TeacherEntity extends BaseEntity<Integer> implements Serializable {
 
