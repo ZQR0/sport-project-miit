@@ -137,12 +137,14 @@ public class TeacherServiceImpl implements TeacherService,
         }
 
         Map<LocalDate, String> emptySchedule = new HashMap<>();
+//      TODO: Старая реализация сервиса с цельным ФИО и без указания ДР.
         TeacherEntity entity = TeacherEntity.builder()
                 .fsp(dto.getFsp())
                 .login(login)
                 .passwordHash(this.passwordEncoder.encode(dto.getPassword()))
                 .isModerator(dto.getIsModerator())
                 .schedule(emptySchedule)
+                .birthday(null)
                 .build();
 
         TeacherEntity saved = this.teacherRepository.save(entity);
