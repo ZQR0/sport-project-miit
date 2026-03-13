@@ -3,6 +3,7 @@ package com.sport.project.dao.entity;
 import jakarta.persistence.Column;
 import lombok.NonNull;
 
+@Deprecated(forRemoval = true)
 public abstract class BaseEntity<ID extends Number> implements Entity<ID> {
 
 
