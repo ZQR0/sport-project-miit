@@ -3,21 +3,21 @@ package com.sport.project.dao.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 @Entity(name = "discipline_entity")
-@Table(schema = "sport_schema", name = "discipline_table")
+@Table(schema = "public", name = "disciplines")
 @NoArgsConstructor
-public class DisciplineEntity extends BaseEntity<Integer> implements Serializable {
+public class DisciplineEntity extends AbstractEntity<Integer> implements Serializable {
 
-    @Setter
     private String name;
+    private List<LessonsEntity> lessonsEntities;
 
-    //FIXME: Исправить после правки родителей или отказа от наследования.
+
     public DisciplineEntity(String name) {
-        super(null, null, null);
         this.name = name;
     }
 
@@ -29,42 +29,23 @@ public class DisciplineEntity extends BaseEntity<Integer> implements Serializabl
         return this.id;
     }
 
-    //FIXME: Наследуемые методы из Entity. Удалить когда будет исправлены родители или отказаться от наследования.
-    @Transient
-    @Override
-    public String getFsp() {
-        return null;
+
+    @Column(name = "name", nullable = false, unique = true, length = 100)
+    public String getName() {
+        return this.name;
     }
 
-    @Transient
-    @Override
-    public String getLogin() {
-        return null;
+    //FIXME: Надо будет подумать как сделать правильно (immutable список или нет)
+    @OneToMany
+    @JoinColumn(name = "discipline_id")
+    public List<LessonsEntity> getLessonsEntities() {
+        return this.lessonsEntities;
     }
 
-    @Transient
-    @Override
-    public String getPasswordHash() {
-        return null;
-    }
-
-    public static DisciplineEntityBuilder builder() {
-        return new DisciplineEntityBuilder();
-    }
-
-    public static final class DisciplineEntityBuilder {
-
-        private String name;
-
-        public DisciplineEntityBuilder name(String name) {
-            this.name = name;
-            return this;
+    public void setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("New name cannot be null");
         }
-
-        public DisciplineEntity build() {
-            return new DisciplineEntity(
-                    this.name
-            );
-        }
+        this.name = name;
     }
 }

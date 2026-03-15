@@ -1,6 +1,7 @@
 package com.sport.project.dao.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -9,16 +10,16 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 
-//@Entity(name = "visits_entity")
-//@Table(schema = "sport_schema", name = "visits")
+@Entity(name = "visits_entity")
+@Table(schema = "public", name = "visits")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VisitsEntity extends BaseEntity<Integer> implements Serializable {
+public class VisitsEntity extends UserEntity<Integer> implements Serializable {
 
     StudentEntity student;
     LessonsEntity lessons;
-    boolean exists;
+    boolean isExists;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,20 +29,6 @@ public class VisitsEntity extends BaseEntity<Integer> implements Serializable {
         return this.id;
     }
 
-    @Override
-    public String getFsp() {
-        return null;
-    }
-
-    @Override
-    public String getLogin() {
-        return null;
-    }
-
-    @Override
-    public String getPasswordHash() {
-        return null;
-    }
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -65,10 +52,7 @@ public class VisitsEntity extends BaseEntity<Integer> implements Serializable {
 
     @Column(name = "exists", nullable = false)
     public boolean isExists() {
-        return exists;
+        return isExists;
     }
 
-    public void setExists(boolean exists) {
-        this.exists = exists;
-    }
 }

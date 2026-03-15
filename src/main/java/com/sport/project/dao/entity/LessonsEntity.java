@@ -1,6 +1,7 @@
 package com.sport.project.dao.entity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,12 @@ import lombok.experimental.FieldDefaults;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
-//@Entity(name = "lessons_entity")
-//@Table(schema = "sport_schema", name = "lessons")
+@Entity(name = "lessons_entity")
+@Table(schema = "public", name = "lessons")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LessonsEntity extends BaseEntity<Integer> implements Serializable {
+public class LessonsEntity extends AbstractEntity<Integer> implements Serializable {
 
     Integer disciplineId;
     OffsetDateTime dateOfLesson;
@@ -29,22 +30,9 @@ public class LessonsEntity extends BaseEntity<Integer> implements Serializable {
         return this.id;
     }
 
-    @Override
-    public String getFsp() {
-        return null;
-    }
 
-    @Override
-    public String getLogin() {
-        return null;
-    }
-
-    @Override
-    public String getPasswordHash() {
-        return null;
-    }
-
-    @Column(name = "discipline_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "discipline_id")
     public Integer getDisciplineId() {
         return disciplineId;
     }
@@ -53,7 +41,7 @@ public class LessonsEntity extends BaseEntity<Integer> implements Serializable {
         this.disciplineId = disciplineId;
     }
 
-    @Column(name = "date_of_lesdsson", nullable = false)
+    @Column(name = "date_of_lesson", nullable = false)
     public OffsetDateTime getDateOfLesson() {
         return dateOfLesson;
     }

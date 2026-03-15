@@ -7,19 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "groups_entity")
-@Table(schema = "sport_schema", name = "groups")
+@Table(schema = "public", name = "groups")
 @NoArgsConstructor
-public class GroupEntity extends BaseEntity<Integer> implements Serializable {
-    @Setter
+public class GroupEntity extends AbstractEntity<Integer> implements Serializable {
+
     private String name;
-    @Setter
     private String institute;
+    private List<StudentEntity> students;
 
     public GroupEntity(String name, String institute) {
-        //После изменения абстрактного класса переписать
-        super(null, null, null);
         this.setName(name);
         this.setInstitute(institute);
     }
@@ -42,48 +41,23 @@ public class GroupEntity extends BaseEntity<Integer> implements Serializable {
         return institute;
     }
 
-    //Убрать методы с аннотацией Transient после правки в абстрактном классе
-    @Transient
-    @Override
-    public String getLogin() {
-        return this.login;
+    @OneToMany
+    @JoinColumn(name = "student_id")
+    public List<StudentEntity> getStudents() {
+        return this.students;
     }
 
-    @Transient
-    @Override
-    public String getPasswordHash() {
-        return this.passwordHash;
-    }
-
-    @Transient
-    @Override
-    public String getFsp() {
-        return this.fsp;
-    }
-
-    public static GroupEntityBuilder builder() {
-        return new GroupEntityBuilder();
-    }
-
-    public static final class GroupEntityBuilder {
-        private String name;
-        private String institute;
-
-        public GroupEntityBuilder name(String name) {
-            this.name = name;
-            return this;
+    public void setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("New name cannot be null");
         }
+        this.name = name;
+    }
 
-        public GroupEntityBuilder institute(String institute) {
-            this.institute = institute;
-            return this;
+    public void setInstitute(String institute) {
+        if (institute == null) {
+            throw new IllegalArgumentException("New institute cannot be null");
         }
-
-        public GroupEntity build() {
-            return new GroupEntity(
-                    this.name,
-                    this.institute
-            );
-        }
+        this.institute = institute;
     }
 }

@@ -1,9 +1,7 @@
 package com.sport.project.dao.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,16 +9,18 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.List;
 
-//@Entity(name = "health_groups_entity")
-//@Table(schema = "sport_schema", name = "health_groups")
+@Entity(name = "health_groups_entity")
+@Table(schema = "public", name = "health_groups")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class HealthGroupsEntity extends BaseEntity<Integer> implements Serializable {
+public class HealthGroupsEntity extends AbstractEntity<Integer> implements Serializable {
 
     String name;
     String description;
+    private List<StudentEntity> students;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,24 +30,16 @@ public class HealthGroupsEntity extends BaseEntity<Integer> implements Serializa
         return this.id;
     }
 
-    @Override
-    public String getFsp() {
-        return null;
-    }
-
-    @Override
-    public String getLogin() {
-        return null;
-    }
-
-    @Override
-    public String getPasswordHash() {
-        return null;
-    }
 
     @Column(name = "name", nullable = false)
     public String getName() {
         return name;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "health_group_id")
+    public List<StudentEntity> getStudents() {
+        return students;
     }
 
     public void setName(@NonNull String name) {

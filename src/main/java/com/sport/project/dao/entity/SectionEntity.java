@@ -6,20 +6,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "section_entity")
 @Table(schema = "sport_schema", name = "sections")
 @NoArgsConstructor
-public class SectionEntity extends BaseEntity<Integer> implements Serializable {
+public class SectionEntity extends AbstractEntity<Integer> implements Serializable {
 
-    @Setter
     private String name;
-    @Setter
     private String description;
+    private List<StudentEntity> studentsOnSection;
 
     public SectionEntity(String name, String description){
-        //После изменения абстрактного класса переписать
-        super(null, null, null);
         this.setName(name);
         this.setDescription(description);
     }
@@ -32,59 +30,34 @@ public class SectionEntity extends BaseEntity<Integer> implements Serializable {
         return this.id;
     }
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     public String getName() {
         return name;
     }
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 100)
     public String getDescription() {
         return description;
     }
 
-    //Убрать методы с аннотацией Transient после правки в абстрактном классе
-    @Transient
-    @Override
-    public String getLogin() {
-        return this.login;
+    //FIXME: решить что использовать правильнее: Immutable список или нет
+    @OneToMany
+    @JoinColumn(name = "section_id")
+    public List<StudentEntity> getStudentsOnSection() {
+        return this.studentsOnSection;
     }
 
-    @Transient
-    @Override
-    public String getPasswordHash() {
-        return this.passwordHash;
-    }
-
-    @Transient
-    @Override
-    public String getFsp() {
-        return this.fsp;
-    }
-
-    public static SectionEntityBuilder builder() {
-        return new SectionEntityBuilder();
-    }
-
-    public static final class SectionEntityBuilder {
-        private String name;
-        private String description;
-
-        public SectionEntityBuilder name(String name) {
-            this.name = name;
-            return this;
+    public void setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("New name cannot be null");
         }
-
-        public SectionEntityBuilder description(String description) {
-            this.description = description;
-            return this;
-        }
-
-        public SectionEntity build() {
-            return new SectionEntity(
-                    this.name,
-                    this.description
-            );
-        }
+        this.name = name;
     }
 
+    public void setDescription(String description) {
+        if (description == null) {
+            throw new IllegalArgumentException("New description cannot be null");
+        }
+        this.description = description;
+    }
 }
