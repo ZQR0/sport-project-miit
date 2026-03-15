@@ -3,7 +3,13 @@
 SELECT last_name, first_name, patronymic, birthday from teachers 
 	WHERE login LIKE 'sid%'; -- заменить на переменную
 	
-	
+
+SELECT last_name, first_name, patronymic, birthday from teachers
+	WHERE last_name LIKE 'Иванов' and
+	first_name LIKE 'Иван' and
+	patronymic LIKE 'Иванович';
+
+
 -- api/teachers/find-by-lfp Поиск преподавателя по ФИО
 SELECT last_name, first_name, patronymic, birthday from teachers 
 	WHERE last_name LIKE 'Пе%' or -- заменить на переменную
