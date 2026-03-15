@@ -5,6 +5,7 @@ import com.sport.project.dao.entity.Entity;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public interface AbstractRepository<E extends Entity<ID>, ID extends Number> {
     Optional<E> findById(ID id);
     E save(E entity);

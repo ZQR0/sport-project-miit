@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 @NoRepositoryBean
 @RequiredArgsConstructor
 public abstract class AbstractRepositoryImpl<E extends Entity<ID>, ID extends Number> implements AbstractRepository<E, ID> {
