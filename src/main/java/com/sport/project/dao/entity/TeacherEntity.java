@@ -3,13 +3,9 @@ package com.sport.project.dao.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.*;
 
 @Entity(name = "teacher_entity")
@@ -20,7 +16,11 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
     @Setter
     private boolean isModerator;
 
-    private List<LessonsEntity> lessons;
+    private List<LessonsEntity> lessons = new ArrayList<>();
+
+    public void setLessons(List<LessonsEntity> lessons) {
+        this.lessons = lessons;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,14 +30,13 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
         return this.id;
     }
 
-
     @Column(name = "is_moderator", nullable = false)
     public boolean isModerator() {
         return this.isModerator;
     }
 
-    @OneToMany
-    @JoinColumn(name = "teacher_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "teacher_id", nullable = false)
     public List<LessonsEntity> getLessons() {
         return lessons;
     }
@@ -47,4 +46,63 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
         return this.lessons.add(lesson);
     }
 
+    public boolean removeLesson(LessonsEntity lesson) {
+        if (lesson == null) throw new IllegalArgumentException("Lesson cannot be null");
+        return this.lessons.remove(lesson);
+    }
+
+    public static TeacherEntityBuilder builder() {
+        return new TeacherEntityBuilder();
+    }
+
+
+    public static class TeacherEntityBuilder {
+        TeacherEntity teacherEntity = new TeacherEntity();
+        FullName fullName = new FullName();
+
+        public TeacherEntityBuilder login(String login) {
+            teacherEntity.setLogin(login);
+            return this;
+        }
+
+        public TeacherEntityBuilder passwordHash(String passwordHash) {
+            teacherEntity.setPasswordHash(passwordHash);
+            return this;
+        }
+
+        public TeacherEntityBuilder firstName(String firstName) {
+            fullName.setFirstName(firstName);
+            return this;
+        }
+
+        public TeacherEntityBuilder lastName(String lastName) {
+            fullName.setLastName(lastName);
+            return this;
+        }
+
+        public TeacherEntityBuilder patronymic(String patronymic) {
+            fullName.setPatronymic(patronymic);
+            return this;
+        }
+
+        public TeacherEntityBuilder birthday(Date birthday) {
+            teacherEntity.setBirthday(birthday);
+            return this;
+        }
+
+        public TeacherEntityBuilder isModerator(boolean isModerator){
+            teacherEntity.setModerator(isModerator);
+            return this;
+        }
+
+        public TeacherEntityBuilder lessons(List<LessonsEntity> lessons) {
+            teacherEntity.setLessons(lessons);
+            return this;
+        }
+
+        public TeacherEntity build() {
+            teacherEntity.setFullName(fullName);
+            return teacherEntity;
+        }
+    }
 }
