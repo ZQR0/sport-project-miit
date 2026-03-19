@@ -11,5 +11,6 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Long> {
     Optional<VisitsEntity> findByStudentId(Long studentId);
 
     /*Поиск посещений студента по логину студента*/
+    @Deprecated
     Optional<VisitsEntity> findByStudentLogin (String studentLogin);
 }
