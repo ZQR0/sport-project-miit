@@ -42,6 +42,9 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
         return lessons;
     }
 
-    //TODO: написать builder, т.к. конструктор будет большой
+    public boolean addLesson(LessonsEntity lesson) {
+        if (lesson == null) throw new IllegalArgumentException("Lesson cannot be null");
+        return this.lessons.add(lesson);
+    }
 
 }

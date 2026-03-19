@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "section_entity")
@@ -20,6 +21,7 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
     public SectionEntity(String name, String description){
         this.setName(name);
         this.setDescription(description);
+        this.studentsOnSection = new ArrayList<>();
     }
 
     @Id
@@ -59,5 +61,12 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
             throw new IllegalArgumentException("New description cannot be null");
         }
         this.description = description;
+    }
+
+    public boolean addStudent(StudentEntity student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student cannot be null");
+        }
+        return this.studentsOnSection.add(student);
     }
 }

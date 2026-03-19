@@ -13,13 +13,16 @@ import java.io.Serializable;
 @Entity(name = "visits_entity")
 @Table(schema = "public", name = "visits")
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VisitsEntity extends UserEntity<Integer> implements Serializable {
 
     StudentEntity student;
     LessonsEntity lessons;
     boolean isExists;
+
+    public VisitsEntity(boolean isExists) {
+        this.isExists = isExists;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

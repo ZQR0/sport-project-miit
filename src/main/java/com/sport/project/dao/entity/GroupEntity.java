@@ -60,4 +60,11 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
         }
         this.institute = institute;
     }
+
+    public boolean addStudent(StudentEntity student) {
+        if (student == null) {
+            throw new IllegalArgumentException("New student cannot be null");
+        }
+        return this.students.add(student);
+    }
 }

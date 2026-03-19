@@ -9,18 +9,24 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "health_groups_entity")
 @Table(schema = "public", name = "health_groups")
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HealthGroupsEntity extends AbstractEntity<Integer> implements Serializable {
 
     String name;
     String description;
     private List<StudentEntity> students;
+
+    public HealthGroupsEntity(String name, String description) {
+        setName(name);
+        setDescription(description);
+        this.students = new ArrayList<>();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,5 +59,12 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
 
     public void setDescription(@NonNull String description) {
         this.description = description;
+    }
+
+    public boolean addStudent(StudentEntity student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student cannot be null");
+        }
+        return this.students.add(student);
     }
 }

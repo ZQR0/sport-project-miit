@@ -55,6 +55,13 @@ public abstract class UserEntity<ID extends Serializable> extends AbstractEntity
         this.passwordHash = passwordHash;
     }
 
+    public void setFullName(FullName fullName) {
+        if (fullName == null) {
+            throw new IllegalArgumentException("Fullname cannot be null");
+        }
+        this.fullName = fullName;
+    }
+
     public void setBirthday(Date birthday) {
         if (birthday == null) {
             throw new IllegalArgumentException("New birthday cannot be null");
