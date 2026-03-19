@@ -14,13 +14,21 @@ import java.time.OffsetDateTime;
 @Entity(name = "lessons_entity")
 @Table(schema = "public", name = "lessons")
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonsEntity extends AbstractEntity<Integer> implements Serializable {
 
     Integer disciplineId;
     OffsetDateTime dateOfLesson;
     TeacherEntity teacher;
+
+    public LessonsEntity(OffsetDateTime dateOfLesson) {
+        this.dateOfLesson = dateOfLesson;
+    }
+
+    public LessonsEntity(OffsetDateTime dateOfLesson, TeacherEntity teacher) {
+        setDateOfLesson(dateOfLesson);
+        setTeacher(teacher);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +45,6 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         return disciplineId;
     }
 
-    public void setDisciplineId(@NonNull Integer disciplineId) {
-        this.disciplineId = disciplineId;
-    }
 
     @Column(name = "date_of_lesson", nullable = false)
     public OffsetDateTime getDateOfLesson() {

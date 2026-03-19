@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class StudentEntity extends UserEntity<Integer> implements Serializable {
 
+    //TODO: добавление посещений, обновление секции, обновление группы, обновление группы здоровья
 
     private HealthGroupsEntity healthGroup;
     private GroupEntity group;
@@ -63,6 +64,11 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         this.healthGroup = healthGroup;
     }
 
+    public boolean addVisits(VisitsEntity visit) {
+        if (visit == null) throw new IllegalArgumentException("Visit cannot be null");
+        return this.visits.add(visit);
+    }
+
     public void setGroup(GroupEntity group) {
         if (group == null) {
             throw new IllegalArgumentException("Group cannot be null");
@@ -71,6 +77,50 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
     }
 
 
-
     //TODO: написать Builder, т.к. конструктор будет слишком большим
+
+    public static StudentEntityBuilder builder() {
+        return new StudentEntityBuilder();
+    }
+
+    public static class StudentEntityBuilder {
+        StudentEntity student = new StudentEntity();
+        FullName fullName = new FullName();
+
+        public StudentEntityBuilder login(String login) {
+            student.setLogin(login);
+            return this;
+        }
+
+        public StudentEntityBuilder passwordHash(String passwordHash) {
+            student.setPasswordHash(passwordHash);
+            return this;
+        }
+
+        public StudentEntityBuilder firstName(String firstName) {
+            fullName.setFirstName(firstName);
+            return this;
+        }
+
+        public StudentEntityBuilder lastName(String lastName) {
+            fullName.setLastName(lastName);
+            return this;
+        }
+
+        public StudentEntityBuilder patronymic(String patronymic) {
+            fullName.setPatronymic(patronymic);
+            return this;
+        }
+
+        public StudentEntityBuilder birthday(Date birthday) {
+            student.setBirthday(birthday);
+            return this;
+        }
+
+        public StudentEntity build() {
+            student.setFullName(this.fullName);
+            //TODO: закинуть всё остальное
+            return student;
+        }
+    }
 }
