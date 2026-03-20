@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset olesya:dml-01
+
 TRUNCATE TABLE groups, disciplines, students, teachers, lessons, visits RESTART IDENTITY CASCADE;
 
 INSERT INTO groups (name, institute) VALUES

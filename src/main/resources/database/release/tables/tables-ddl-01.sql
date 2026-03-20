@@ -1,7 +1,6 @@
 --liquibase formatted sql
 
 --changeset olesya:ddl-01
--- дописать ограничения на длину всех типов VARCHAR
 --DROP TABLE IF EXISTS disciplines, groups, health_groups, lessons, sections, students, teachers, visits;
 
 CREATE TABLE IF NOT EXISTS groups (

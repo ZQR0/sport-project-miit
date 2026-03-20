@@ -13,17 +13,17 @@ import java.util.List;
 @Entity(name = "student_entity")
 @Table(schema = "public", name = "students")
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 public class StudentEntity extends UserEntity<Integer> implements Serializable {
 
-    //TODO: добавление посещений, обновление секции, обновление группы, обновление группы здоровья
+    private Integer id;
 
     private HealthGroupsEntity healthGroup;
     private GroupEntity group;
     @Setter
     private SectionEntity section;
+    @Setter
     private List<VisitsEntity> visits;
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +51,7 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         return this.section;
     }
 
-    @OneToMany
-    @JoinColumn(name = "student_id")
+    @OneToMany(mappedBy = "student")
     public List<VisitsEntity> getVisits() {
         return this.visits;
     }

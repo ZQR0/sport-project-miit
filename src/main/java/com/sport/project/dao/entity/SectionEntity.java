@@ -10,12 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "section_entity")
-@Table(schema = "sport_schema", name = "sections")
+@Table(schema = "public", name = "sections")
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 public class SectionEntity extends AbstractEntity<Integer> implements Serializable {
+
+
+    private Integer id;
 
     private String name;
     private String description;
+
+    @Setter
     private List<StudentEntity> studentsOnSection;
 
     public SectionEntity(String name, String description){
@@ -43,8 +49,7 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
     }
 
     //FIXME: решить что использовать правильнее: Immutable список или нет
-    @OneToMany
-    @JoinColumn(name = "section_id")
+    @OneToMany(mappedBy = "section")
     public List<StudentEntity> getStudentsOnSection() {
         return this.studentsOnSection;
     }

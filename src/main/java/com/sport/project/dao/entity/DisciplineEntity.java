@@ -3,6 +3,7 @@ package com.sport.project.dao.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,9 +12,13 @@ import java.util.List;
 @Entity(name = "discipline_entity")
 @Table(schema = "public", name = "disciplines")
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 public class DisciplineEntity extends AbstractEntity<Integer> implements Serializable {
 
+    private Integer id;
+
     private String name;
+    @Setter
     private List<LessonsEntity> lessonsEntities;
 
 
@@ -37,8 +42,7 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
     }
 
     //FIXME: Надо будет подумать как сделать правильно (immutable список или нет)
-    @OneToMany
-    @JoinColumn(name = "discipline_id")
+    @OneToMany(mappedBy = "discipline")
     public List<LessonsEntity> getLessonsEntities() {
         return this.lessonsEntities;
     }

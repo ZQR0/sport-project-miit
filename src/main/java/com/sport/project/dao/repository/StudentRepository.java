@@ -14,13 +14,12 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     Optional<StudentEntity> findByLogin(String login);
 
     //Поиск студента по LFP (ФИО, с заменой "_" на пробел)
-    @Query("SELECT student FROM student_entity student" +
-            "WHERE CONCAT(student.fullName.lastName, ' ', student.fullName.firstName, ' ', COALESCE(student.fullName.patronymic))" +
-            "LIKE CONCAT('%', :lfp, '%')")
-    List<StudentEntity> findByLFP(@Param("lfp") String lfp);
+    // FIXME: не заметил ошибку при ревью, CONCAT не поддерживается в HQL, потом найдём замену
+//    @Query("SELECT student FROM student_entity student" +
+//            "WHERE CONCAT(student.fullName.lastName, ' ', student.fullName.firstName, ' ', COALESCE(student.fullName.patronymic))" +
+//            "LIKE CONCAT('%', :lfp, '%')")
+//    List<StudentEntity> findByLFP(@Param("lfp") String lfp);
 
-    //Поиск всех студентов
-    List<StudentEntity> findAll();
 
     /*Поиск по группе. Найти всех студентов группы.
     * Это отсебятина немного, может удалишь*/

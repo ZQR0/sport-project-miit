@@ -11,7 +11,13 @@ import java.util.*;
 @Entity(name = "teacher_entity")
 @Table(schema = "public", name = "teachers")
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 public class TeacherEntity extends UserEntity<Integer> implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "teacher_id", nullable = false)
+    private Integer id;
 
     @Setter
     private boolean isModerator;
@@ -35,8 +41,7 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
         return this.isModerator;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "teacher_id", nullable = false)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "teacher")
     public List<LessonsEntity> getLessons() {
         return lessons;
     }

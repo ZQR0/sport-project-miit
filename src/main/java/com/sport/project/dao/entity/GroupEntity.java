@@ -12,16 +12,22 @@ import java.util.List;
 @Entity(name = "groups_entity")
 @Table(schema = "public", name = "groups")
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 public class GroupEntity extends AbstractEntity<Integer> implements Serializable {
+
+
+    private Integer id;
 
     private String name;
     private String institute;
+    @Setter
     private List<StudentEntity> students;
 
     public GroupEntity(String name, String institute) {
         this.setName(name);
         this.setInstitute(institute);
     }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,8 +47,7 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
         return institute;
     }
 
-    @OneToMany
-    @JoinColumn(name = "student_id")
+    @OneToMany(mappedBy = "group")
     public List<StudentEntity> getStudents() {
         return this.students;
     }

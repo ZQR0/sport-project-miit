@@ -2,10 +2,7 @@ package com.sport.project.dao.entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
@@ -15,14 +12,19 @@ import java.time.OffsetDateTime;
 @Table(schema = "public", name = "lessons")
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Access(AccessType.PROPERTY)
 public class LessonsEntity extends AbstractEntity<Integer> implements Serializable {
 
-    Integer disciplineId;
+
+    private Integer id;
+
+    @Setter
+    DisciplineEntity discipline;
     OffsetDateTime dateOfLesson;
     TeacherEntity teacher;
 
     public LessonsEntity(OffsetDateTime dateOfLesson) {
-        this.dateOfLesson = dateOfLesson;
+        setDateOfLesson(dateOfLesson);
     }
 
     public LessonsEntity(OffsetDateTime dateOfLesson, TeacherEntity teacher) {
@@ -40,11 +42,17 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
 
 
     @ManyToOne
-    @JoinColumn(name = "discipline_id")
-    public Integer getDisciplineId() {
-        return disciplineId;
+    @JoinColumn(name = "discipline_id", nullable = false)
+    public DisciplineEntity getDiscipline() {
+        return this.discipline;
     }
 
+    public void setDiscipline(DisciplineEntity discipline) {
+        if (discipline == null) {
+            throw new IllegalArgumentException("Discipline cannot be null");
+        }
+        this.discipline = discipline;
+    }
 
     @Column(name = "date_of_lesson", nullable = false)
     public OffsetDateTime getDateOfLesson() {

@@ -25,18 +25,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<TeacherEntity> teacher_username = teacherRepo.findByLogin(username);
-        if (teacher_username.isPresent()) {
-            log.info("Teacher is present");
-            return Mapper.mapUserDetails(teacher_username.get());
-        } else {
-            Optional<StudentEntity> student_username = studentRepo.findByLogin(username);
-            if (student_username.isPresent()) {
-                log.info("Student is present");
-                return Mapper.mapUserDetails(student_username.get());
-            }
-        }
-
+//        Optional<TeacherEntity> teacher_username = teacherRepo.findByLogin(username);
+//        if (teacher_username.isPresent()) {
+//            log.info("Teacher is present");
+//            return Mapper.mapUserDetails(teacher_username.get());
+//        } else {
+//            Optional<StudentEntity> student_username = studentRepo.findByLogin(username);
+//            if (student_username.isPresent()) {
+//                log.info("Student is present");
+//                return Mapper.mapUserDetails(student_username.get());
+//            }
+//        }
+//
+//        return null;
         return null;
     }
 }

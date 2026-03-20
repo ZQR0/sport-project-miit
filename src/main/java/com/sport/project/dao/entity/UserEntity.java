@@ -1,8 +1,6 @@
 package com.sport.project.dao.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,6 +10,7 @@ import java.util.Date;
  * чтобы не переписывать их по 10 раз и избежать избыточности
  * */
 @MappedSuperclass
+@Access(AccessType.PROPERTY)
 public abstract class UserEntity<ID extends Serializable> extends AbstractEntity<ID> {
 
     private String login;
@@ -19,7 +18,6 @@ public abstract class UserEntity<ID extends Serializable> extends AbstractEntity
     private FullName fullName;
     private Date birthday;
 
-    public abstract ID getId();
 
     @Column(name = "login", unique = true, length = 50, nullable = false)
     public String getLogin() {

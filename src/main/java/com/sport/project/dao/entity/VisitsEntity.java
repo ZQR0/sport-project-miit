@@ -2,10 +2,7 @@ package com.sport.project.dao.entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
@@ -14,10 +11,15 @@ import java.io.Serializable;
 @Table(schema = "public", name = "visits")
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VisitsEntity extends UserEntity<Integer> implements Serializable {
+@Access(AccessType.PROPERTY)
+public class VisitsEntity extends AbstractEntity<Integer> implements Serializable {
+
+    private Integer id;
 
     StudentEntity student;
     LessonsEntity lessons;
+
+    @Setter
     boolean isExists;
 
     public VisitsEntity(boolean isExists) {

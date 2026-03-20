@@ -2,10 +2,7 @@ package com.sport.project.dao.entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
@@ -15,11 +12,15 @@ import java.util.List;
 @Entity(name = "health_groups_entity")
 @Table(schema = "public", name = "health_groups")
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HealthGroupsEntity extends AbstractEntity<Integer> implements Serializable {
 
+    private Integer id;
+
     String name;
     String description;
+    @Setter
     private List<StudentEntity> students;
 
     public HealthGroupsEntity(String name, String description) {
@@ -42,8 +43,7 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
         return name;
     }
 
-    @OneToMany
-    @JoinColumn(name = "health_group_id")
+    @OneToMany(mappedBy = "healthGroup")
     public List<StudentEntity> getStudents() {
         return students;
     }
