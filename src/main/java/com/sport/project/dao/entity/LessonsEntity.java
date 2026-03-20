@@ -17,17 +17,11 @@ import java.time.OffsetDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LessonsEntity extends AbstractEntity<Integer> implements Serializable {
 
-    Integer disciplineId;
+    DisciplineEntity disciplineId;
     OffsetDateTime dateOfLesson;
-    TeacherEntity teacher;
 
     public LessonsEntity(OffsetDateTime dateOfLesson) {
         this.dateOfLesson = dateOfLesson;
-    }
-
-    public LessonsEntity(OffsetDateTime dateOfLesson, TeacherEntity teacher) {
-        setDateOfLesson(dateOfLesson);
-        setTeacher(teacher);
     }
 
     @Id
@@ -38,13 +32,11 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         return this.id;
     }
 
-
     @ManyToOne
     @JoinColumn(name = "discipline_id")
-    public Integer getDisciplineId() {
+    public DisciplineEntity getDisciplineId() {
         return disciplineId;
     }
-
 
     @Column(name = "date_of_lesson", nullable = false)
     public OffsetDateTime getDateOfLesson() {
@@ -53,15 +45,5 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
 
     public void setDateOfLesson(@NonNull OffsetDateTime dateOfLesson) {
         this.dateOfLesson = dateOfLesson;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "teacher_id")
-    public TeacherEntity getTeacher() {
-        return this.teacher;
-    }
-
-    public void setTeacher(@NonNull TeacherEntity newTeacher) {
-        this.teacher = newTeacher;
     }
 }
