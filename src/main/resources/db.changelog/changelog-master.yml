@@ -1,4 +1,7 @@
 databaseChangeLog:
   - include:
-      file: release/release.changelog.yml
+      file: release/tables-ddl-01.sql
+      relativeToChangeLogFile: true
+  - include:
+      file: release/dml-01.sql
       relativeToChangeLogFile: true

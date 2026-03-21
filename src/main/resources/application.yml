@@ -5,13 +5,18 @@ server:
     whitelabel:
       enabled: false
 
+logging:
+  level:
+    liquibase: DEBUG
+    org.springframework.boot.autoconfigure.liquibase: DEBUG
+    org.springframework.boot: DEBUG
+
 spring:
   application:
     name: project
   liquibase:
-    change-log: classpath:database/db.changelog.yml
     enabled: true
-    contexts: prod, dev
+    change-log: classpath:db/changelog/changelog-master.yml
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB:all-on-sport}
     username: ${POSTGRES_USER:postgres}
@@ -35,5 +40,5 @@ spring:
     dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     hibernate:
-      ddlAuto: create
+      ddl-auto: update
 
