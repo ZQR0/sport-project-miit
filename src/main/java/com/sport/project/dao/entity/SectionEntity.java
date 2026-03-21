@@ -10,32 +10,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "section_entity")
-@Table(schema = "public", name = "sections")
+@Table(name = "sections")
 @NoArgsConstructor
-@Access(AccessType.PROPERTY)
 public class SectionEntity extends AbstractEntity<Integer> implements Serializable {
-
-
-    private Integer id;
 
     private String name;
     private String description;
-
-    @Setter
     private List<StudentEntity> studentsOnSection;
 
-    public SectionEntity(String name, String description){
+    public SectionEntity(String name, String description) {
         this.setName(name);
         this.setDescription(description);
         this.studentsOnSection = new ArrayList<>();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "section_id")
-    @Override
-    public Integer getId() {
-        return this.id;
+    public SectionEntity(String name, String description, List<StudentEntity> studentsOnSection) {
+        setName(name);
+        setDescription(description);
+        setStudentsOnSection(studentsOnSection);
     }
 
     @Column(name = "name", nullable = false, unique = true, length = 100)
@@ -66,6 +58,13 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
             throw new IllegalArgumentException("New description cannot be null");
         }
         this.description = description;
+    }
+
+    public void setStudentsOnSection(List<StudentEntity> studentsOnSection) {
+        if (studentsOnSection == null) {
+            throw new IllegalArgumentException("Students on section cannot be null list");
+        }
+        this.studentsOnSection = studentsOnSection;
     }
 
     public boolean addStudent(StudentEntity student) {

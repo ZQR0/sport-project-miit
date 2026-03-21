@@ -3,6 +3,7 @@ package com.sport.project.dao.entity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -10,13 +11,12 @@ import java.util.Date;
  * чтобы не переписывать их по 10 раз и избежать избыточности
  * */
 @MappedSuperclass
-@Access(AccessType.PROPERTY)
 public abstract class UserEntity<ID extends Serializable> extends AbstractEntity<ID> {
 
     private String login;
     private String passwordHash;
     private FullName fullName;
-    private Date birthday;
+    private LocalDate birthday;
 
 
     @Column(name = "login", unique = true, length = 50, nullable = false)
@@ -34,8 +34,8 @@ public abstract class UserEntity<ID extends Serializable> extends AbstractEntity
         return fullName;
     }
 
-    @Column(name = "birthday")
-    public Date getBirthday() {
+    @Column(name = "birthday", columnDefinition = "DATE")
+    public LocalDate getBirthday() {
         return birthday;
     }
 
@@ -60,12 +60,12 @@ public abstract class UserEntity<ID extends Serializable> extends AbstractEntity
         this.fullName = fullName;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         if (birthday == null) {
             throw new IllegalArgumentException("New birthday cannot be null");
         }
 
-        if (birthday.after(new Date())) {
+        if (birthday.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Invalid type of birthday");
         }
         this.birthday = birthday;

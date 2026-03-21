@@ -10,17 +10,12 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity(name = "groups_entity")
-@Table(schema = "public", name = "groups")
+@Table(name = "groups")
 @NoArgsConstructor
-@Access(AccessType.PROPERTY)
 public class GroupEntity extends AbstractEntity<Integer> implements Serializable {
-
-
-    private Integer id;
 
     private String name;
     private String institute;
-    @Setter
     private List<StudentEntity> students;
 
     public GroupEntity(String name, String institute) {
@@ -29,25 +24,17 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
     }
 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "group_id")
-    @Override
-    public Integer getId() {
-        return this.id;
-    }
-
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false, length = 15)
     public String getName() {
         return name;
     }
 
-    @Column(name = "institute", nullable = false)
+    @Column(name = "institute", nullable = false, length = 100)
     public String getInstitute() {
         return institute;
     }
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.PERSIST)
     public List<StudentEntity> getStudents() {
         return this.students;
     }
@@ -64,6 +51,13 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
             throw new IllegalArgumentException("New institute cannot be null");
         }
         this.institute = institute;
+    }
+
+    public void setStudents(List<StudentEntity> students) {
+        if (students == null) {
+            throw new IllegalArgumentException("Students cannot be null");
+        }
+        this.students = students;
     }
 
     public boolean addStudent(StudentEntity student) {

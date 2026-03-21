@@ -1,9 +1,6 @@
 package com.sport.project.dao.entity;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
@@ -12,19 +9,21 @@ import java.io.Serializable;
  * {@link BaseEntity} и {@link Entity}
  * */
 @MappedSuperclass
-@Access(AccessType.PROPERTY)
 public abstract class AbstractEntity<ID extends Serializable> {
 
+    protected ID id;
 
-    @Transient
-    public abstract ID getId();
-
-    /**
-     * Не рекомендуется к использованию
-     * НУЖЕН ТОЛЬКО ДЛЯ ТЕСТИРОВАНИЯ
-     * */
-    protected void setId(ID id) {
-        // Теперь пустой, если понадобится, то придётся переопределить
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    public ID getId() {
+        return this.id;
     }
 
+    protected void setId(ID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        this.id = id;
+    }
 }

@@ -10,18 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "health_groups_entity")
-@Table(schema = "public", name = "health_groups")
+@Table(name = "health_groups")
 @NoArgsConstructor
-@Access(AccessType.PROPERTY)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HealthGroupsEntity extends AbstractEntity<Integer> implements Serializable {
 
-    private Integer id;
-
     String name;
     String description;
-    @Setter
-    private List<StudentEntity> students;
+    List<StudentEntity> students;
 
     public HealthGroupsEntity(String name, String description) {
         setName(name);
@@ -29,36 +25,39 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
         this.students = new ArrayList<>();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "health_group_id")
-    @Override
-    public Integer getId() {
-        return this.id;
+    public HealthGroupsEntity(String name, String description, List<StudentEntity> students) {
+        setName(name);
+        setDescription(description);
+        setStudents(students);
     }
 
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     public String getName() {
         return name;
     }
 
-    @OneToMany(mappedBy = "healthGroup")
+    //TODO: определить нормальный каскад
+    @OneToMany(mappedBy = "healthGroup", cascade = CascadeType.PERSIST)
     public List<StudentEntity> getStudents() {
         return students;
+    }
+
+    @Column(name = "description", nullable = false, length = 100)
+    public String getDescription() {
+        return description;
     }
 
     public void setName(@NonNull String name) {
         this.name = name;
     }
 
-    @Column(name = "description", nullable = false)
-    public String getDescription() {
-        return description;
-    }
-
     public void setDescription(@NonNull String description) {
         this.description = description;
+    }
+
+    public void setStudents(@NonNull List<StudentEntity> students) {
+        this.students = students;
     }
 
     public boolean addStudent(StudentEntity student) {

@@ -10,12 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "discipline_entity")
-@Table(schema = "public", name = "disciplines")
+@Table(name = "disciplines")
 @NoArgsConstructor
-@Access(AccessType.PROPERTY)
 public class DisciplineEntity extends AbstractEntity<Integer> implements Serializable {
-
-    private Integer id;
 
     private String name;
     @Setter
@@ -27,12 +24,9 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
         this.lessonsEntities = new ArrayList<>();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "discipline_id")
-    @Override
-    public Integer getId() {
-        return this.id;
+    public DisciplineEntity(String name, List<LessonsEntity> lessonsEntities) {
+        this.name = name;
+        this.lessonsEntities = lessonsEntities;
     }
 
 
@@ -41,8 +35,7 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
         return this.name;
     }
 
-    //FIXME: Надо будет подумать как сделать правильно (immutable список или нет)
-    @OneToMany(mappedBy = "discipline")
+    @OneToMany(mappedBy = "discipline", cascade = CascadeType.ALL)
     public List<LessonsEntity> getLessonsEntities() {
         return this.lessonsEntities;
     }

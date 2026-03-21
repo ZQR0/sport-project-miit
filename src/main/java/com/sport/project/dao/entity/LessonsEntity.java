@@ -7,39 +7,26 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.Date;
 
 @Entity(name = "lessons_entity")
-@Table(schema = "public", name = "lessons")
+@Table(name = "lessons")
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Access(AccessType.PROPERTY)
 public class LessonsEntity extends AbstractEntity<Integer> implements Serializable {
 
-
-    private Integer id;
-
-    @Setter
     DisciplineEntity discipline;
-    OffsetDateTime dateOfLesson;
+    Date dateOfLesson;
     TeacherEntity teacher;
 
-    public LessonsEntity(OffsetDateTime dateOfLesson) {
+    public LessonsEntity(Date dateOfLesson) {
         setDateOfLesson(dateOfLesson);
     }
 
-    public LessonsEntity(OffsetDateTime dateOfLesson, TeacherEntity teacher) {
+    public LessonsEntity(Date dateOfLesson, TeacherEntity teacher) {
         setDateOfLesson(dateOfLesson);
         setTeacher(teacher);
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "lesson_id")
-    @Override
-    public Integer getId() {
-        return this.id;
-    }
-
 
     @ManyToOne
     @JoinColumn(name = "discipline_id", nullable = false)
@@ -54,12 +41,12 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         this.discipline = discipline;
     }
 
-    @Column(name = "date_of_lesson", nullable = false)
-    public OffsetDateTime getDateOfLesson() {
+    @Column(name = "date_of_lesson", nullable = false, columnDefinition = "DATE")
+    public Date getDateOfLesson() {
         return dateOfLesson;
     }
 
-    public void setDateOfLesson(@NonNull OffsetDateTime dateOfLesson) {
+    public void setDateOfLesson(@NonNull Date dateOfLesson) {
         this.dateOfLesson = dateOfLesson;
     }
 

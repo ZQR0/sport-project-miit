@@ -3,47 +3,34 @@ package com.sport.project.dao.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity(name = "teacher_entity")
-@Table(schema = "public", name = "teachers")
+@Table(name = "teachers")
 @NoArgsConstructor
-@Access(AccessType.PROPERTY)
 public class TeacherEntity extends UserEntity<Integer> implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "teacher_id", nullable = false)
-    private Integer id;
-
     @Setter
     private boolean isModerator;
+    private List<LessonsEntity> lessons;
 
-    private List<LessonsEntity> lessons = new ArrayList<>();
-
-    public void setLessons(List<LessonsEntity> lessons) {
-        this.lessons = lessons;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "teacher_id", nullable = false)
-    @Override
-    public Integer getId() {
-        return this.id;
-    }
 
     @Column(name = "is_moderator", nullable = false)
     public boolean isModerator() {
         return this.isModerator;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "teacher")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "teacher", fetch = FetchType.LAZY)
     public List<LessonsEntity> getLessons() {
         return lessons;
+    }
+
+    public void setLessons(@NonNull List<LessonsEntity> lessons) {
+        this.lessons = lessons;
     }
 
     public boolean addLesson(LessonsEntity lesson) {
@@ -90,7 +77,7 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
             return this;
         }
 
-        public TeacherEntityBuilder birthday(Date birthday) {
+        public TeacherEntityBuilder birthday(LocalDate birthday) {
             teacherEntity.setBirthday(birthday);
             return this;
         }

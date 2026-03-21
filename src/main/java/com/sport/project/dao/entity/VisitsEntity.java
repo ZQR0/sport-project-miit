@@ -8,13 +8,10 @@ import lombok.experimental.FieldDefaults;
 import java.io.Serializable;
 
 @Entity(name = "visits_entity")
-@Table(schema = "public", name = "visits")
+@Table(name = "visits")
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Access(AccessType.PROPERTY)
 public class VisitsEntity extends AbstractEntity<Integer> implements Serializable {
-
-    private Integer id;
 
     StudentEntity student;
     LessonsEntity lessons;
@@ -24,14 +21,6 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
 
     public VisitsEntity(boolean isExists) {
         this.isExists = isExists;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "visit_id")
-    @Override
-    public Integer getId() {
-        return this.id;
     }
 
 
@@ -55,7 +44,7 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
         this.lessons = lessons;
     }
 
-    @Column(name = "exists", nullable = false)
+    @Column(name = "is_exists", nullable = false)
     public boolean isExists() {
         return isExists;
     }

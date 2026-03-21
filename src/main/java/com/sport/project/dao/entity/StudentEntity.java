@@ -7,31 +7,20 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 @Entity(name = "student_entity")
-@Table(schema = "public", name = "students")
+@Table(name = "students")
 @NoArgsConstructor
-@Access(AccessType.PROPERTY)
 public class StudentEntity extends UserEntity<Integer> implements Serializable {
-
-    private Integer id;
 
     private HealthGroupsEntity healthGroup;
     private GroupEntity group;
-    @Setter
     private SectionEntity section;
-    @Setter
     private List<VisitsEntity> visits;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "student_id")
-    @Override
-    public Integer getId() {
-        return this.id;
-    }
 
     @ManyToOne
     @JoinColumn(name = "health_group_id", nullable = false)
@@ -51,7 +40,7 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         return this.section;
     }
 
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     public List<VisitsEntity> getVisits() {
         return this.visits;
     }
@@ -75,6 +64,13 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         this.group = group;
     }
 
+    public void setSection(@NonNull SectionEntity section) {
+        this.section = section;
+    }
+
+    public void setVisits(@NonNull List<VisitsEntity> visits) {
+        this.visits = visits;
+    }
 
     //TODO: написать Builder, т.к. конструктор будет слишком большим
 
@@ -111,7 +107,7 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
             return this;
         }
 
-        public StudentEntityBuilder birthday(Date birthday) {
+        public StudentEntityBuilder birthday(LocalDate birthday) {
             student.setBirthday(birthday);
             return this;
         }
