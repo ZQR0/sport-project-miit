@@ -1,8 +1,6 @@
 --liquibase formatted sql
 
 --changeset olesya:ddl-01
---DROP TABLE IF EXISTS disciplines, groups, health_groups, lessons, sections, students, teachers, visits;
-
 CREATE TABLE IF NOT EXISTS groups (
     group_id    INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name        VARCHAR(8)      NOT NULL,

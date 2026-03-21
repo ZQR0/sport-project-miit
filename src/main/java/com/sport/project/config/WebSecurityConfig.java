@@ -23,44 +23,56 @@ public class WebSecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
 
+//    @Bean
+//    public SecurityFilterChain mvcFilterChain(HttpSecurity httpSecurity)
+//        throws Exception
+//    {
+//        httpSecurity
+//                .formLogin(Customizer.withDefaults())
+//                .authenticationManager(authenticationManager());
+//
+//        httpSecurity.authorizeHttpRequests(authz -> {
+//            authz.requestMatchers("/index").permitAll();
+//            authz.requestMatchers("/styles/**").permitAll();
+//            authz.requestMatchers("/admin/**").hasAuthority("teacher");
+//            authz.requestMatchers("/error").permitAll();
+//            authz.anyRequest().authenticated();
+//        });
+//
+//        httpSecurity.logout(out -> {
+//            out.logoutUrl("/logout")
+//                    .invalidateHttpSession(true)
+//                    .clearAuthentication(true)
+//                    .deleteCookies(SESSION_COOKIE)
+//                    .logoutSuccessUrl("/login");
+//        });
+//
+//        return httpSecurity.build();
+//    }
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//    @Bean
+//    public AuthenticationManager authenticationManager() {
+//        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(this.userDetailsService);
+//        authenticationProvider.setPasswordEncoder(passwordEncoder());
+//
+//        return new ProviderManager(authenticationProvider);
+//    }
+
     @Bean
-    public SecurityFilterChain mvcFilterChain(HttpSecurity httpSecurity)
-        throws Exception
-    {
-        httpSecurity
-                .formLogin(Customizer.withDefaults())
-                .authenticationManager(authenticationManager());
-
-        httpSecurity.authorizeHttpRequests(authz -> {
-            authz.requestMatchers("/index").permitAll();
-            authz.requestMatchers("/styles/**").permitAll();
-            authz.requestMatchers("/admin/**").hasAuthority("teacher");
-            authz.requestMatchers("/error").permitAll();
-            authz.anyRequest().authenticated();
-        });
-
-        httpSecurity.logout(out -> {
-            out.logoutUrl("/logout")
-                    .invalidateHttpSession(true)
-                    .clearAuthentication(true)
-                    .deleteCookies(SESSION_COOKIE)
-                    .logoutSuccessUrl("/login");
-        });
-
-        return httpSecurity.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(this.userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-
-        return new ProviderManager(authenticationProvider);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()   // разрешаем все запросы
+                )
+                .csrf(csrf -> csrf.disable())   // отключаем CSRF (для stateless API)
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable());
+        return http.build();
     }
 
 }

@@ -1,7 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: tables/tables-ddl-01.sql
-      relativeToChangeLogFile: true
-  - include:
-      file: tables/dml-01.sql
-      relativeToChangeLogFile: true
