@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "section_entity")
 @Table(name = "sections")
@@ -72,5 +74,18 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
             throw new IllegalArgumentException("Student cannot be null");
         }
         return this.studentsOnSection.add(student);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        SectionEntity that = (SectionEntity) o;
+        return Objects.equals(name, that.name) && Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description);
     }
 }

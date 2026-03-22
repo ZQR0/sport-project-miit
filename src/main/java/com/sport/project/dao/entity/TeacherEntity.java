@@ -43,6 +43,8 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
         return this.lessons.remove(lesson);
     }
 
+
+
     public static TeacherEntityBuilder builder() {
         return new TeacherEntityBuilder();
     }

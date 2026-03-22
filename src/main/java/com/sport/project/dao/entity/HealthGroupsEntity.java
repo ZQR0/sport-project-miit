@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "health_groups_entity")
 @Table(name = "health_groups")
@@ -65,5 +67,18 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
             throw new IllegalArgumentException("Student cannot be null");
         }
         return this.students.add(student);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        HealthGroupsEntity that = (HealthGroupsEntity) o;
+        return Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(students, that.students);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description);
     }
 }

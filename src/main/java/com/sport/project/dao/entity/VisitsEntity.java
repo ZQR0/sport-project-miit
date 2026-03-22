@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(name = "visits_entity")
 @Table(name = "visits")
@@ -49,4 +51,16 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
         return isExists;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        VisitsEntity that = (VisitsEntity) o;
+        return isExists == that.isExists && Objects.equals(student, that.student) && Objects.equals(lessons, that.lessons);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(student, lessons, isExists);
+    }
 }

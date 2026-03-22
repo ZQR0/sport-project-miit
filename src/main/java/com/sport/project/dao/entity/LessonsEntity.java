@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity(name = "lessons_entity")
 @Table(name = "lessons")
@@ -58,5 +60,18 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
 
     public void setTeacher(@NonNull TeacherEntity newTeacher) {
         this.teacher = newTeacher;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        LessonsEntity that = (LessonsEntity) o;
+        return Objects.equals(discipline.getName(), that.discipline.getName()) && Objects.equals(dateOfLesson, that.dateOfLesson) && Objects.equals(teacher, that.teacher);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(discipline, dateOfLesson);
     }
 }

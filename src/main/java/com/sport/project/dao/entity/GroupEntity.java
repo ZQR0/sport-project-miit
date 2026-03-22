@@ -5,9 +5,11 @@ import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "groups_entity")
 @Table(name = "groups")
@@ -65,5 +67,18 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
             throw new IllegalArgumentException("New student cannot be null");
         }
         return this.students.add(student);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        GroupEntity groupEntity = (GroupEntity) o;
+        return groupEntity.getName() != null && Objects.equals(groupEntity.getName(), this.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, institute);
     }
 }
