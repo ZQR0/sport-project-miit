@@ -12,4 +12,7 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Long> {
 
     /*Поиск посещений студента по логину студента*/
     Optional<VisitsEntity> findByStudentLogin (String studentLogin);
+
+    //Метод для проверки существования записи (вроде)
+    Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer lessonId);
 }
