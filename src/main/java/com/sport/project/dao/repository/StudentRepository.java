@@ -21,7 +21,7 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
 //    List<StudentEntity> findByLFP(@Param("lfp") String lfp);
 
 
-    /*Поиск по группе. Найти всех студентов группы.
-    * Это отсебятина немного, может удалишь*/
-    Optional<StudentEntity> findByGroupName(String groupName);
+    /*Поиск по группе. Найти всех студентов группы.*/
+    @Query("SELECT s FROM StudentEntity s WHERE s.group.name = :groupName")
+    List<StudentEntity> findByGroupName(String groupName);
 }

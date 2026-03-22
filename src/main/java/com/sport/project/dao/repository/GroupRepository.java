@@ -21,6 +21,4 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
     //Поиск по названию института
     List<GroupEntity> findByInstitute(String institute);
 
-    //Поиск всех групп
-    List<GroupEntity> findAll();
 }
