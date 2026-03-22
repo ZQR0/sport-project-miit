@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 //В документации нет, но может еще понадобится
-public interface LessonsRepository extends JpaRepository<LessonsEntity, Long> {
+public interface LessonsRepository extends JpaRepository<LessonsEntity, Integer> {
 
     //Получение расписание занятий по дисциплине disciplineName
     List<LessonsEntity> findByDiscipline_Name(String disciplineName);
