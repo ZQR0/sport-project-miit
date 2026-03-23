@@ -13,6 +13,8 @@ import lombok.Setter;
 @Builder
 public class VisitCreationDTO {
 
+    //FIXME: подумать как лучше: айдишники или строковые поля
+
     @JsonProperty(namespace = "student_login", required = true)
     private String studentLogin;
 

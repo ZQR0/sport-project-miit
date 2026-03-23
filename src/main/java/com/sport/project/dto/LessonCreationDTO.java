@@ -15,6 +15,8 @@ import java.util.Date;
 @Builder
 public class LessonCreationDTO {
 
+    //FIXME: вот надо подумать, стоит указывать ФИО препода или так оставить. То же самое с дисциплиной
+
     @JsonProperty(namespace = "date_of_lesson", required = true)
     private Date dateOfLesson;
 
