@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "discipline_entity")
 @Table(name = "disciplines")
@@ -52,5 +54,18 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
             throw new IllegalArgumentException("Lesson cannot be null");
         }
         return this.lessonsEntities.add(lesson);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || Hibernate.getClass(this) != Hibernate.getClass(obj)) return false;
+        DisciplineEntity discipline = (DisciplineEntity) obj;
+        return discipline.getName() != null && Objects.equals(discipline.getName(), this.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name);
     }
 }

@@ -5,11 +5,13 @@ import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "student_entity")
 @Table(name = "students")
@@ -72,7 +74,18 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         this.visits = visits;
     }
 
-    //TODO: написать Builder, т.к. конструктор будет слишком большим
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        return true; // ВРеменная заглушка
+    }
+
+    // Временная заглушка
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(healthGroup, group, section, visits);
+//    }
 
     public static StudentEntityBuilder builder() {
         return new StudentEntityBuilder();
@@ -112,9 +125,28 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
             return this;
         }
 
+        public StudentEntityBuilder healthGroup(HealthGroupsEntity healthGroup) {
+            student.setHealthGroup(healthGroup);
+            return this;
+        }
+
+        public StudentEntityBuilder group(GroupEntity group) {
+            student.setGroup(group);
+            return this;
+        }
+
+        public StudentEntityBuilder section(SectionEntity section) {
+            student.setSection(section);
+            return this;
+        }
+
+        public StudentEntityBuilder visits(List<VisitsEntity> visits) {
+            student.setVisits(visits);
+            return this;
+        }
+
         public StudentEntity build() {
             student.setFullName(this.fullName);
-            //TODO: закинуть всё остальное
             return student;
         }
     }

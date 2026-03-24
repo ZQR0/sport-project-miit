@@ -1,0 +1,28 @@
+package com.sport.project.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Date;
+
+/**
+ * DTO для создания {@link com.sport.project.dao.entity.LessonsEntity}
+ */
+@Getter
+@Setter
+@Builder
+public class LessonCreationDTO {
+
+    //FIXME: вот надо подумать, стоит указывать ФИО препода или так оставить. То же самое с дисциплиной
+
+    @JsonProperty(namespace = "date_of_lesson", required = true)
+    private Date dateOfLesson;
+
+    @JsonProperty(namespace = "teacher_id", required = false)
+    private Integer teacherId;
+
+    @JsonProperty(namespace = "discipline_id", required = true)
+    private Integer disciplineId;
+}

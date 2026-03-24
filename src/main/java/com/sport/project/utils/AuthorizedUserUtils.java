@@ -12,17 +12,17 @@ public class AuthorizedUserUtils {
      * Код для получения текущего аутентифицированного пользователя из контекста Spring
      * @author Yaroslav
      * */
-    public static UserDetailsImpl getCurrentUser() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                return (UserDetailsImpl) principal;
-            }
-        }
-
-        return null;
-    }
+//    public static UserDetailsImpl getCurrentUser() {
+//        SecurityContext context = SecurityContextHolder.getContext();
+//        Authentication authentication = context.getAuthentication();
+//        if (authentication != null) {
+//            Object principal = authentication.getPrincipal();
+//            if (principal instanceof UserDetails) {
+//                return (UserDetailsImpl) principal;
+//            }
+//        }
+//
+//        return null;
+//    }
 
 }

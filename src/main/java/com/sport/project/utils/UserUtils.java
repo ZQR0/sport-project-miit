@@ -14,19 +14,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserUtils {
 
-    private final TeacherRepositoryImpl teacherRepository;
-    private final StudentRepositoryImpl studentRepository;
-
-    public boolean isTeacherExistsByLogin(String login) {
-        Optional<TeacherEntity> optionalTeacherEntity = this.teacherRepository.findByLogin(login);
-
-        return optionalTeacherEntity.isPresent();
-    }
-
-    public boolean isStudentExistsByLogin(String login) {
-        Optional<StudentEntity> optionalStudentEntity = this.studentRepository.findByLogin(login);
-
-        return optionalStudentEntity.isPresent();
-    }
+//    private final TeacherRepositoryImpl teacherRepository;
+//    private final StudentRepositoryImpl studentRepository;
+//
+//    public boolean isTeacherExistsByLogin(String login) {
+//        Optional<TeacherEntity> optionalTeacherEntity = this.teacherRepository.findByLogin(login);
+//
+//        return optionalTeacherEntity.isPresent();
+//    }
+//
+//    public boolean isStudentExistsByLogin(String login) {
+//        Optional<StudentEntity> optionalStudentEntity = this.studentRepository.findByLogin(login);
+//
+//        return optionalStudentEntity.isPresent();
+//    }
 
 }
