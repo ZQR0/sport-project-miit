@@ -24,5 +24,8 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Integer>
     List<TeacherEntity> findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(
             String firstName, String lastName, String patronymic);
 
+    //Получение преподавателей-модераторов
+    List<TeacherEntity> findByIsModeratorTrue();
+
     //TODO: Сделать методы для (см. API документацию): api/teachers/update-schedule, api/teachers/notice.
 }

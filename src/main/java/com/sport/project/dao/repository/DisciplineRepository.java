@@ -15,4 +15,6 @@ public interface DisciplineRepository extends JpaRepository<DisciplineEntity, In
     //Поиск дисциплины по имени
     Optional<DisciplineEntity> findByName(String name);
 
+    //Проверка существования дисциплины по названию
+    boolean existsByName(String name);
 }

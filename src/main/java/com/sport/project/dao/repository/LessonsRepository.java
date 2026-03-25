@@ -17,4 +17,7 @@ public interface LessonsRepository extends JpaRepository<LessonsEntity, Integer>
 
     //Список занятий на указанную дату
     List<LessonsEntity> findByDateOfLesson(LocalDate date);
+
+    //Очистка занятий при удалении дисциплины
+    void deleteByDiscipline_Name(String disciplineName);
 }

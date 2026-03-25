@@ -16,4 +16,7 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
 
     //Метод для проверки существования записи (вроде)
     Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer lessonId);
+
+    //Удаление посещений по логину студента
+    void deleteByStudent_Login(String studentLogin);
 }
