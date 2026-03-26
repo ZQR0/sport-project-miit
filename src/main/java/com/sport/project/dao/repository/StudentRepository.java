@@ -16,8 +16,18 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     //Поиск по ФИО
     Optional<StudentEntity> findByFullNameAndFullLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic);
 
+    //Поиск по фамилии студента
+    List<StudentEntity> findByFullNameLastName(String lastName);
+
     //Вывод всех студентов, у которых есть секция sectionName
     List<StudentEntity> findBySectionName(String sectionName);
+
+    //Удаление всех студентов группы при удалении группы
+    void deleteByGroup_Name(String groupName);
+
+    //Подсчет количества студентов в группе
+    int countByGroup_Name(String groupName);
+
     //Поиск студента по LFP (ФИО, с заменой "_" на пробел)
     // FIXME: не заметил ошибку при ревью, CONCAT не поддерживается в HQL, потом найдём замену
 //    @Query("SELECT student FROM student_entity student" +

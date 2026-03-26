@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,9 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
     //Поиск по названию института
     List<GroupEntity> findByInstitute(String institute);
 
+    //Получение групп по институту с пагинацией
+    List<GroupEntity> findByInstitute(String institute, Pageable pageable);
+
+    //Проверка существования группы по названию
+    boolean existsByName(String name);
 }
