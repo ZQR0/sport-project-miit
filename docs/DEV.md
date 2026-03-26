@@ -349,7 +349,7 @@
 
 Закомментированная реализация с методами:
 - `findAll()`
-- `findByFSP(String fsp)`
+- `findByFullName(String fullName)`
 - `findByLogin(String login)`
 
 ### 4.3. TeacherRepositoryImpl
@@ -358,7 +358,7 @@
 
 Закомментированная реализация с методами:
 - `findAll()`
-- `findByFSP(String fsp)`
+- `findByFullName(String fullName)`
 - `findByLogin(String login)`
 - `findAllModerators()`
 
@@ -510,7 +510,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 | Метод | Возвращает | Параметры | Исключения | Описание |
 |-------|------------|-----------|------------|----------|
-| `createStudent(StudentCreationDTO dto)` | `StudentDTO` | `dto` — DTO для создания студента (fsp, login, password, healthGroup, teacherId) | `EntityAlreadyExistsException` | Создание нового студента. Валидация уникальности логина, хеширование пароля, связывание с группой, медицинской группой и преподавателем |
+| `createStudent(StudentCreationDTO dto)` | `StudentDTO` | `dto` — DTO для создания студента (fullName, login, password, healthGroup, teacherId) | `EntityAlreadyExistsException` | Создание нового студента. Валидация уникальности логина, хеширование пароля, связывание с группой, медицинской группой и преподавателем |
 
 **Зависимости:**
 - `StudentRepository` — для сохранения сущности
@@ -531,7 +531,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 | Метод | Возвращает | Параметры | Исключения | Описание |
 |-------|------------|-----------|------------|----------|
-| `updateFSP(String newFSP, String login)` | `void` | `newFSP` — новое ФИО, `login` — текущий логин студента | `EntityNotFoundException` | Обновление ФИО студента |
+| `updateFullName(String newFullName, String login)` | `void` | `newFullName` — новое ФИО, `login` — текущий логин студента | `EntityNotFoundException` | Обновление ФИО студента |
 | `updateLogin(String newLogin, String login)` | `void` | `newLogin` — новый логин, `login` — текущий логин | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина студента. Проверка уникальности нового логина |
 | `updateHealthGroup(int newHealthGroup, String login)` | `void` | `newHealthGroup` — ID новой медицинской группы, `login` — логин студента | `EntityNotFoundException` | Присвоение студенту новой медицинской группы |
 | `updateStudentTeacher(TeacherEntity teacher, String login)` | `void` | `teacher` — сущность преподавателя, `login` — логин студента | `EntityNotFoundException` | Привязка студента к преподавателю |
@@ -554,7 +554,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 | Метод | Возвращает | Параметры | Исключения | Описание |
 |-------|------------|-----------|------------|----------|
 | `deleteById(int id)` | `void` | `id` — идентификатор студента | `EntityNotFoundException` | Удаление студента по ID |
-| `deleteByFSP(String fsp)` | `void` | `fsp` — ФИО студента | `EntityNotFoundException` | Удаление студента по ФИО |
+| `deleteByFullName(String fullName)` | `void` | `fullName` — ФИО студента | `EntityNotFoundException` | Удаление студента по ФИО |
 | `deleteByLogin(String login)` | `void` | `login` — логин студента | `EntityNotFoundException` | Удаление студента по логину |
 
 **Зависимости:**
@@ -593,7 +593,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 | Метод | Возвращает | Параметры | Исключения | Описание |
 |-------|------------|-----------|------------|----------|
-| `createTeacher(TeacherCreationDTO dto)` | `TeacherDTO` | `dto` — DTO для создания преподавателя (fsp, login, password, isModerator) | `EntityAlreadyExistsException` | Создание нового преподавателя. Валидация уникальности логина, хеширование пароля, установка флага модератора |
+| `createTeacher(TeacherCreationDTO dto)` | `TeacherDTO` | `dto` — DTO для создания преподавателя (fullName, login, password, isModerator) | `EntityAlreadyExistsException` | Создание нового преподавателя. Валидация уникальности логина, хеширование пароля, установка флага модератора |
 
 **Зависимости:**
 - `TeacherRepository` — для сохранения сущности
@@ -611,7 +611,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 | Метод | Возвращает | Параметры | Исключения | Описание |
 |-------|------------|-----------|------------|----------|
-| `updateFSP(String newFSP, String login)` | `void` | `newFSP` — новое ФИО, `login` — текущий логин | `EntityNotFoundException` | Обновление ФИО преподавателя |
+| `updateFullName(String newFullName, String login)` | `void` | `newFullName` — новое ФИО, `login` — текущий логин | `EntityNotFoundException` | Обновление ФИО преподавателя |
 | `updateLogin(String newLogin, String login)` | `void` | `newLogin` — новый логин, `login` — текущий логин | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина преподавателя |
 | `updateIsModerator(boolean isModerator, int id)` | `void` | `isModerator` — новый статус модератора, `id` — ID преподавателя | `EntityNotFoundException` | Изменение статуса модератора преподавателя |
 
@@ -631,7 +631,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 | Метод | Возвращает | Параметры | Исключения | Описание |
 |-------|------------|-----------|------------|----------|
 | `deleteById(int id)` | `void` | `id` — идентификатор преподавателя | `EntityNotFoundException` | Удаление преподавателя по ID |
-| `deleteByFSP(String fsp)` | `void` | `fsp` — ФИО преподавателя | `EntityNotFoundException` | Удаление преподавателя по ФИО |
+| `deleteByFullName(String fullName)` | `void` | `fullName` — ФИО преподавателя | `EntityNotFoundException` | Удаление преподавателя по ФИО |
 | `deleteByLogin(String login)` | `void` | `login` — логин преподавателя | `EntityNotFoundException` | Удаление преподавателя по логину |
 
 **Зависимости:**
@@ -675,7 +675,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 |-------|------------|-----------|------------|----------|
 | `findById(Integer id)` | `StudentDTO` | `id` — идентификатор студента | `EntityNotFoundException` | Получение данных студента по ID |
 | `findByLogin(String login)` | `StudentDTO` | `login` — логин студента | `EntityNotFoundException` | Получение данных студента по логину |
-| `findByFSP(String fsp)` | `StudentDTO` | `fsp` — ФИО студента | `EntityNotFoundException` | Получение данных студента по ФИО |
+| `findByFullName(String fullName)` | `StudentDTO` | `fullName` — ФИО студента | `EntityNotFoundException` | Получение данных студента по ФИО |
 | `findAll()` | `List<StudentDTO>` | — | — | Получение всех студентов |
 
 **Зависимости:**
@@ -696,7 +696,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 |-------|------------|-----------|------------|----------|
 | `findById(Integer id)` | `TeacherDTO` | `id` — идентификатор преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ID |
 | `findByLogin(String login)` | `TeacherDTO` | `login` — логин преподавателя | `EntityNotFoundException` | Получение данных преподавателя по логину |
-| `findByFSP(String fsp)` | `TeacherDTO` | `fsp` — ФИО преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ФИО |
+| `findByFullName(String fullName)` | `TeacherDTO` | `fullName` — ФИО преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ФИО |
 | `findAllModerators()` | `List<TeacherDTO>` | — | — | Получение всех преподавателей со статусом модератора |
 | `findAll()` | `List<TeacherDTO>` | — | — | Получение всех преподавателей |
 
@@ -715,7 +715,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 **Назначение:** DTO для создания нового студента. Содержит только необходимые для создания поля.
 
 **Поля:**
-- `fsp` (String) — ФИО студента (обязательное)
+- `fullName` (String) — ФИО студента (обязательное)
 - `login` (String) — логин (обязательное)
 - `password` (String) — пароль (обязательное)
 - `healthGroup` (Integer) — ID медицинской группы
@@ -731,7 +731,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Поля:**
 - `id` (Integer) — идентификатор
-- `fsp` (String) — ФИО
+- `fullName` (String) — ФИО
 - `login` (String) — логин
 - `passwordHash` (String) — хеш пароля
 - `healthGroup` (Integer) — ID медицинской группы
@@ -747,7 +747,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 **Назначение:** DTO для создания нового преподавателя.
 
 **Поля:**
-- `fsp` (String) — ФИО (обязательное)
+- `fullName` (String) — ФИО (обязательное)
 - `login` (String) — логин (обязательное)
 - `password` (String) — пароль (обязательное)
 - `isModerator` (Boolean) — статус модератора
@@ -762,7 +762,7 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Поля:**
 - `id` (Integer) — идентификатор
-- `fsp` (String) — ФИО
+- `fullName` (String) — ФИО
 - `login` (String) — логин
 - `passwordHash` (String) — хеш пароля
 - `isModerator` (boolean) — статус модератора
