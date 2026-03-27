@@ -14,7 +14,7 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     Optional<StudentEntity> findByLogin(String login);
 
     //Поиск по ФИО
-    Optional<StudentEntity> findByFullNameAndFullLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic);
+    List<StudentEntity> findByFullNameAndFullLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic);
 
     //Поиск по фамилии студента
     List<StudentEntity> findByFullNameLastName(String lastName);
