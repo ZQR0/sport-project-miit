@@ -14,8 +14,9 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     //Поиск студента по логину
     Optional<StudentEntity> findByLogin(String login);
 
+    //FIXME: не работает: нужно писать Query вручную
     //Поиск по ФИО
-    List<StudentEntity> findByFullNameAndFullLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic);
+//    List<StudentEntity> findByFullNameAndFullLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic);
 
     //Поиск по фамилии студента
     List<StudentEntity> findByFullNameLastName(String lastName);
@@ -50,7 +51,8 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
 //    List<StudentEntity> findByLFP(@Param("lfp") String lfp);
 
 
+    //FIXME: Не работает при запуске, надо исправить query
     /*Поиск по группе. Найти всех студентов группы.*/
-    @Query("SELECT s FROM StudentEntity s WHERE s.group.name = :groupName")
-    List<StudentEntity> findByGroupName(String groupName);
+//    @Query("SELECT s FROM StudentEntity s WHERE s.group.name = :groupName")
+//    List<StudentEntity> findByGroupName(String groupName);
 }

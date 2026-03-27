@@ -14,8 +14,9 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
     /*Поиск посещений студента по логину студента*/
     Optional<VisitsEntity> findByStudentLogin (String studentLogin);
 
+    //FIXME: написать кастомный Query, не получается запрос построить
     //Метод для проверки существования записи (вроде)
-    Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer lessonId);
+//    Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer lessonId);
 
     //Удаление посещений по логину студента
     void deleteByStudent_Login(String studentLogin);
