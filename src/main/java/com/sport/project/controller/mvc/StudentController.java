@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(path = "/students")
-@RequiredArgsConstructor
-@Slf4j
+//@Controller
+//@RequestMapping(path = "/students")
+//@RequiredArgsConstructor
+//@Slf4j
 public class StudentController {
 
 //    private final StudentServiceImpl studentService;

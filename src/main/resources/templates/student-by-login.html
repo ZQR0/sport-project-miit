@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <title>Поиск студента по логину</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .search-form {
+            margin-bottom: 30px;
+        }
+        .search-form input {
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        .search-form button {
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .result {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .result h2 {
+            margin-top: 0;
+        }
+        .result-row {
+            margin: 10px 0;
+        }
+        .result-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .error {
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Поиск студента по логину</h1>
+
+    <div class="search-form">
+        <form th:action="@{/student-by-login}" method="post">
+            <input type="text" name="login" placeholder="Введите логин..."
+                   th:value="${searchLogin}" required />
+            <button type="submit">Найти</button>
+        </form>
+    </div>
+
+    <div th:if="${error}" class="error">
+        <span th:text="${error}"></span>
+    </div>
+
+    <div th:if="${student}" class="result">
+        <h2>Данные студента</h2>
+        <div class="result-row">
+            <span class="result-label">ID:</span>
+            <span th:text="${student.id}"></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Фамилия:</span>
+            <span th:text="${student.secondName}"></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Имя:</span>
+            <span th:text="${student.firstName}"></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Отчество:</span>
+            <span th:text="${student.patronymic}"></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Логин:</span>
+            <span th:text="${student.login}"></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Мед. группа:</span>
+            <span th:text="${student.healthGroup}"></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">ID преподавателя:</span>
+            <span th:text="${student.teacherId}"></span>
+        </div>
+    </div>
+</body>
+</html>
