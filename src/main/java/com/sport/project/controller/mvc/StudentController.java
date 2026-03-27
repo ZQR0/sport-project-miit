@@ -1,23 +1,9 @@
 package com.sport.project.controller.mvc;
 
-import com.sport.project.dto.StudentCreationDTO;
-import com.sport.project.dto.StudentDTO;
-import com.sport.project.dto.TeacherDTO;
-import com.sport.project.exception.EntityAlreadyExistsException;
-import com.sport.project.exception.EntityNotFoundException;
-import com.sport.project.service.StudentService;
-import com.sport.project.service.impl.StudentServiceImpl;
-import com.sport.project.service.impl.TeacherServiceImpl;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.util.List;
 
 @Controller
 @RequestMapping(path = "/students")
