@@ -38,7 +38,7 @@ public interface StudentService {
      * @return данные студента
      * @throws EntityNotFoundException если студент не найден
      */
-    List<StudentDTO> findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
+    List<StudentDTO> findByFullName(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
 
     /**
      * Получение всех студентов.
