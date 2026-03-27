@@ -14,6 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
+/**
+ * Этот сервис нужнн для реализации аутентификации пользователя
+ * НЕ УДАЛЯТЬ
+ * */
 @Slf4j
 @Service
 @RequiredArgsConstructor

@@ -192,8 +192,8 @@
 
 **Объявленные методы:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
+| Метод                     | Возвращает                   | Описание                              |
+|---------------------------|------------------------------|---------------------------------------|
 | `findByName(String name)` | `Optional<DisciplineEntity>` | Поиск дисциплины по уникальному имени |
 
 **Замечания:**
@@ -210,12 +210,12 @@
 
 **Объявленные методы:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `findByName(String name)` | `Optional<GroupEntity>` | Поиск группы по уникальному названию |
-| `findStudentsByGroup(@Param("group_name") String group_name)` | `List<StudentEntity>` | JPQL-запрос: получение всех студентов группы по названию группы |
-| `findByInstitute(String institute)` | `List<GroupEntity>` | Поиск групп по названию института (возвращает список) |
-| `findAll()` | `List<GroupEntity>` | Получение всех групп (переопределение стандартного метода) |
+| Метод                                                         | Возвращает              | Описание                                                        |
+|---------------------------------------------------------------|-------------------------|-----------------------------------------------------------------|
+| `findByName(String name)`                                     | `Optional<GroupEntity>` | Поиск группы по уникальному названию                            |
+| `findStudentsByGroup(@Param("group_name") String group_name)` | `List<StudentEntity>`   | JPQL-запрос: получение всех студентов группы по названию группы |
+| `findByInstitute(String institute)`                           | `List<GroupEntity>`     | Поиск групп по названию института (возвращает список)           |
+| `findAll()`                                                   | `List<GroupEntity>`     | Получение всех групп (переопределение стандартного метода)      |
 
 **JPQL-запрос:**
 ```java
@@ -239,13 +239,13 @@
 
 **Требуемые методы для сервисов:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `findByDateOfLesson(LocalDate date)` | `List<LessonsEntity>` | Получение занятий по дате |
-| `findByTeacherId(Integer teacherId)` | `List<LessonsEntity>` | Получение занятий преподавателя |
-| `findByDisciplineNameAndDateOfLesson(String disciplineName, LocalDate date)` | `Optional<LessonsEntity>` | Поиск занятия по дисциплине и дате |
-| `findByDisciplineName(String disciplineName)` | `List<LessonsEntity>` | Получение всех занятий дисциплины |
-| `deleteByDisciplineName(String disciplineName)` | `void` | Очистка занятий при удалении дисциплины |
+| Метод                                                                        | Возвращает                | Описание                                |
+|------------------------------------------------------------------------------|---------------------------|-----------------------------------------|
+| `findByDateOfLesson(LocalDate date)`                                         | `List<LessonsEntity>`     | Получение занятий по дате               |
+| `findByTeacherId(Integer teacherId)`                                         | `List<LessonsEntity>`     | Получение занятий преподавателя         |
+| `findByDisciplineNameAndDateOfLesson(String disciplineName, LocalDate date)` | `Optional<LessonsEntity>` | Поиск занятия по дисциплине и дате      |
+| `findByDisciplineName(String disciplineName)`                                | `List<LessonsEntity>`     | Получение всех занятий дисциплины       |
+| `deleteByDisciplineName(String disciplineName)`                              | `void`                    | Очистка занятий при удалении дисциплины |
 
 ### 3.5. StudentRepository
 
@@ -258,21 +258,21 @@
 
 **Объявленные методы:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `findByLogin(String login)` | `Optional<StudentEntity>` | Поиск студента по уникальному логину |
-| `findByGroupName(String groupName)` | `Optional<StudentEntity>` | Поиск студента по названию группы |
+| Метод                               | Возвращает                | Описание                             |
+|-------------------------------------|---------------------------|--------------------------------------|
+| `findByLogin(String login)`         | `Optional<StudentEntity>` | Поиск студента по уникальному логину |
+| `findByGroupName(String groupName)` | `Optional<StudentEntity>` | Поиск студента по названию группы    |
 
 **Требуемые методы для сервисов:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` | `Optional<StudentEntity>` | Поиск студента по полному ФИО |
-| `findByGroupId(Integer groupId)` | `List<StudentEntity>` | Получение всех студентов группы по ID |
-| `existsByLogin(String login)` | `boolean` | Проверка существования студента по логину |
-| `findBySectionName(String sectionName)` | `List<StudentEntity>` | Получение всех студентов секции |
-| `deleteByGroupName(String groupName)` | `void` | Удаление всех студентов группы |
-| `countByGroupName(String groupName)` | `int` | Подсчёт количества студентов в группе |
+| Метод                                                                                                                   | Возвращает                | Описание                                  |
+|-------------------------------------------------------------------------------------------------------------------------|---------------------------|-------------------------------------------|
+| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` | `Optional<StudentEntity>` | Поиск студента по полному ФИО             |
+| `findByGroupId(Integer groupId)`                                                                                        | `List<StudentEntity>`     | Получение всех студентов группы по ID     |
+| `existsByLogin(String login)`                                                                                           | `boolean`                 | Проверка существования студента по логину |
+| `findBySectionName(String sectionName)`                                                                                 | `List<StudentEntity>`     | Получение всех студентов секции           |
+| `deleteByGroupName(String groupName)`                                                                                   | `void`                    | Удаление всех студентов группы            |
+| `countByGroupName(String groupName)`                                                                                    | `int`                     | Подсчёт количества студентов в группе     |
 
 ### 3.6. TeacherRepository
 
@@ -285,15 +285,15 @@
 
 **Объявленные методы:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `findByLogin(String login)` | `Optional<TeacherEntity>` | Поиск преподавателя по уникальному логину |
-| `findByIsModerator(boolean isModerator)` | `List<TeacherEntity>` | Фильтрация по флагу модератора |
-| `findByFullNameFirstName(String firstName)` | `List<TeacherEntity>` | Поиск по имени (FirstName из FullName) |
-| `findByFullNameLastName(String lastName)` | `List<TeacherEntity>` | Поиск по фамилии (LastName из FullName) |
-| `findByFullNamePatronymic(String patronymic)` | `List<TeacherEntity>` | Поиск по отчеству (Patronymic из FullName) |
-| `findByFullNameFirstNameAndFullNameLastName(String firstName, String lastName)` | `List<TeacherEntity>` | Поиск по имени и фамилии |
-| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` | `List<TeacherEntity>` | Поиск по полному ФИО |
+| Метод                                                                                                                   | Возвращает                | Описание                                   |
+|-------------------------------------------------------------------------------------------------------------------------|---------------------------|--------------------------------------------|
+| `findByLogin(String login)`                                                                                             | `Optional<TeacherEntity>` | Поиск преподавателя по уникальному логину  |
+| `findByIsModerator(boolean isModerator)`                                                                                | `List<TeacherEntity>`     | Фильтрация по флагу модератора             |
+| `findByFullNameFirstName(String firstName)`                                                                             | `List<TeacherEntity>`     | Поиск по имени (FirstName из FullName)     |
+| `findByFullNameLastName(String lastName)`                                                                               | `List<TeacherEntity>`     | Поиск по фамилии (LastName из FullName)    |
+| `findByFullNamePatronymic(String patronymic)`                                                                           | `List<TeacherEntity>`     | Поиск по отчеству (Patronymic из FullName) |
+| `findByFullNameFirstNameAndFullNameLastName(String firstName, String lastName)`                                         | `List<TeacherEntity>`     | Поиск по имени и фамилии                   |
+| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` | `List<TeacherEntity>`     | Поиск по полному ФИО                       |
 
 **TODO:**
 - Методы для работы с расписанием (`api/teachers/update-schedule`)
@@ -301,11 +301,11 @@
 
 **Требуемые методы для сервисов:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `existsByLogin(String login)` | `boolean` | Проверка существования преподавателя по логину |
-| `findByIdWithLessons(Integer id)` | `Optional<TeacherEntity>` | Получение преподавателя с занятиями (eager fetch) |
-| `findByLessonsDateOfLesson(LocalDate date)` | `List<TeacherEntity>` | Получение преподавателей, проводящих занятия на дату |
+| Метод                                       | Возвращает                | Описание                                             |
+|---------------------------------------------|---------------------------|------------------------------------------------------|
+| `existsByLogin(String login)`               | `boolean`                 | Проверка существования преподавателя по логину       |
+| `findByIdWithLessons(Integer id)`           | `Optional<TeacherEntity>` | Получение преподавателя с занятиями (eager fetch)    |
+| `findByLessonsDateOfLesson(LocalDate date)` | `List<TeacherEntity>`     | Получение преподавателей, проводящих занятия на дату |
 
 ### 3.7. VisitsRepository
 
@@ -318,18 +318,18 @@
 
 **Объявленные методы:**
 
-| Метод                                     | Возвращает | Описание |
-|-------------------------------------------|------------|----------|
-| `findByStudentId(Integer studentId)`      | `Optional<VisitsEntity>` | Поиск записи о посещении по ID студента |
+| Метод                                     | Возвращает               | Описание                                    |
+|-------------------------------------------|--------------------------|---------------------------------------------|
+| `findByStudentId(Integer studentId)`      | `Optional<VisitsEntity>` | Поиск записи о посещении по ID студента     |
 | `findByStudentLogin(String studentLogin)` | `Optional<VisitsEntity>` | Поиск записи о посещении по логину студента |
 
 **Требуемые методы для сервисов:**
 
-| Метод | Возвращает | Описание |
-|-------|------------|----------|
-| `findByStudentIdAndLessonId(Integer studentId, Integer lessonId)` | `Optional<VisitsEntity>` | Поиск записи о посещении по студенту и занятию |
-| `findByLessonId(Integer lessonId)` | `List<VisitsEntity>` | Получение всех посещений занятия |
-| `deleteByStudentLogin(String studentLogin)` | `void` | Очистка истории посещений при удалении студента |
+| Метод                                                             | Возвращает               | Описание                                        |
+|-------------------------------------------------------------------|--------------------------|-------------------------------------------------|
+| `findByStudentIdAndLessonId(Integer studentId, Integer lessonId)` | `Optional<VisitsEntity>` | Поиск записи о посещении по студенту и занятию  |
+| `findByLessonId(Integer lessonId)`                                | `List<VisitsEntity>`     | Получение всех посещений занятия                |
+| `deleteByStudentLogin(String studentLogin)`                       | `void`                   | Очистка истории посещений при удалении студента |
 
 ---
 
@@ -349,7 +349,7 @@
 
 Закомментированная реализация с методами:
 - `findAll()`
-- `findByFSP(String fsp)`
+- `findByFullName(String fullName)`
 - `findByLogin(String login)`
 
 ### 4.3. TeacherRepositoryImpl
@@ -358,7 +358,7 @@
 
 Закомментированная реализация с методами:
 - `findAll()`
-- `findByFSP(String fsp)`
+- `findByFullName(String fullName)`
 - `findByLogin(String login)`
 - `findAllModerators()`
 
@@ -508,9 +508,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `createStudent(StudentCreationDTO dto)` | `StudentDTO` | `dto` — DTO для создания студента (fsp, login, password, healthGroup, teacherId) | `EntityAlreadyExistsException` | Создание нового студента. Валидация уникальности логина, хеширование пароля, связывание с группой, медицинской группой и преподавателем |
+| Метод                                   | Возвращает   | Параметры                                                                             | Исключения                     | Описание                                                                                                                                |
+|-----------------------------------------|--------------|---------------------------------------------------------------------------------------|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `createStudent(StudentCreationDTO dto)` | `StudentDTO` | `dto` — DTO для создания студента (fullName, login, password, healthGroup, teacherId) | `EntityAlreadyExistsException` | Создание нового студента. Валидация уникальности логина, хеширование пароля, связывание с группой, медицинской группой и преподавателем |
 
 **Зависимости:**
 - `StudentRepository` — для сохранения сущности
@@ -529,12 +529,12 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `updateFSP(String newFSP, String login)` | `void` | `newFSP` — новое ФИО, `login` — текущий логин студента | `EntityNotFoundException` | Обновление ФИО студента |
-| `updateLogin(String newLogin, String login)` | `void` | `newLogin` — новый логин, `login` — текущий логин | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина студента. Проверка уникальности нового логина |
-| `updateHealthGroup(int newHealthGroup, String login)` | `void` | `newHealthGroup` — ID новой медицинской группы, `login` — логин студента | `EntityNotFoundException` | Присвоение студенту новой медицинской группы |
-| `updateStudentTeacher(TeacherEntity teacher, String login)` | `void` | `teacher` — сущность преподавателя, `login` — логин студента | `EntityNotFoundException` | Привязка студента к преподавателю |
+| Метод                                                                                         | Возвращает | Параметры                                                                | Исключения                                                | Описание                                                        |
+|-----------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------|
+| `updateFullName(String newFirstName, String newLastName, String newPatronymic, String login)` | `void`     | `newFullName` — новое ФИО, `login` — текущий логин студента              | `EntityNotFoundException`                                 | Обновление ФИО студента                                         |
+| `updateLogin(String newLogin, String login)`                                                  | `void`     | `newLogin` — новый логин, `login` — текущий логин                        | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина студента. Проверка уникальности нового логина |
+| `updateHealthGroup(int newHealthGroup, String login)`                                         | `void`     | `newHealthGroup` — ID новой медицинской группы, `login` — логин студента | `EntityNotFoundException`                                 | Присвоение студенту новой медицинской группы                    |
+| `updateStudentTeacher(TeacherEntity teacher, String login)`                                   | `void`     | `teacher` — сущность преподавателя, `login` — логин студента             | `EntityNotFoundException`                                 | Привязка студента к преподавателю                               |
 
 **Зависимости:**
 - `StudentRepository` — для поиска и обновления студента
@@ -551,11 +551,11 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `deleteById(int id)` | `void` | `id` — идентификатор студента | `EntityNotFoundException` | Удаление студента по ID |
-| `deleteByFSP(String fsp)` | `void` | `fsp` — ФИО студента | `EntityNotFoundException` | Удаление студента по ФИО |
-| `deleteByLogin(String login)` | `void` | `login` — логин студента | `EntityNotFoundException` | Удаление студента по логину |
+| Метод                                                                    | Возвращает | Параметры                     | Исключения                | Описание                    |
+|--------------------------------------------------------------------------|------------|-------------------------------|---------------------------|-----------------------------|
+| `deleteById(int id)`                                                     | `void`     | `id` — идентификатор студента | `EntityNotFoundException` | Удаление студента по ID     |
+| `deleteByFullName(String firstName, String lastName, String patronymic)` | `void`     | `fullName` — ФИО студента     | `EntityNotFoundException` | Удаление студента по ФИО    |
+| `deleteByLogin(String login)`                                            | `void`     | `login` — логин студента      | `EntityNotFoundException` | Удаление студента по логину |
 
 **Зависимости:**
 - `StudentRepository` — для поиска и удаления сущности
@@ -571,9 +571,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `getStudentSchedule(StudentEntity student)` | `Map<LocalDate, String>` | `student` — сущность студента | — | Получение расписания занятий студента. Возвращает мапу: дата → название занятия/дисциплины |
+| Метод                                       | Возвращает               | Параметры                     | Исключения | Описание                                                                                   |
+|---------------------------------------------|--------------------------|-------------------------------|------------|--------------------------------------------------------------------------------------------|
+| `getStudentSchedule(StudentEntity student)` | `Map<LocalDate, String>` | `student` — сущность студента | —          | Получение расписания занятий студента. Возвращает мапу: дата → название занятия/дисциплины |
 
 **Зависимости:**
 - `LessonsRepository` — для получения занятий по дате
@@ -591,9 +591,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `createTeacher(TeacherCreationDTO dto)` | `TeacherDTO` | `dto` — DTO для создания преподавателя (fsp, login, password, isModerator) | `EntityAlreadyExistsException` | Создание нового преподавателя. Валидация уникальности логина, хеширование пароля, установка флага модератора |
+| Метод                                   | Возвращает   | Параметры                                                                       | Исключения                     | Описание                                                                                                     |
+|-----------------------------------------|--------------|---------------------------------------------------------------------------------|--------------------------------|--------------------------------------------------------------------------------------------------------------|
+| `createTeacher(TeacherCreationDTO dto)` | `TeacherDTO` | `dto` — DTO для создания преподавателя (fullName, login, password, isModerator) | `EntityAlreadyExistsException` | Создание нового преподавателя. Валидация уникальности логина, хеширование пароля, установка флага модератора |
 
 **Зависимости:**
 - `TeacherRepository` — для сохранения сущности
@@ -609,11 +609,11 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `updateFSP(String newFSP, String login)` | `void` | `newFSP` — новое ФИО, `login` — текущий логин | `EntityNotFoundException` | Обновление ФИО преподавателя |
-| `updateLogin(String newLogin, String login)` | `void` | `newLogin` — новый логин, `login` — текущий логин | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина преподавателя |
-| `updateIsModerator(boolean isModerator, int id)` | `void` | `isModerator` — новый статус модератора, `id` — ID преподавателя | `EntityNotFoundException` | Изменение статуса модератора преподавателя |
+| Метод                                                                                         | Возвращает | Параметры                                                        | Исключения                                                | Описание                                   |
+|-----------------------------------------------------------------------------------------------|------------|------------------------------------------------------------------|-----------------------------------------------------------|--------------------------------------------|
+| `updateFullName(String newFirstName, String newLastName, String newPatronymic, String login)` | `void`     | `newFullName` — новое ФИО, `login` — текущий логин               | `EntityNotFoundException`                                 | Обновление ФИО преподавателя               |
+| `updateLogin(String newLogin, String login)`                                                  | `void`     | `newLogin` — новый логин, `login` — текущий логин                | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина преподавателя            |
+| `updateIsModerator(boolean isModerator, int id)`                                              | `void`     | `isModerator` — новый статус модератора, `id` — ID преподавателя | `EntityNotFoundException`                                 | Изменение статуса модератора преподавателя |
 
 **Зависимости:**
 - `TeacherRepository` — для поиска и обновления сущности
@@ -628,11 +628,11 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `deleteById(int id)` | `void` | `id` — идентификатор преподавателя | `EntityNotFoundException` | Удаление преподавателя по ID |
-| `deleteByFSP(String fsp)` | `void` | `fsp` — ФИО преподавателя | `EntityNotFoundException` | Удаление преподавателя по ФИО |
-| `deleteByLogin(String login)` | `void` | `login` — логин преподавателя | `EntityNotFoundException` | Удаление преподавателя по логину |
+| Метод                                                                    | Возвращает | Параметры                          | Исключения                | Описание                         |
+|--------------------------------------------------------------------------|------------|------------------------------------|---------------------------|----------------------------------|
+| `deleteById(int id)`                                                     | `void`     | `id` — идентификатор преподавателя | `EntityNotFoundException` | Удаление преподавателя по ID     |
+| `deleteByFullName(String firstName, String lastName, String patronymic)` | `void`     | `fullName` — ФИО преподавателя     | `EntityNotFoundException` | Удаление преподавателя по ФИО    |
+| `deleteByLogin(String login)`                                            | `void`     | `login` — логин преподавателя      | `EntityNotFoundException` | Удаление преподавателя по логину |
 
 **Зависимости:**
 - `TeacherRepository` — для поиска и удаления сущности
@@ -648,10 +648,10 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `updateSchedule(LocalDate date, String lessonName)` | `void` | `date` — дата занятия, `lessonName` — название занятия | — | Обновление расписания преподавателя на указанную дату | - этот метод делать не обязательно, можно сделать потом
-| `noticeStudent(String login)` | `boolean` | `login` — логин студента | `EntityNotFoundException` | Отметка посещаемости студента. Проверка наличия студента, создание/обновление записи в `VisitsEntity` |
+| Метод                                               | Возвращает | Параметры                                              | Исключения                | Описание                                                                                              |
+|-----------------------------------------------------|------------|--------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------|
+| `updateSchedule(LocalDate date, String lessonName)` | `void`     | `date` — дата занятия, `lessonName` — название занятия | —                         | Обновление расписания преподавателя на указанную дату                                                 | - этот метод делать не обязательно, можно сделать потом
+| `noticeStudent(String login)`                       | `boolean`  | `login` — логин студента                               | `EntityNotFoundException` | Отметка посещаемости студента. Проверка наличия студента, создание/обновление записи в `VisitsEntity` |
 
 **Зависимости:**
 - `TeacherRepository` — для получения преподавателя
@@ -671,12 +671,12 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `findById(Integer id)` | `StudentDTO` | `id` — идентификатор студента | `EntityNotFoundException` | Получение данных студента по ID |
-| `findByLogin(String login)` | `StudentDTO` | `login` — логин студента | `EntityNotFoundException` | Получение данных студента по логину |
-| `findByFSP(String fsp)` | `StudentDTO` | `fsp` — ФИО студента | `EntityNotFoundException` | Получение данных студента по ФИО |
-| `findAll()` | `List<StudentDTO>` | — | — | Получение всех студентов |
+| Метод                                                                  | Возвращает         | Параметры                     | Исключения                | Описание                            |
+|------------------------------------------------------------------------|--------------------|-------------------------------|---------------------------|-------------------------------------|
+| `findById(Integer id)`                                                 | `StudentDTO`       | `id` — идентификатор студента | `EntityNotFoundException` | Получение данных студента по ID     |
+| `findByLogin(String login)`                                            | `StudentDTO`       | `login` — логин студента      | `EntityNotFoundException` | Получение данных студента по логину |
+| `findByFullName(String firstName, String lastName, String patronymic)` | `StudentDTO`       | `fullName` — ФИО студента     | `EntityNotFoundException` | Получение данных студента по ФИО    |
+| `findAll()`                                                            | `List<StudentDTO>` | —                             | —                         | Получение всех студентов            |
 
 **Зависимости:**
 - `StudentRepository` — для поиска сущностей
@@ -692,13 +692,13 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Методы:**
 
-| Метод | Возвращает | Параметры | Исключения | Описание |
-|-------|------------|-----------|------------|----------|
-| `findById(Integer id)` | `TeacherDTO` | `id` — идентификатор преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ID |
-| `findByLogin(String login)` | `TeacherDTO` | `login` — логин преподавателя | `EntityNotFoundException` | Получение данных преподавателя по логину |
-| `findByFSP(String fsp)` | `TeacherDTO` | `fsp` — ФИО преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ФИО |
-| `findAllModerators()` | `List<TeacherDTO>` | — | — | Получение всех преподавателей со статусом модератора |
-| `findAll()` | `List<TeacherDTO>` | — | — | Получение всех преподавателей |
+| Метод                                                                  | Возвращает         | Параметры                          | Исключения                | Описание                                             |
+|------------------------------------------------------------------------|--------------------|------------------------------------|---------------------------|------------------------------------------------------|
+| `findById(Integer id)`                                                 | `TeacherDTO`       | `id` — идентификатор преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ID                 |
+| `findByLogin(String login)`                                            | `TeacherDTO`       | `login` — логин преподавателя      | `EntityNotFoundException` | Получение данных преподавателя по логину             |
+| `findByFullName(String firstName, String lastName, String patronymic)` | `TeacherDTO`       | `fullName` — ФИО преподавателя     | `EntityNotFoundException` | Получение данных преподавателя по ФИО                |
+| `findAllModerators()`                                                  | `List<TeacherDTO>` | —                                  | —                         | Получение всех преподавателей со статусом модератора |
+| `findAll()`                                                            | `List<TeacherDTO>` | —                                  | —                         | Получение всех преподавателей                        |
 
 **Зависимости:**
 - `TeacherRepository` — для поиска сущностей
@@ -715,7 +715,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 **Назначение:** DTO для создания нового студента. Содержит только необходимые для создания поля.
 
 **Поля:**
-- `fsp` (String) — ФИО студента (обязательное)
+- `firstName` (String) — Имя
+- `lastName` (String) — Фамилия
+- `patronymic` (String) - Отчество
 - `login` (String) — логин (обязательное)
 - `password` (String) — пароль (обязательное)
 - `healthGroup` (Integer) — ID медицинской группы
@@ -731,7 +733,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Поля:**
 - `id` (Integer) — идентификатор
-- `fsp` (String) — ФИО
+- `firstName` (String) — Имя
+- `lastName` (String) — Фамилия
+- `patronymic` (String) - Отчество
 - `login` (String) — логин
 - `passwordHash` (String) — хеш пароля
 - `healthGroup` (Integer) — ID медицинской группы
@@ -747,7 +751,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 **Назначение:** DTO для создания нового преподавателя.
 
 **Поля:**
-- `fsp` (String) — ФИО (обязательное)
+- `firstName` (String) — Имя
+- `lastName` (String) — Фамилия
+- `patronymic` (String) - Отчество
 - `login` (String) — логин (обязательное)
 - `password` (String) — пароль (обязательное)
 - `isModerator` (Boolean) — статус модератора
@@ -762,7 +768,9 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 
 **Поля:**
 - `id` (Integer) — идентификатор
-- `fsp` (String) — ФИО
+- `firstName` (String) — Имя
+- `lastName` (String) — Фамилия
+- `patronymic` (String) - Отчество
 - `login` (String) — логин
 - `passwordHash` (String) — хеш пароля
 - `isModerator` (boolean) — статус модератора
@@ -811,3 +819,6 @@ Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer les
 - `List<LessonsEntity> findByDateOfLesson(LocalDate date)` — получение занятий по дате
 - `List<LessonsEntity> findByTeacherId(Integer teacherId)` — получение занятий преподавателя
 - `Optional<LessonsEntity> findByDisciplineNameAndDateOfLesson(String disciplineName, LocalDate date)` — поиск занятия по дисциплине и дате
+
+
+# На текущий момент реализуем именно StudentService, TeacherEntity и подобные интерфейсы. Интерфейсы с префиксами Business или Updation и т.п. делать на недо

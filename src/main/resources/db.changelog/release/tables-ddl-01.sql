@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS students (
     CONSTRAINT students_patronymic_length_malo CHECK (LENGTH(patronymic) <= 50),
     CONSTRAINT students_login_unique UNIQUE(login),
 
-    CONSTRAINT students_health_group_foreign_key FOREIGN KEY (health_group_id) REFERENCES health_groups(health_group_id) ON DELETE RESTRICT,
-    CONSTRAINT students_group_id_foreign_key FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE RESTRICT,
-    CONSTRAINT students_section_id_foreign_key FOREIGN KEY (section_id) REFERENCES sections(section_id) ON DELETE SET NULL
+    CONSTRAINT students_health_group_foreign_key FOREIGN KEY (health_group_id) REFERENCES health_groups(id) ON DELETE RESTRICT,
+    CONSTRAINT students_group_id_foreign_key FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE RESTRICT,
+    CONSTRAINT students_section_id_foreign_key FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS teachers (
@@ -90,8 +90,8 @@ CREATE TABLE IF NOT EXISTS lessons (
     date_of_lesson  DATE NOT NULL,
     teacher_id      INTEGER NOT NULL,
 
-    CONSTRAINT discipline_id_foreign_key FOREIGN KEY (discipline_id) REFERENCES disciplines(discipline_id) ON DELETE CASCADE,
-    CONSTRAINT teacher_id_foreign_key FOREIGN KEY (teacher_id) REFERENCES teachers(teacher_id) ON DELETE SET NULL
+    CONSTRAINT discipline_id_foreign_key FOREIGN KEY (discipline_id) REFERENCES disciplines(id) ON DELETE CASCADE,
+    CONSTRAINT teacher_id_foreign_key FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS visits (
@@ -100,6 +100,6 @@ CREATE TABLE IF NOT EXISTS visits (
     lesson_id   INTEGER,
     is_exists   BOOLEAN,
 
-    CONSTRAINT student_id_foreign_key FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
-    CONSTRAINT lesson_id_foreign_key FOREIGN KEY (lesson_id) REFERENCES lessons(lesson_id) ON DELETE CASCADE
+    CONSTRAINT student_id_foreign_key FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    CONSTRAINT lesson_id_foreign_key FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
 );

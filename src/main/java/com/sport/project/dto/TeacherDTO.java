@@ -1,13 +1,11 @@
 package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sport.project.dao.entity.StudentEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +21,14 @@ public class TeacherDTO {
     @JsonProperty(namespace = "id", required = true)
     private Integer id;
 
-    @JsonProperty(namespace = "fsp", required = true)
-    private String fsp;
+    @JsonProperty(namespace = "firstName", required = true)
+    private String firstName;
+
+    @JsonProperty(namespace = "secondName", required = true)
+    private String secondName;
+
+    @JsonProperty(namespace = "patronymic")
+    private String patronymic;
 
     @JsonProperty(namespace = "login", required = true)
     private String login;
@@ -39,5 +43,5 @@ public class TeacherDTO {
     private Map<LocalDate, String> schedule;
 
     @JsonProperty(namespace = "students", required = true)
-    private List<StudentEntity> students;
+    private List<StudentDTO> students;
 }

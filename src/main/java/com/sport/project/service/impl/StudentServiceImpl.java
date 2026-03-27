@@ -1,180 +1,70 @@
 package com.sport.project.service.impl;
 
 import com.sport.project.dao.entity.StudentEntity;
-import com.sport.project.dao.entity.TeacherEntity;
-import com.sport.project.dao.repository.impl.StudentRepositoryImpl;
-import com.sport.project.dao.repository.impl.TeacherRepositoryImpl;
-import com.sport.project.dto.StudentCreationDTO;
+import com.sport.project.dao.repository.StudentRepository;
 import com.sport.project.dto.StudentDTO;
-import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.StudentService;
-import com.sport.project.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class StudentServiceImpl {
+public class StudentServiceImpl implements StudentService {
 
-//    private final StudentRepositoryImpl repository;
-//    private final PasswordEncoder passwordEncoder;
-//    private final TeacherRepositoryImpl teacherRepository;
-//    private final UserUtils userUtils;
-//
-//    @Override
-//    public StudentDTO findById(Integer id) throws EntityNotFoundException {
-//        if (id == null) throw new EntityNotFoundException("Null id provided");
-//
-//        StudentEntity studentEntity = this.repository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Teacher entity with id %s not found", id)));
-//
-//        log.info(studentEntity.getFsp());
-//        log.info(studentEntity.getLogin());
-//        return Mapper.map(studentEntity);
-//    }
-//
-//    @Override
-//    public StudentDTO findByLogin(String login) throws EntityNotFoundException {
-//        if (login == null) throw new EntityNotFoundException("Null login provided");
-//
-//        StudentEntity studentEntity = this.repository.findByLogin(login)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Student entity with login %s not found", login)));
-//
-//        return Mapper.map(studentEntity);
-//    }
-//
-//    @Override
-//    public StudentDTO findByFSP(String fsp) throws EntityNotFoundException {
-//        if (fsp == null) throw new EntityNotFoundException("Null fsp provided");
-//
-//        StudentEntity studentEntity = this.repository.findByFSP(fsp)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Student entity with FSP %s not found", fsp)));
-//
-//        return Mapper.map(studentEntity);
-//    }
-//
-//    @Override
-//    public List<StudentDTO> findAll() {
-//        return this.repository.findAll()
-//                .stream()
-//                .map(Mapper::map)
-//                .toList();
-//    }
-//
-//
-//    @Override
-//    public Map<LocalDate, String> getStudentSchedule(StudentEntity student) {
-//        return student.getTeacher().getSchedule();
-//    }
-//
-//
-//
-//    @Override
-//    public void deleteById(int id) throws EntityNotFoundException {
-//        log.info("Not available to use this method now [deleteById]");
-//    }
-//
-//    @Override
-//    public void deleteByFSP(String fsp) throws EntityNotFoundException {
-//        log.info("Not available to use this method now [deleteByFSP]");
-//    }
-//
-//    @Override
-//    public void deleteByLogin(String login) throws EntityNotFoundException {
-//        log.info("Not available to use this method now [deleteByLogin]");
-//    }
-//
-//    @Transactional(isolation = Isolation.READ_COMMITTED)
-//    @Override
-//    public void updateFSP(String newFSP, String login) throws EntityNotFoundException {
-//        StudentEntity entity = this.repository.findByLogin(login)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
-//
-//        entity.setFsp(newFSP);
-//        this.repository.save(entity);
-//    }
-//
-//    @Transactional(isolation = Isolation.READ_COMMITTED)
-//    @Override
-//    public void updateLogin(String newLogin, String login) throws EntityNotFoundException {
-//        StudentEntity entity = this.repository.findByLogin(login)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
-//
-//        entity.setLogin(newLogin);
-//        this.repository.save(entity);
-//    }
-//
-//    @Transactional(isolation = Isolation.READ_COMMITTED)
-//    @Override
-//    public void updateHealthGroup(int newHealthGroup, String login) throws EntityNotFoundException {
-//        StudentEntity entity = this.repository.findByLogin(login)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
-//
-//        entity.setHealthGroup(newHealthGroup);
-//        this.repository.save(entity);
-//    }
-//
-//    @Transactional(isolation = Isolation.READ_COMMITTED)
-//    @Override
-//    public void updateStudentTeacher(TeacherEntity teacher, String login) throws EntityNotFoundException {
-//        StudentEntity entity = this.repository.findByLogin(login)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
-//        entity.setTeacher(teacher);
-//
-//        this.repository.save(entity);
-//    }
-//
-//    @Override
-//    public StudentDTO createStudent(StudentCreationDTO dto) throws EntityAlreadyExistsException {
-//        Map<LocalDate, Boolean> exist = new HashMap<>();
-//
-//        String login = dto.getLogin();
-//        if (this.userUtils.isTeacherExistsByLogin(login) || this.userUtils.isStudentExistsByLogin(login)) {
-//            throw new EntityAlreadyExistsException(String.format("User with login %s already exists"));
-//        }
-//
-//        TeacherEntity teacher;
-//        try {
-//            teacher = findTeacherById(dto.getTeacherId());
-//            log.info(teacher.getFsp());
-//        } catch (EntityNotFoundException ex) {
-//            log.error(ex.getMessage());
-//            return null;
-//        }
-//
-//        log.info(String.valueOf(dto.getHealthGroup()));
-//
-//        StudentEntity entity = StudentEntity.builder()
-//                .fsp(dto.getFsp())
-//                .login(login)
-//                .passwordHash(this.passwordEncoder.encode(dto.getPassword()))
-//                .healthGroup(dto.getHealthGroup())
-//                .exist(exist)
-//                .teacher(teacher)
-//                .build();
-//
-//        this.repository.save(entity);
-//
-//        return Mapper.map(entity);
-//    }
-//
-//    private TeacherEntity findTeacherById(int id) throws EntityNotFoundException {
-//        TeacherEntity teacher = this.teacherRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException(String.format("TeacherEntity with id %s not found", id)));
-//        return teacher;
-//    }
+    private final StudentRepository studentRepository;
 
+    @Override
+    public StudentDTO findById(Integer id) throws EntityNotFoundException {
+        StudentEntity entity = this.studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with id %s not found", id)));
 
+        return Mapper.map(entity);
+    }
 
+    @Override
+    public StudentDTO findByLogin(String login) throws EntityNotFoundException {
+        StudentEntity entity = this.studentRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", login)));
 
+        return Mapper.map(entity);
+    }
+
+    @Override
+    public List<StudentDTO> findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException {
+        List<StudentEntity> entity = this.studentRepository.findByFullNameAndFullLastNameAndFullNamePatronymic(firstName, lastName, patronymic);
+        return entity.stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    @Override
+    public List<StudentDTO> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public List<StudentDTO> findByGroup(Integer groupId) {
+        return List.of();
+    }
+
+    @Override
+    public List<StudentDTO> findBySection(Integer sectionId) {
+        return List.of();
+    }
+
+    @Override
+    public List<StudentDTO> findByHealthGroup(Integer healthGroupId) {
+        return List.of();
+    }
+
+    @Override
+    public boolean existsByLogin(String login) {
+        return false;
+    }
 }
