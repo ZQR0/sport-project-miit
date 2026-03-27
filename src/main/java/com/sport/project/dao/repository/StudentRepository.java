@@ -1,6 +1,7 @@
 package com.sport.project.dao.repository;
 
 import com.sport.project.dao.entity.StudentEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,19 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     //Подсчет количества студентов в группе
     int countByGroup_Name(String groupName);
 
+//    @Query("SELECT student FROM StudentEntity student " +
+//            "WHERE student.group.id = :groupId;"
+//    )
+//    List<StudentEntity> findByGroupId (Integer groupId);
+
+    //Поиск всех студентов по айди группы
+    List<StudentEntity> findByGroupId(Integer groupId);
+
+    //
+    List<StudentEntity> findBySectionId(Integer sectionId);
+
+
+    //FIXME: добавить метод на поиск группы здоровья по айди.
     //Поиск студента по LFP (ФИО, с заменой "_" на пробел)
     // FIXME: не заметил ошибку при ревью, CONCAT не поддерживается в HQL, потом найдём замену
 //    @Query("SELECT student FROM student_entity student" +
