@@ -39,7 +39,7 @@ public interface TeacherService {
      * @return данные преподавателя
      * @throws EntityNotFoundException если преподаватель не найден
      */
-    TeacherDTO findByFsp(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
+    TeacherDTO findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
 
     /**
      * Получение всех преподавателей.

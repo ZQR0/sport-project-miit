@@ -12,8 +12,14 @@ public class TeacherCreationDTO {
 
     //TODO: Декомпозировать fsp на FullName
 
-    @JsonProperty(namespace = "fsp", required = true)
-    private String fsp;
+    @JsonProperty(namespace = "firstName", required = true)
+    private String firstName;
+
+    @JsonProperty(namespace = "secondName", required = true)
+    private String secondName;
+
+    @JsonProperty(namespace = "patronymic")
+    private String patronymic;
 
     @JsonProperty(namespace = "login", required = true)
     private String login;
