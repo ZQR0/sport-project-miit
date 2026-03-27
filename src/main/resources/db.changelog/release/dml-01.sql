@@ -28,7 +28,7 @@ INSERT INTO sections (name, description) VALUES
 INSERT INTO disciplines (name) VALUES
     ('Физическая культура и спорт');
 
-INSERT INTO students (login, password_hash, last_name, first_name, patronymic, birthday, health_group, group_id, section_id) VALUES
+INSERT INTO students (login, password_hash, last_name, first_name, patronymic, birthday, health_group_id, group_id, section_id) VALUES
     -- Группа УВП-111
     ('МилиБро', 'pass123', 'Речкалов', 'Ярослав', 'Иванович', '2006-04-21', 1, 1, 7),
     ('student2', 'pass456', 'Борисова', 'Анна', 'Павловна', '2005-06-23', 2, 1, 4),
