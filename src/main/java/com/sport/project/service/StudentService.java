@@ -30,7 +30,7 @@ public interface StudentService {
     StudentDTO findByLogin(String login) throws EntityNotFoundException;
 
     /**
-     * Получение студента по ФИО.
+     * Получение студентов по ФИО.
      *
      * @param firstName имя
      * @param lastName фамилия
@@ -38,7 +38,7 @@ public interface StudentService {
      * @return данные студента
      * @throws EntityNotFoundException если студент не найден
      */
-    StudentDTO findByFsp(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
+    List<StudentDTO> findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
 
     /**
      * Получение всех студентов.

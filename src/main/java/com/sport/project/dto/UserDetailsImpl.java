@@ -16,7 +16,9 @@ import java.util.List;
 public class UserDetailsImpl implements UserDetails {
 
     private Integer id;
-    private String fsp;
+    private String firstName;
+    private String lastName;
+    private String patronymic;
     private String login;
     private String passwordHash;
     private String role;
