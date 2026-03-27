@@ -31,7 +31,7 @@ public interface TeacherService {
     TeacherDTO findByLogin(String login) throws EntityNotFoundException;
 
     /**
-     * Получение преподавателя по ФИО.
+     * Получение преподавателей по ФИО.
      *
      * @param firstName имя
      * @param lastName фамилия
@@ -39,7 +39,7 @@ public interface TeacherService {
      * @return данные преподавателя
      * @throws EntityNotFoundException если преподаватель не найден
      */
-    TeacherDTO findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
+    List<TeacherDTO> findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException;
 
     /**
      * Получение всех преподавателей.
