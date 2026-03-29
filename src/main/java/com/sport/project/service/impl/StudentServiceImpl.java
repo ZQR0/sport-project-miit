@@ -46,17 +46,29 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDTO> findAll() {
-        return List.of();
+        return this.studentRepository
+                .findAll()
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
     public List<StudentDTO> findByGroup(Integer groupId) {
-        return List.of();
+        return this.studentRepository
+                .findByGroupId(groupId)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
     public List<StudentDTO> findBySection(Integer sectionId) {
-        return List.of();
+        return this.studentRepository
+                .findBySectionId(sectionId)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.sport.project.service.impl;
 import com.sport.project.dao.entity.LessonsEntity;
 import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.LessonsRepository;
+import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.TeacherRepository;
 import com.sport.project.dto.TeacherDTO;
 import com.sport.project.exception.EntityNotFoundException;
@@ -52,8 +53,9 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<TeacherDTO> findAll() {
-        List<TeacherEntity> entities = this.teacherRepository.findAll();
-        return entities.stream()
+        return this.teacherRepository
+                .findAll()
+                .stream()
                 .map(Mapper::map)
                 .toList();
     }
