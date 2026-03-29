@@ -10,6 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -35,4 +38,16 @@ public class StudentLoginController {
         }
         return "student-by-login";
     }
+
+    // ТЕСТ ФИО через запрос (POSTMAN)
+
+    @GetMapping("/api/student/full-name")
+    @ResponseBody
+    public List<StudentDTO> findStudentByFullName(
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam(required = false) String patronymic) {
+        return studentService.findByFullName(firstName, lastName, patronymic);
+    }
+
 }

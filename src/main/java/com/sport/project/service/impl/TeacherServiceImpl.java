@@ -1,5 +1,8 @@
 package com.sport.project.service.impl;
 
+import com.sport.project.dao.entity.LessonsEntity;
+import com.sport.project.dao.entity.TeacherEntity;
+import com.sport.project.dao.repository.LessonsRepository;
 import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.TeacherRepository;
 import com.sport.project.dto.TeacherDTO;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,7 @@ import java.util.List;
 public class TeacherServiceImpl implements TeacherService {
 
     private final TeacherRepository teacherRepository;
+    private final LessonsRepository lessonsRepository;
 
     @Override
     public TeacherDTO findById(Integer id) throws EntityNotFoundException {
@@ -37,9 +43,10 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<TeacherDTO> findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException {
-        List<TeacherEntity> entityList = this.teacherRepository.findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(firstName, lastName, patronymic);
-        return entityList.stream()
+    public List<TeacherDTO> findByFullName(String firstName, String lastName, String patronymic) throws EntityNotFoundException {
+        List<TeacherEntity> entities = this.teacherRepository.findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic
+                (firstName, lastName, patronymic);
+        return entities.stream()
                 .map(Mapper::map)
                 .toList();
     }
@@ -55,20 +62,32 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<TeacherDTO> findAllModerators() {
-        return this.teacherRepository
-                .findByIsModeratorTrue()
-                .stream()
+        List<TeacherEntity> entities = this.teacherRepository.findByIsModerator(true);
+
+        return entities.stream()
                 .map(Mapper::map)
                 .toList();
     }
 
     @Override
     public List<TeacherDTO> findByLessonsDate(LocalDate date) {
-        return List.of();
+        List<LessonsEntity> lessons = lessonsRepository.findByDateOfLesson(date);
+
+        List<TeacherEntity> teachers = lessons.stream()
+                .map(LessonsEntity::getTeacher)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        return teachers.stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
     public boolean existsByLogin(String login) {
-        return false;
+        Optional<TeacherEntity> entityOptional = this.teacherRepository.findByLogin(login);
+
+        return entityOptional.isPresent();
     }
 }
