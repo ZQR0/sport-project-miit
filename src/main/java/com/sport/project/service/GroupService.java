@@ -55,6 +55,15 @@ public interface GroupService {
     List<StudentDTO> getStudents(Integer groupId) throws EntityNotFoundException;
 
     /**
+     * Получение всех студентов группы по названию группы.
+     *
+     * @param groupName название группы
+     * @return список студентов группы
+     * @throws EntityNotFoundException если группа не найдена
+     */
+    List<StudentDTO> getStudents(String groupName) throws EntityNotFoundException;
+
+    /**
      * Проверка существования группы по названию.
      *
      * @param name название группы

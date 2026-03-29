@@ -47,6 +47,14 @@ public interface DisciplineService {
     List<LessonDTO> getLessons(Integer disciplineId) throws EntityNotFoundException;
 
     /**
+     * Получение всех занятий дисциплины по названию.
+     * @param disciplineName название дисциплины
+     * @return список занятий дисциплины
+     * @throws EntityNotFoundException если дисциплина не найдена
+     * */
+    List<LessonDTO> getLessons(String disciplineName) throws EntityNotFoundException;
+
+    /**
      * Проверка существования дисциплины по названию.
      *
      * @param name название дисциплины

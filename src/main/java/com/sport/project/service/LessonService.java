@@ -58,9 +58,19 @@ public interface LessonService {
      * Получение всех занятий дисциплины.
      *
      * @param disciplineId идентификатор дисциплины
-     * @return список занятий дисциплины
+     * @return список занятий
+     * @throws EntityNotFoundException если такой дисциплины нет
      */
-    List<LessonDTO> findByDiscipline(Integer disciplineId);
+    List<LessonDTO> findByDiscipline(Integer disciplineId) throws EntityNotFoundException;
+
+    /**
+     * Получение всех занятий дисциплины.
+     *
+     * @param disciplineName название дисциплины
+     * @return список занятий
+     * @throws EntityNotFoundException если такой дисциплины нет
+     */
+    List<LessonDTO> findByDisciplineName(String disciplineName) throws EntityNotFoundException;
 
     /**
      * Получение занятий за период.

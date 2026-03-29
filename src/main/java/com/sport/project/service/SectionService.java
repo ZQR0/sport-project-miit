@@ -46,6 +46,16 @@ public interface SectionService {
      */
     List<StudentDTO> getStudents(Integer sectionId) throws EntityNotFoundException;
 
+    //todo метод для получения студентов по названию секции
+    /**
+     * Получение всех студентов секции.
+     *
+     * @param sectionName название секции
+     * @return список студентов секции
+     * @throws EntityNotFoundException если секция не найдена
+     */
+    List<StudentDTO> getStudents(String sectionName) throws EntityNotFoundException;
+
     /**
      * Проверка существования секции по названию.
      *
