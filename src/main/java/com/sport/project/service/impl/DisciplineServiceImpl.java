@@ -50,6 +50,11 @@ public class DisciplineServiceImpl implements DisciplineService {
     }
 
     @Override
+    public List<LessonDTO> getLessons(String disciplineName) throws EntityNotFoundException {
+        return List.of();
+    }
+
+    @Override
     public boolean existsByName(String name) {
         return this.disciplineRepository
                 .existsByName(name);

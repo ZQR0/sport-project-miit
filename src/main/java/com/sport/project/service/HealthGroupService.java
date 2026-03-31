@@ -47,6 +47,15 @@ public interface HealthGroupService {
     List<StudentDTO> getStudents(Integer healthGroupId) throws EntityNotFoundException;
 
     /**
+     * Получение всех студентов медицинской группы.
+     *
+     * @param healthGroupName название медицинской группы
+     * @return список студентов медицинской группы
+     * @throws EntityNotFoundException если медицинская группа не найдена
+     */
+    List<StudentDTO> getStudents(String healthGroupName) throws EntityNotFoundException;
+
+    /**
      * Проверка существования медицинской группы по названию.
      *
      * @param name название медицинской группы

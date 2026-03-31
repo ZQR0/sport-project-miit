@@ -36,12 +36,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentDTO> findByFullname(String firstName, String lastName, String patronymic) throws EntityNotFoundException {
-//        List<StudentEntity> entity = this.studentRepository.findByFullNameAndFullLastNameAndFullNamePatronymic(firstName, lastName, patronymic);
-//        return entity.stream()
-//                .map(Mapper::map)
-//                .toList();
-        return null;
+    public List<StudentDTO> findByFullName(String firstName, String lastName, String patronymic) throws EntityNotFoundException {
+        List<StudentEntity> entity = this.studentRepository.findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic
+                (firstName, lastName, patronymic);
+        return entity.stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
