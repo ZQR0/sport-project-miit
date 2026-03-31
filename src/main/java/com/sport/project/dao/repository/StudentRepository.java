@@ -38,11 +38,15 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     //Поиск всех студентов по айди группы
     List<StudentEntity> findByGroupId(Integer groupId);
 
-    //
+    //Поиск по айди секции
     List<StudentEntity> findBySectionId(Integer sectionId);
 
+    //Поиск по айди группы здоровья
+    List<StudentEntity> findByHealthGroupId(Integer healthGroupId);
 
-    //FIXME: добавить метод на поиск группы здоровья по айди.
+    //Проверка на существование студента с приведенным логином
+    boolean existsByLogin(String login);
+
     //Поиск студента по LFP (ФИО, с заменой "_" на пробел)
     // FIXME: не заметил ошибку при ревью, CONCAT не поддерживается в HQL, потом найдём замену
 //    @Query("SELECT student FROM student_entity student" +
