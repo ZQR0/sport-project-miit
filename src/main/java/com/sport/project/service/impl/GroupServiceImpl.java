@@ -1,0 +1,78 @@
+package com.sport.project.service.impl;
+
+import com.sport.project.dao.entity.DisciplineEntity;
+import com.sport.project.dao.entity.GroupEntity;
+import com.sport.project.dao.entity.StudentEntity;
+import com.sport.project.dao.repository.GroupRepository;
+import com.sport.project.dao.repository.StudentRepository;
+import com.sport.project.dto.GroupDTO;
+import com.sport.project.dto.StudentDTO;
+import com.sport.project.exception.EntityNotFoundException;
+import com.sport.project.mapper.Mapper;
+import com.sport.project.service.GroupService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class GroupServiceImpl implements GroupService {
+
+    private final GroupRepository groupRepository;
+    private final StudentRepository studentRepository;
+
+    @Override
+    public GroupDTO findById(Integer id) throws EntityNotFoundException {
+        GroupEntity entity = this.groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Group with id %s not found", id)));
+
+        return Mapper.map(entity);
+    }
+
+    @Override
+    public GroupDTO findByName(String name) throws EntityNotFoundException {
+        GroupEntity entity = this.groupRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Group with name %s not found", name)));
+        return Mapper.map(entity);
+    }
+
+    @Override
+    public List<GroupDTO> findAll() {
+        return this.groupRepository
+                .findAll()
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    @Override
+    public List<GroupDTO> findByInstitute(String institute) {
+        return this.groupRepository
+                .findAll()
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    @Override
+    public List<StudentDTO> getStudents(Integer groupId) throws EntityNotFoundException {
+        if (!groupRepository.existsById(groupId)) {
+            throw new EntityNotFoundException("Группа с ID " + groupId + " не найдена");
+        }
+
+        // Получаем студентов группы
+        return studentRepository.findByGroupId(groupId)
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return this.groupRepository
+                .existsByName(name);
+    }
+}

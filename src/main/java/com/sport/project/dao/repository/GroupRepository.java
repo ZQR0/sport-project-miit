@@ -12,12 +12,19 @@ import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
 
+    //Поиск группы по айди группы
+    Optional<GroupEntity> findById(Integer id);
+
     //Поиск по названию группы
     Optional<GroupEntity> findByName(String name);
 
-    //Поиск всех студентов группы
+    //Поиск всех студентов по id группы
+    @Query("SELECT student FROM student_entity student WHERE student.group.id = :group_id")
+    List<StudentEntity> findStudentsByGroupId(@Param("group_id") Integer group_id);
+
+    //Поиск всех студентов по названию группы
     @Query("SELECT student FROM student_entity student WHERE student.group.name = :group_name")
-    List<StudentEntity> findStudentsByGroup(@Param("group_name") String group_name);
+    List<StudentEntity> findStudentsByGroupName(@Param("group_name") String group_name);
 
     //Поиск по названию института
     List<GroupEntity> findByInstitute(String institute);

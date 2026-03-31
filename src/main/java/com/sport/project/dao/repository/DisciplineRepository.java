@@ -12,6 +12,9 @@ public interface DisciplineRepository extends JpaRepository<DisciplineEntity, In
     абстрактном интерфейсе
      */
 
+    //
+    Optional<DisciplineEntity> findById(Integer id);
+
     //Поиск дисциплины по имени
     Optional<DisciplineEntity> findByName(String name);
 

@@ -73,11 +73,16 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDTO> findByHealthGroup(Integer healthGroupId) {
-        return List.of();
+        return this.studentRepository
+                .findByGroupId(healthGroupId)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
     public boolean existsByLogin(String login) {
-        return false;
+        return this.studentRepository
+                .existsByLogin(login);
     }
 }

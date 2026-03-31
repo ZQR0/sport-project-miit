@@ -27,5 +27,11 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Integer>
     //Получение преподавателей-модераторов
     List<TeacherEntity> findByIsModeratorTrue();
 
+    //Поиск преподавателя по дате урока
+
+
+    //Проверка существования учителя по логину
+    boolean existsByLogin(String login);
+
     //TODO: Сделать методы для (см. API документацию): api/teachers/update-schedule, api/teachers/notice.
 }

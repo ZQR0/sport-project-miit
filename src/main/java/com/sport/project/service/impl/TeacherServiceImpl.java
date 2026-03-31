@@ -67,8 +67,9 @@ public class TeacherServiceImpl implements TeacherService {
         return List.of();
     }
 
+    //проверка существования учителя по логину
     @Override
     public boolean existsByLogin(String login) {
-        return false;
+        return this.teacherRepository.existsByLogin(login);
     }
 }
