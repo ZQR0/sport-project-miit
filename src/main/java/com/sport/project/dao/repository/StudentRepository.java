@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,28 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
 
     //Вывод всех студентов, у которых есть секция sectionName
     List<StudentEntity> findBySectionName(String sectionName);
+
+    //Вывод всех студентов, конкретного занятия по конкретной дате (если гр и гр здор подтянется без join)
+    @Query("""
+            SELECT student FROM student_entity student
+                JOIN student.visits visit
+                JOIN visit.lessons lesson
+                WHERE lesson.date_of_lesson = :date
+            """)
+    List<StudentEntity> findByDateOfLesson(@Param("date") LocalDate date);
+
+    // Вывод студентов, которые посетили занятие по определённой дисциплине (если гр и гр здор не подтянется без join)
+    @Query("""
+            SELECT student FROM StudentEntity student
+                JOIN student.visits visit
+                JOIN visit.lessons lesson
+                JOIN lesson.disciplines discipline
+                JOIN student.groups group
+                JOIN student.healthGroup healthGr
+                WHERE visit.isExists = TRUE
+                AND discipline.name = :disciplineName
+            """)
+    List<StudentEntity> findByDisciplineAndAttendance(@Param("disciplineName") String disciplineName);
 
     //Удаление всех студентов группы при удалении группы
     void deleteByGroup_Name(String groupName);
