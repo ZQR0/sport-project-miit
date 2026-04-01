@@ -28,8 +28,8 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     //Вывод всех студентов, конкретного занятия по конкретной дате (если гр и гр здор подтянется без join)
     @Query("""
             SELECT student FROM student_entity student
-                JOIN student.visits visit
-                JOIN visit.lessons lesson
+                JOIN FETCH student.visits visit
+                JOIN FETCH visit.lessons lesson
                 WHERE lesson.date_of_lesson = :date
             """)
     List<StudentEntity> findByDateOfLesson(@Param("date") LocalDate date);
@@ -37,11 +37,11 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     // Вывод студентов, которые посетили занятие по определённой дисциплине (если гр и гр здор не подтянется без join)
     @Query("""
             SELECT student FROM StudentEntity student
-                JOIN student.visits visit
-                JOIN visit.lessons lesson
-                JOIN lesson.disciplines discipline
-                JOIN student.groups group
-                JOIN student.healthGroup healthGr
+                JOIN FETCH student.visits visit
+                JOIN FETCH visit.lessons lesson
+                JOIN FETCH lesson.disciplines discipline
+                JOIN FETCH student.groups group
+                JOIN FETCH student.healthGroup healthGr
                 WHERE visit.isExists = TRUE
                 AND discipline.name = :disciplineName
             """)

@@ -21,11 +21,11 @@ public interface LessonsRepository extends JpaRepository<LessonsEntity, Integer>
                 lesson.dateOfLesson,
                 group.name as groupName
             FROM TeacherEntity t
-            JOIN t.lessons lesson
-            JOIN lesson.disciplines discipline
-            JOIN lesson.visits visit
-            JOIN visit.students student
-            JOIN student.group group
+            JOIN FETCH t.lessons lesson
+            JOIN FETCH lesson.disciplines discipline
+            JOIN FETCH lesson.visits visit
+            JOIN FETCH visit.students student
+            JOIN FETCH student.group group
             WHERE t.login = :teacherLogin
             """)
     List<LessonsEntity> findByTeacher_Login(@Param("teacherLogin") String teacherLogin);
