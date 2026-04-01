@@ -106,4 +106,46 @@ INSERT INTO sections (name, description) VALUES
 -- /api/disciplines/find-all Весь список секций
 SELECT name, description from sections;
 
+
+-- вывести всех студентов какой то конкретной группы;
+SELECT last_name, first_name, patronymic,
+		groups.name as group, health_groups.name as health_group from students
+	JOIN groups ON students.group_id = groups.group_id
+	JOIN health_groups ON students.health_group = health_groups.health_group_id
+	WHERE groups.name = 'УВП-111';
+
+--вывести студентов, которые посетили занятие (по имени дисциплины)
+SELECT last_name, first_name, patronymic,
+		groups.name as group, health_groups.name as health_group from students
+	JOIN visits ON students.student_id = visits.student_id
+	JOIN lessons ON visits.lesson_id = lessons.lesson_id
+	JOIN groups ON students.group_id = groups.group_id
+	JOIN disciplines ON lessons.discipline_id = disciplines.discipline_id
+	JOIN health_groups ON students.health_group = health_groups.health_group_id
+	WHERE visits.is_exists = true AND disciplines.name = 'Физическая культура и спорт';
+
+
+-- вывести всех студентов конкретного занятия по определенной дате
+SELECT last_name, first_name, patronymic,
+		groups.name as group, health_groups.name as health_group from students
+	JOIN visits ON students.student_id = visits.student_id
+	JOIN lessons ON visits.lesson_id = lessons.lesson_id
+	JOIN groups ON students.group_id = groups.group_id
+	JOIN health_groups ON students.health_group = health_groups.health_group_id
+	WHERE date_of_lesson = '2024-09-02';
+
+
+-- вывести преподавателя и его расписание
+-- (занятия, которые он провел, даты этих занятий, группы, у которых были занятия,
+-- короче ключевой параметр сам препод)
+SELECT DISTINCT t.last_name, t.first_name, t.patronymic,
+		disciplines.name as discipline_name,
+		lessons.date_of_lesson, groups.name as group_name from teachers t
+	JOIN lessons ON t.teacher_id = lessons.teacher_id
+	JOIN disciplines ON lessons.discipline_id = disciplines.discipline_id
+	JOIN visits ON lessons.lesson_id = visits.lesson_id
+	JOIN students ON visits.student_id = students.student_id
+	JOIN groups ON students.group_id = groups.group_id
+	WHERE t.login = 'ivanov_iv';
+
 	

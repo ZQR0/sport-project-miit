@@ -26,6 +26,16 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
     @Query("SELECT student FROM student_entity student WHERE student.group.name = :group_name")
     List<StudentEntity> findStudentsByGroupName(@Param("group_name") String group_name);
 
+    // Вывод всех студентов конкретной группы
+//    (выше запрос тот же, Олесин - не знаю, подтягиваются автоматически или нужен join)
+//    @Query("""
+//            SELECT student FROM StudentEntity student
+//                JOIN FETCH student.groups group
+//                JOIN FETCH student.healthGroup healthGr
+//                WHERE group.name = :groupName
+//            """)
+//    List<StudentEntity> findByGroupName(@Param("groupName") String groupName);
+
     //Поиск по названию института
     List<GroupEntity> findByInstitute(String institute);
 
