@@ -5,18 +5,20 @@ server:
     whitelabel:
       enabled: false
 
-logging:
-  level:
-    liquibase: DEBUG
-    org.springframework.boot.autoconfigure.liquibase: DEBUG
-    org.springframework.boot: DEBUG
+# Включать данное логирование если хотите посмотреть что происходит при старте
+#logging:
+#  level:
+#    liquibase: DEBUG
+#    org.springframework.boot.autoconfigure.liquibase: DEBUG
+#    org.springframework.boot: DEBUG
 
 spring:
   application:
     name: project
   liquibase:
     enabled: true
-    change-log: classpath:db/changelog/changelog-master.yml
+    change-log: classpath:/db.changelog/changelog-master.yml
+    default-schema: public
   datasource:
     url: jdbc:postgresql://localhost:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB:all-on-sport}
     username: ${POSTGRES_USER:postgres}
@@ -40,5 +42,5 @@ spring:
     dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 

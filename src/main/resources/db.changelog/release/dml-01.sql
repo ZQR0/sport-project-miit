@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset olesya:dml-02
+--changeset olesya:dml-01
 INSERT INTO groups (name, institute) VALUES
     ('УВП-111', 'Институт управления и цифровых технологий (ИУЦТ)'),
     ('ЭПИ-111', 'Институт экономики и финансов (ИЭФ)'),
