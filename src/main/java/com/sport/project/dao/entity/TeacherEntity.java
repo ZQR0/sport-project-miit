@@ -15,13 +15,13 @@ import java.util.*;
 @NoArgsConstructor
 public class TeacherEntity extends UserEntity<Integer> implements Serializable {
     @Setter
-    private boolean isModerator;
+    private boolean moderator;
     private List<LessonsEntity> lessons;
 
 
     @Column(name = "is_moderator", nullable = false)
     public boolean isModerator() {
-        return this.isModerator;
+        return this.moderator;
     }
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "teacher", fetch = FetchType.LAZY)
