@@ -8,7 +8,9 @@ import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "lessons_entity")
@@ -20,6 +22,7 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
     DisciplineEntity discipline;
     Date dateOfLesson;
     TeacherEntity teacher;
+    List<VisitsEntity> visits;
 
     public LessonsEntity(Date dateOfLesson) {
         setDateOfLesson(dateOfLesson);
@@ -28,6 +31,11 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
     public LessonsEntity(Date dateOfLesson, TeacherEntity teacher) {
         setDateOfLesson(dateOfLesson);
         setTeacher(teacher);
+    }
+
+    @OneToMany(mappedBy = "lessons", cascade = CascadeType.ALL)
+    public List<VisitsEntity> getVisits() {
+        return this.visits;
     }
 
     @ManyToOne
@@ -60,6 +68,14 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
 
     public void setTeacher(@NonNull TeacherEntity newTeacher) {
         this.teacher = newTeacher;
+    }
+
+    public void setVisits(@NonNull List<VisitsEntity> visits) {
+        this.visits = visits;
+    }
+
+    public boolean addVisit(@NonNull VisitsEntity visit) {
+        return this.visits.add(visit);
     }
 
     @Override

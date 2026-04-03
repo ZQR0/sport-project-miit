@@ -21,19 +21,17 @@ public interface LessonsRepository extends JpaRepository<LessonsEntity, Integer>
 
     //Получение расписание преподавателя, список всех занятий, которые проводит преподаватель
     @Query("""
-            SELECT DISTINCT
-                discipline.name as disciplineName,
-                lesson.dateOfLesson,
-                group.name as groupName
-            FROM TeacherEntity t
-            JOIN FETCH t.lessons lesson
-            JOIN FETCH lesson.disciplines discipline
-            JOIN FETCH lesson.visits visit
-            JOIN FETCH visit.students student
-            JOIN FETCH student.group group
-            WHERE t.login = :teacherLogin
-            """)
+        SELECT DISTINCT lesson
+        FROM teacher_entity t
+        JOIN t.lessons lesson
+        JOIN FETCH lesson.discipline discipline
+        JOIN FETCH lesson.visits visit
+        JOIN FETCH visit.student student
+        JOIN FETCH student.group group
+        WHERE t.login = :teacherLogin
+        """)
     List<LessonsEntity> findByTeacher_Login(@Param("teacherLogin") String teacherLogin);
+
 
     //Поиск занятий по id учителя
     @Query("SELECT l FROM lessons_entity l WHERE l.teacher.id = :teacher_id")

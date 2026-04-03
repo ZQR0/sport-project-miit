@@ -30,19 +30,19 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
             SELECT student FROM student_entity student
                 JOIN FETCH student.visits visit
                 JOIN FETCH visit.lessons lesson
-                WHERE lesson.date_of_lesson = :date
+                WHERE lesson.dateOfLesson = :date
             """)
     List<StudentEntity> findByDateOfLesson(@Param("date") LocalDate date);
 
     // Вывод студентов, которые посетили занятие по определённой дисциплине (если гр и гр здор не подтянется без join)
     @Query("""
-            SELECT student FROM StudentEntity student
+            SELECT student FROM student_entity student
                 JOIN FETCH student.visits visit
                 JOIN FETCH visit.lessons lesson
-                JOIN FETCH lesson.disciplines discipline
-                JOIN FETCH student.groups group
-                JOIN FETCH student.healthGroup healthGr
-                WHERE visit.isExists = TRUE
+                JOIN FETCH lesson.discipline discipline
+                JOIN FETCH student.group group
+                JOIN FETCH student.healthGroup healthGroup
+                WHERE visit.exists = TRUE
                 AND discipline.name = :disciplineName
             """)
     List<StudentEntity> findByDisciplineAndAttendance(@Param("disciplineName") String disciplineName);
