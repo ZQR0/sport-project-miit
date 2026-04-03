@@ -18,18 +18,19 @@ import java.io.IOException;
 @Slf4j
 public class RestAdviceErrorController {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public void printLogEntityNotFoundRest(EntityNotFoundException ex) {
-        log.info("[REST] Entity not found");
-    }
-
-    @ExceptionHandler(EntityAlreadyExistsException.class)
-    public void printLogEntityAlreadyExists(EntityAlreadyExistsException ex) {
-        log.info("Entity already exists");
-    }
+//    @ExceptionHandler(EntityNotFoundException.class)
+//    public void printLogEntityNotFoundRest(EntityNotFoundException ex) {
+//        log.info("[REST] Entity not found");
+//    }
+//
+//    @ExceptionHandler(EntityAlreadyExistsException.class)
+//    public void printLogEntityAlreadyExists(EntityAlreadyExistsException ex) {
+//        log.info("Entity already exists");
+//    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ErrorResponseDto handleNotFound(IOException ex) {
+        log.info("[REST] Entity not found");
         return ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .trace(ex.getStackTrace())
@@ -38,6 +39,7 @@ public class RestAdviceErrorController {
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ErrorResponseDto handleExists(EntityAlreadyExistsException ex) {
+        log.info("Entity already exists");
         return ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .trace(ex.getStackTrace())
