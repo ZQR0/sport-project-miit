@@ -7,9 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,15 +18,15 @@ import java.util.Objects;
 public class LessonsEntity extends AbstractEntity<Integer> implements Serializable {
 
     DisciplineEntity discipline;
-    Date dateOfLesson;
+    LocalDate dateOfLesson;
     TeacherEntity teacher;
     List<VisitsEntity> visits;
 
-    public LessonsEntity(Date dateOfLesson) {
+    public LessonsEntity(LocalDate dateOfLesson) {
         setDateOfLesson(dateOfLesson);
     }
 
-    public LessonsEntity(Date dateOfLesson, TeacherEntity teacher) {
+    public LessonsEntity(LocalDate dateOfLesson, TeacherEntity teacher) {
         setDateOfLesson(dateOfLesson);
         setTeacher(teacher);
     }
@@ -52,11 +50,11 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
     }
 
     @Column(name = "date_of_lesson", nullable = false, columnDefinition = "DATE")
-    public Date getDateOfLesson() {
+    public LocalDate getDateOfLesson() {
         return dateOfLesson;
     }
 
-    public void setDateOfLesson(@NonNull Date dateOfLesson) {
+    public void setDateOfLesson(@NonNull LocalDate dateOfLesson) {
         this.dateOfLesson = dateOfLesson;
     }
 
