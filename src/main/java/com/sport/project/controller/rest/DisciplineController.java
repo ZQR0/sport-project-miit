@@ -19,7 +19,7 @@ public class DisciplineController {
 
     //Поиск дисциплины по айди
     @GetMapping("/{id}")
-    public ResponseEntity<DisciplineDTO> getDiscipline(@PathVariable Integer id) {
+    public ResponseEntity<DisciplineDTO> getDiscipline(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(disciplineService.findById(id));
     }
 }
