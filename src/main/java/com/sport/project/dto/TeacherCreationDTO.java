@@ -10,8 +10,6 @@ import lombok.Setter;
 @Builder
 public class TeacherCreationDTO {
 
-    //TODO: Декомпозировать fsp на FullName
-
     @JsonProperty(namespace = "firstName", required = true)
     private String firstName;
 
