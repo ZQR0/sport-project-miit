@@ -22,7 +22,7 @@ public class TeacherController {
         return this.teacherService.findByLogin(login);
     }
 
-    @GetMapping(path = "/find-by-full-name", params = "full-name")
+    @GetMapping(path = "/find-by-full-name")
     public List<TeacherDTO> findByFullName(
             @RequestParam(name = "first-name") String firstName,
             @RequestParam(name = "last-name") String lastName,
