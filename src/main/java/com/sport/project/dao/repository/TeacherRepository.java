@@ -2,6 +2,8 @@ package com.sport.project.dao.repository;
 
 import com.sport.project.dao.entity.TeacherEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +12,8 @@ public interface TeacherRepository extends JpaRepository<TeacherEntity, Integer>
 
     Optional<TeacherEntity> findByLogin(String login);
 
-    List<TeacherEntity> findByIsModerator(boolean isModerator);
+    @Query("SELECT t FROM teacher_entity t WHERE t.moderator = :moderator")
+    List<TeacherEntity> findByIsModerator(@Param("moderator") boolean moderator);
 
     List<TeacherEntity> findByFullNameFirstName(String firstName);
 

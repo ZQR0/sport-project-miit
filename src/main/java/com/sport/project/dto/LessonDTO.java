@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * DTO для {@link com.sport.project.dao.entity.LessonsEntity}
@@ -25,7 +25,7 @@ public class LessonDTO {
     private String disciplineName;
 
     @JsonProperty(namespace = "date_of_lesson", required = true)
-    private Date dateOfLesson;
+    private LocalDate dateOfLesson;
 
     @JsonProperty(namespace = "teacher_id", required = false)
     private Integer teacherId;
