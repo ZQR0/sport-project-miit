@@ -19,9 +19,7 @@ import com.sport.project.dto.UserDetailsImpl;
 import com.sport.project.dto.VisitDTO;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,7 +47,7 @@ public class Mapper {
         Map<LocalDate, Boolean> exist = entity.getVisits() != null
                 ? entity.getVisits().stream()
                     .collect(Collectors.toMap(
-                            v -> LocalDate.ofInstant(v.getLessons().getDateOfLesson().toInstant(), ZoneId.systemDefault()),
+                            v -> v.getLessons().getDateOfLesson(),
                             VisitsEntity::isExists,
                             (v1, v2) -> v1
                     ))
@@ -80,7 +78,7 @@ public class Mapper {
         Map<LocalDate, String> schedule = entity.getLessons() != null
                 ? entity.getLessons().stream()
                     .collect(Collectors.toMap(
-                            l -> LocalDate.ofInstant(l.getDateOfLesson().toInstant(), ZoneId.systemDefault()),
+                            LessonsEntity::getDateOfLesson,
                             l -> l.getDiscipline().getName(),
                             (v1, v2) -> v1 + ", " + v2
                     ))

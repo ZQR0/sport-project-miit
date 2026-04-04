@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * DTO для создания {@link com.sport.project.dao.entity.LessonsEntity}
@@ -18,7 +18,7 @@ public class LessonCreationDTO {
     //FIXME: вот надо подумать, стоит указывать ФИО препода или так оставить. То же самое с дисциплиной
 
     @JsonProperty(namespace = "date_of_lesson", required = true)
-    private Date dateOfLesson;
+    private LocalDate dateOfLesson;
 
     @JsonProperty(namespace = "teacher_id", required = false)
     private Integer teacherId;
