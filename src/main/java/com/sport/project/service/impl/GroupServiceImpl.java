@@ -72,7 +72,14 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<StudentDTO> getStudents(String groupName) throws EntityNotFoundException {
-        return List.of();
+        if (!groupRepository.existsByName(groupName)) {
+            throw new EntityNotFoundException("Группа с названием:  " + groupName + " не найдена");
+        }
+        // Получаем студентов группы
+        return studentRepository.findByGroupName(groupName)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override

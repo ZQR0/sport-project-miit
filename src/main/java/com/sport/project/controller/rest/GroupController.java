@@ -40,11 +40,16 @@ public class GroupController {
         return ResponseEntity.ok(groupService.findByInstitute(institute));
     }
 
+    //Поиск студентов группы по айди группы и по названию группы
     @GetMapping("/{groupId}/students")
     public ResponseEntity<List<StudentDTO>> getStudentsByGroupId (@PathVariable Integer groupId) {
         return ResponseEntity.ok(groupService.getStudents(groupId));
     }
 
 
+    @GetMapping("/{groupName}/students")
+    public ResponseEntity<List<StudentDTO>> getStudentsByGroupName(@RequestParam String groupName) {
+        return ResponseEntity.ok(groupService.getStudents(groupName));
+    }
 
 }
