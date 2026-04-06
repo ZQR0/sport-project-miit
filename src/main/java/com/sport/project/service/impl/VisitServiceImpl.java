@@ -153,6 +153,7 @@ public class VisitServiceImpl implements VisitService, VisitCreationService, Vis
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void deleteById(@NonNull Integer id) throws EntityNotFoundException {
         if (id <= 0) throw new IllegalArgumentException("ID cannot be less or equal zero");
         this.visitsRepository.deleteById(id);
@@ -160,6 +161,7 @@ public class VisitServiceImpl implements VisitService, VisitCreationService, Vis
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void deleteByStudentLogin(@NonNull String studentLogin) throws EntityNotFoundException {
         if (studentLogin.isBlank()) throw new IllegalArgumentException("Login cannot be blank");
         this.visitsRepository.deleteByStudent_Login(studentLogin);
@@ -167,6 +169,7 @@ public class VisitServiceImpl implements VisitService, VisitCreationService, Vis
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void deleteByLesson(@NonNull Integer lessonId) throws EntityNotFoundException {
         if (lessonId <= 0) throw new IllegalArgumentException("");
         this.visitsRepository.deleteByLessonId(lessonId);
