@@ -21,7 +21,7 @@ public interface VisitDeletingService {
      * @param studentLogin логин студента
      * @throws EntityNotFoundException если студент не найден
      */
-    void deleteByStudent(String studentLogin) throws EntityNotFoundException;
+    void deleteByStudentLogin(String studentLogin) throws EntityNotFoundException;
 
     /**
      * Удаление всех записей о посещениях занятия.

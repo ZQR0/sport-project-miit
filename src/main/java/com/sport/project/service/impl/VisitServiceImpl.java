@@ -17,6 +17,8 @@ import com.sport.project.service.LessonService;
 import com.sport.project.service.StudentService;
 import com.sport.project.service.VisitService;
 import com.sport.project.service.interfaces.visit.VisitCreationService;
+import com.sport.project.service.interfaces.visit.VisitDeletingService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class VisitServiceImpl implements VisitService, VisitCreationService {
+public class VisitServiceImpl implements VisitService, VisitCreationService, VisitDeletingService {
 
     private final VisitsRepository visitsRepository;
     private final LessonsRepository lessonsRepository;
@@ -148,5 +150,26 @@ public class VisitServiceImpl implements VisitService, VisitCreationService {
         log.info("Visit saved [2] {}", visit.getId());
 
         return Mapper.map(visit);
+    }
+
+    @Override
+    public void deleteById(@NonNull Integer id) throws EntityNotFoundException {
+        if (id <= 0) throw new IllegalArgumentException("ID cannot be less or equal zero");
+        this.visitsRepository.deleteById(id);
+        log.info("Deleting visit by id {} completed", id);
+    }
+
+    @Override
+    public void deleteByStudentLogin(@NonNull String studentLogin) throws EntityNotFoundException {
+        if (studentLogin.isBlank()) throw new IllegalArgumentException("Login cannot be blank");
+        this.visitsRepository.deleteByStudent_Login(studentLogin);
+        log.info("Deleting visit by student login {} completed", studentLogin);
+    }
+
+    @Override
+    public void deleteByLesson(@NonNull Integer lessonId) throws EntityNotFoundException {
+        if (lessonId <= 0) throw new IllegalArgumentException("");
+        this.visitsRepository.deleteByLessonId(lessonId);
+        log.info("Deleting visit by lesson id {} completed", lessonId);
     }
 }
