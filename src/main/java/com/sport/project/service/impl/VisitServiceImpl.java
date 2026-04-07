@@ -16,6 +16,7 @@ import com.sport.project.mapper.Mapper;
 import com.sport.project.service.LessonService;
 import com.sport.project.service.StudentService;
 import com.sport.project.service.VisitService;
+import com.sport.project.service.interfaces.visit.VisitBusinessService;
 import com.sport.project.service.interfaces.visit.VisitCreationService;
 import com.sport.project.service.interfaces.visit.VisitDeletingService;
 import com.sport.project.service.interfaces.visit.VisitUpdatingService;
@@ -30,12 +31,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class VisitServiceImpl implements VisitService, VisitCreationService, VisitDeletingService, VisitUpdatingService {
+public class VisitServiceImpl implements VisitService,
+        VisitCreationService,
+        VisitDeletingService,
+        VisitUpdatingService,
+        VisitBusinessService
+{
 
     private final VisitsRepository visitsRepository;
     private final LessonsRepository lessonsRepository;
@@ -60,7 +67,7 @@ public class VisitServiceImpl implements VisitService, VisitCreationService, Vis
 
     @Override
     public List<VisitDTO> findAll() {
-        return this.visitsRepository.findAll()
+        return this.visitsRepository.findAllOptimized()
                 .stream()
                 .map(Mapper::map)
                 .toList();
@@ -193,5 +200,43 @@ public class VisitServiceImpl implements VisitService, VisitCreationService, Vis
         visit.setExists(isExists);
         this.visitsRepository.save(visit);
         log.info("Visit {} updated", visitId);
+    }
+
+    @Override
+    public Map<LocalDate, Boolean> getStudentAttendanceMap(String studentLogin) throws EntityNotFoundException {
+        return Map.of();
+    }
+
+    @Override
+    public int getTotalVisits(String studentLogin) throws EntityNotFoundException {
+        StudentEntity student = this.studentRepository.findByLogin(studentLogin)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", studentLogin)));
+        return student.getVisits().size();
+    }
+
+    @Override
+    public int getTotalAbsences(String studentLogin) throws EntityNotFoundException {
+        StudentEntity student = this.studentRepository.findByLogin(studentLogin)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", studentLogin)));
+
+        return Math.toIntExact(student.getVisits()
+                .stream()
+                .filter(VisitsEntity::isExists)
+                .count());
+    }
+
+    @Override
+    public double getAttendancePercentage(String studentLogin) throws EntityNotFoundException {
+        return 0;
+    }
+
+    @Override
+    public List<StudentDTO> getAbsentStudentsForLesson(Integer lessonId) throws EntityNotFoundException {
+        return List.of();
+    }
+
+    @Override
+    public void bulkMarkAttendance(Integer lessonId, Map<String, Boolean> attendanceMap) throws EntityNotFoundException {
+        log.info("Log-заглушка");
     }
 }
