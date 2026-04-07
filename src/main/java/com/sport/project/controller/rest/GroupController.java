@@ -19,13 +19,13 @@ public class GroupController {
     private final StudentService studentService;
 
     //Получить все группы
-    @GetMapping
+    @GetMapping("/get-all")
     public ResponseEntity<List<GroupDTO>> getAll() {
         return ResponseEntity.ok(groupService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GroupDTO> getGroupById(@PathVariable Integer id) {
+    public ResponseEntity<GroupDTO> getGroupById(@PathVariable("id") Integer id) {
         GroupDTO group = groupService.findById(id);
         return ResponseEntity.ok(group);
     }
@@ -40,11 +40,16 @@ public class GroupController {
         return ResponseEntity.ok(groupService.findByInstitute(institute));
     }
 
+    //Поиск студентов группы по айди группы и по названию группы
     @GetMapping("/{groupId}/students")
-    public ResponseEntity<List<StudentDTO>> getStudentsByGroupId (@PathVariable Integer groupId) {
+    public ResponseEntity<List<StudentDTO>> getStudentsByGroupId (@PathVariable(name = "groupId") Integer groupId) {
         return ResponseEntity.ok(groupService.getStudents(groupId));
     }
 
 
+    @GetMapping("/{groupName}/students")
+    public ResponseEntity<List<StudentDTO>> getStudentsByGroupName(@PathVariable(name = "groupName") String groupName) {
+        return ResponseEntity.ok(groupService.getStudents(groupName));
+    }
 
 }

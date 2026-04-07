@@ -1,13 +1,11 @@
 package com.sport.project.controller.rest;
 
 import com.sport.project.dto.DisciplineDTO;
+import com.sport.project.dto.LessonDTO;
 import com.sport.project.service.DisciplineService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,9 +15,31 @@ import java.util.List;
 public class DisciplineController {
     private final DisciplineService disciplineService;
 
+    //Вывод всех дисциплин
+    @GetMapping("/get-all")
+    public ResponseEntity<List<DisciplineDTO>> getAll() {
+        return ResponseEntity.ok(disciplineService.findAll());
+    }
+
     //Поиск дисциплины по айди
     @GetMapping("/{id}")
     public ResponseEntity<DisciplineDTO> getDiscipline(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(disciplineService.findById(id));
+    }
+
+    //Поиск по имени дисциплины
+    @GetMapping("/by-name")
+    public ResponseEntity<DisciplineDTO> getDisciplineByName(@RequestParam String name) {
+        return ResponseEntity.ok(disciplineService.findByName(name));
+    }
+
+    @GetMapping("/{disciplineId}/lessons")
+    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineId(@PathVariable(name = "disciplineId") Integer disciplineId) {
+        return ResponseEntity.ok(disciplineService.getLessons(disciplineId));
+    }
+
+    @GetMapping("/{disciplineName}/lessons")
+    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineName(@PathVariable(name = "disciplineName") String disciplineName) {
+        return ResponseEntity.ok(disciplineService.getLessons(disciplineName));
     }
 }

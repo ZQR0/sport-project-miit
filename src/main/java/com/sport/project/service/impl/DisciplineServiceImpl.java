@@ -2,6 +2,7 @@ package com.sport.project.service.impl;
 
 import com.sport.project.dao.entity.DisciplineEntity;
 import com.sport.project.dao.repository.DisciplineRepository;
+import com.sport.project.dao.repository.LessonsRepository;
 import com.sport.project.dto.DisciplineDTO;
 import com.sport.project.dto.LessonDTO;
 import com.sport.project.exception.EntityNotFoundException;
@@ -19,6 +20,7 @@ import java.util.List;
 public class DisciplineServiceImpl implements DisciplineService {
 
     private final DisciplineRepository disciplineRepository;
+    private final LessonsRepository lessonsRepository;
 
     @Override
     public DisciplineDTO findById(Integer id) throws EntityNotFoundException {
@@ -43,15 +45,28 @@ public class DisciplineServiceImpl implements DisciplineService {
                 .toList();
     }
 
-    //TODO: вотэту какашку доделать
     @Override
     public List<LessonDTO> getLessons(Integer disciplineId) throws EntityNotFoundException {
-        return List.of();
+        if (!disciplineRepository.existsById(disciplineId)) {
+            throw new EntityNotFoundException("Дисциплина с ID: " + disciplineId + " не найдена");
+        }
+
+        return this.lessonsRepository.findByDisciplineId(disciplineId)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
     public List<LessonDTO> getLessons(String disciplineName) throws EntityNotFoundException {
-        return List.of();
+        if (!disciplineRepository.existsByName(disciplineName)) {
+            throw new EntityNotFoundException("Дисциплина с названием: " + disciplineName + " не найдена");
+        }
+
+        return this.lessonsRepository.findByDiscipline_Name(disciplineName)
+                .stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override
