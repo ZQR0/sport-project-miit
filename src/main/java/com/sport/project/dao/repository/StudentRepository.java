@@ -80,6 +80,6 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
 
     //FIXME: Не работает при запуске, надо исправить query
     /*Поиск по группе. Найти всех студентов группы.*/
-//    @Query("SELECT s FROM StudentEntity s WHERE s.group.name = :groupName")
-//    List<StudentEntity> findByGroupName(String groupName);
+    @Query("SELECT s FROM student_entity s WHERE s.group.name = :groupName")
+    List<StudentEntity> findByGroupName(String groupName);
 }
