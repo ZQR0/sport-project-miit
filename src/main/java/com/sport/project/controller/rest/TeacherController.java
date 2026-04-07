@@ -1,9 +1,12 @@
 package com.sport.project.controller.rest;
 
+import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
 import com.sport.project.service.impl.TeacherServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -50,15 +53,13 @@ public class TeacherController {
         return this.teacherService.existsByLogin(login);
     }
 
-//    @PostMapping(path = "/create")
-//    public void createEndpoint(TeacherCreationDTO dto) throws EntityAlreadyExistsException {
-//        TeacherDTO created = this.teacherService.createTeacher(dto);
-//        try {
-//            response.sendRedirect(String.format("/teachers/find-by-login?login=%s", dto.getLogin()));
-//        } catch (IOException ex) {
-//            log.info(ex.getMessage());
-//        }
-//    }
+    @PostMapping(path = "/create")
+    public ResponseEntity<TeacherDTO> create(@RequestBody TeacherCreationDTO dto) {
+        TeacherDTO created = teacherService.create(dto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
 
 //    @PostMapping(path = "/update-schedule", params = {"date", "lesson"})
 //    public void updateSchedule(
