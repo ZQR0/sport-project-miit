@@ -24,25 +24,25 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
     private List<VisitsEntity> visits;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "health_group_id", nullable = false)
     public HealthGroupsEntity getHealthGroup() {
         return this.healthGroup;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = false)
     public GroupEntity getGroup() {
         return this.group;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id")
     public SectionEntity getSection() {
         return this.section;
     }
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<VisitsEntity> getVisits() {
         return this.visits;
     }
@@ -66,7 +66,7 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         this.group = group;
     }
 
-    public void setSection(@NonNull SectionEntity section) {
+    public void setSection(SectionEntity section) {
         this.section = section;
     }
 

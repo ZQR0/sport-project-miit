@@ -37,7 +37,7 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
         return this.name;
     }
 
-    @OneToMany(mappedBy = "discipline", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "discipline", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<LessonsEntity> getLessonsEntities() {
         return this.lessonsEntities;
     }

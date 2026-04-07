@@ -26,7 +26,7 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
     }
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     public StudentEntity getStudent() {
         return student;
@@ -36,7 +36,7 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
         this.student = student;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id")
     public LessonsEntity getLessons() {
         return lessons;
