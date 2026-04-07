@@ -1,9 +1,7 @@
 package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,6 +14,8 @@ import java.util.Map;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TeacherDTO {
 
     @JsonProperty(namespace = "id", required = true)
@@ -24,8 +24,8 @@ public class TeacherDTO {
     @JsonProperty(namespace = "firstName", required = true)
     private String firstName;
 
-    @JsonProperty(namespace = "secondName", required = true)
-    private String secondName;
+    @JsonProperty(namespace = "lastName", required = true)
+    private String lastName;
 
     @JsonProperty(namespace = "patronymic")
     private String patronymic;
@@ -36,8 +36,8 @@ public class TeacherDTO {
     @JsonProperty(namespace = "password_hash", required = true)
     private String passwordHash;
 
-    @JsonProperty(namespace = "is_moderator", required = true)
-    private boolean isModerator;
+    @JsonProperty(namespace = "moderator", required = true)
+    private boolean moderator;
 
     @JsonProperty(namespace = "schedule", required = true)
     private Map<LocalDate, String> schedule;
