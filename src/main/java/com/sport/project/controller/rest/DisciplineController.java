@@ -16,7 +16,7 @@ public class DisciplineController {
     private final DisciplineService disciplineService;
 
     //Вывод всех дисциплин
-    @GetMapping
+    @GetMapping("/get-all")
     public ResponseEntity<List<DisciplineDTO>> getAll() {
         return ResponseEntity.ok(disciplineService.findAll());
     }
@@ -34,12 +34,12 @@ public class DisciplineController {
     }
 
     @GetMapping("/{disciplineId}/lessons")
-    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineId(@PathVariable Integer disciplineId) {
+    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineId(@PathVariable(name = "disciplineId") Integer disciplineId) {
         return ResponseEntity.ok(disciplineService.getLessons(disciplineId));
     }
 
-    @GetMapping("/by-name/lessons")
-    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineName(@RequestParam String disciplineName) {
+    @GetMapping("/{disciplineName}/lessons")
+    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineName(@PathVariable(name = "disciplineName") String disciplineName) {
         return ResponseEntity.ok(disciplineService.getLessons(disciplineName));
     }
 }
