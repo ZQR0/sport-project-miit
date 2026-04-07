@@ -39,7 +39,7 @@ public class RestAdviceErrorController {
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ErrorResponseDto handleExists(EntityAlreadyExistsException ex) {
-        log.info("Entity already exists");
+        log.info("[REST] Entity already exists");
         return ErrorResponseDto.builder()
                 .message(ex.getMessage())
                 .trace(ex.getStackTrace())

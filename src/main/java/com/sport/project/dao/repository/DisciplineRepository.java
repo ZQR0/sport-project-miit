@@ -2,8 +2,11 @@ package com.sport.project.dao.repository;
 
 
 import com.sport.project.dao.entity.DisciplineEntity;
+import com.sport.project.dao.entity.LessonsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DisciplineRepository extends JpaRepository<DisciplineEntity, Integer> {
@@ -13,7 +16,6 @@ public interface DisciplineRepository extends JpaRepository<DisciplineEntity, In
      */
 
     //
-    Optional<DisciplineEntity> findById(Integer id);
 
     //Поиск дисциплины по имени
     Optional<DisciplineEntity> findByName(String name);

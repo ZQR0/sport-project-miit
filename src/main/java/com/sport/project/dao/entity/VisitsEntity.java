@@ -51,6 +51,10 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
         return isExists;
     }
 
+    public static VisitsEntityBuilder builder() {
+        return new VisitsEntityBuilder();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
@@ -62,5 +66,28 @@ public class VisitsEntity extends AbstractEntity<Integer> implements Serializabl
     @Override
     public int hashCode() {
         return Objects.hash(student, lessons, isExists);
+    }
+
+    public static class VisitsEntityBuilder {
+        VisitsEntity visit = new VisitsEntity();
+
+        public VisitsEntityBuilder student(StudentEntity student) {
+            visit.setStudent(student);
+            return this;
+        }
+
+        public VisitsEntityBuilder lesson(LessonsEntity lesson) {
+            visit.setLessons(lesson);
+            return this;
+        }
+
+        public VisitsEntityBuilder exists(boolean exists) {
+            visit.setExists(exists);
+            return this;
+        }
+
+        public VisitsEntity build() {
+            return this.visit;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.sport.project.dao.repository;
 
 import com.sport.project.dao.entity.VisitsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
@@ -38,4 +39,8 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
 
     @Query("SELECT v FROM visits_entity v WHERE v.lessons.dateOfLesson BETWEEN :from AND :to")
     List<VisitsEntity> findByDateRange(LocalDate from, LocalDate to);
+
+    @Modifying
+    @Query("DELETE FROM visits_entity v WHERE v.lessons.id = :lessonId")
+    void deleteByLessonId(Integer lessonId);
 }

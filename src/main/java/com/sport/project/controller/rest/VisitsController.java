@@ -28,27 +28,27 @@ public class VisitsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VisitDTO> findById(@PathVariable Integer id) throws EntityNotFoundException {
+    public ResponseEntity<VisitDTO> findById(@PathVariable(name = "id") Integer id) throws EntityNotFoundException {
         VisitDTO visit = visitService.findById(id);
         return ResponseEntity.ok(visit);
     }
 
     @GetMapping("/student/{login}")
-    public ResponseEntity<List<VisitDTO>> findByStudent(@PathVariable String login) {
+    public ResponseEntity<List<VisitDTO>> findByStudent(@PathVariable(name = "login") String login) {
         List<VisitDTO> visits = visitService.findByStudent(login);
         return ResponseEntity.ok(visits);
     }
 
     @GetMapping("/lesson/{lessonId}")
-    public ResponseEntity<List<VisitDTO>> findByLesson(@PathVariable Integer lessonId) {
+    public ResponseEntity<List<VisitDTO>> findByLesson(@PathVariable(name = "lessonId") Integer lessonId) {
         List<VisitDTO> visits = visitService.findByLesson(lessonId);
         return ResponseEntity.ok(visits);
     }
 
     @GetMapping("/student/{login}/lesson/{lessonId}")
     public ResponseEntity<VisitDTO> findByStudentAndLesson(
-            @PathVariable String login,
-            @PathVariable Integer lessonId
+            @PathVariable(name = "login") String login,
+            @PathVariable(name = "lessonId") Integer lessonId
     ) throws EntityNotFoundException {
         VisitDTO visit = visitService.findByStudentAndLesson(login, lessonId);
         return ResponseEntity.ok(visit);
@@ -56,15 +56,15 @@ public class VisitsController {
 
     @GetMapping("/range")
     public ResponseEntity<List<VisitDTO>> findByDateRange(
-            @RequestParam LocalDate from,
-            @RequestParam LocalDate to
+            @RequestParam(name = "from") LocalDate from,
+            @RequestParam(name = "to") LocalDate to
     ) {
         List<VisitDTO> visits = visitService.findByDateRange(from, to);
         return ResponseEntity.ok(visits);
     }
 
     @GetMapping("/exists/{id}")
-    public ResponseEntity<Boolean> existsById(@PathVariable Integer id) {
+    public ResponseEntity<Boolean> existsById(@PathVariable(name = "id") Integer id) {
         boolean exists = visitService.existsById(id);
         return ResponseEntity.ok(exists);
     }
