@@ -16,5 +16,5 @@ public interface VisitUpdatingService {
      * @return обновлённые данные о посещении
      * @throws EntityNotFoundException если запись не найдена
      */
-    VisitDTO updateStatus(Integer visitId, boolean isExists) throws EntityNotFoundException;
+    void updateStatus(Integer visitId, boolean isExists) throws EntityNotFoundException;
 }

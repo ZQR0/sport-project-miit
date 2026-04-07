@@ -18,6 +18,9 @@ import com.sport.project.service.StudentService;
 import com.sport.project.service.VisitService;
 import com.sport.project.service.interfaces.visit.VisitCreationService;
 import com.sport.project.service.interfaces.visit.VisitDeletingService;
+import com.sport.project.service.interfaces.visit.VisitUpdatingService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +35,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class VisitServiceImpl implements VisitService, VisitCreationService, VisitDeletingService {
+public class VisitServiceImpl implements VisitService, VisitCreationService, VisitDeletingService, VisitUpdatingService {
 
     private final VisitsRepository visitsRepository;
     private final LessonsRepository lessonsRepository;
     private final StudentRepository studentRepository;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     @Override
     public VisitDTO findById(Integer id) throws EntityNotFoundException {
@@ -174,5 +180,18 @@ public class VisitServiceImpl implements VisitService, VisitCreationService, Vis
         if (lessonId <= 0) throw new IllegalArgumentException("");
         this.visitsRepository.deleteByLessonId(lessonId);
         log.info("Deleting visit by lesson id {} completed", lessonId);
+    }
+
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public void updateStatus(Integer visitId, boolean isExists) throws EntityNotFoundException {
+        log.info("Update status started");
+        VisitsEntity visit = this.visitsRepository.findById(visitId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Visit with this id %s not found", visitId)));
+
+        visit.setExists(isExists);
+        this.visitsRepository.save(visit);
+        log.info("Visit {} updated", visitId);
     }
 }
