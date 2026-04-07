@@ -12,6 +12,17 @@ import java.util.Optional;
 
 public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
 
+    @Query("SELECT v FROM visits_entity  v " +
+            "JOIN FETCH v.lessons l " +
+            "JOIN FETCH l.discipline " +
+            "LEFT JOIN FETCH l.teacher " +
+            "JOIN FETCH v.student s " +
+            "JOIN FETCH s.group " +
+            "JOIN FETCH s.healthGroup " +
+            "LEFT JOIN FETCH s.section " +
+            "ORDER BY v.id ASC")
+    List<VisitsEntity> findAllOptimized();
+
     /*Поиск посещений студента по id студента*/
     List<VisitsEntity> findByStudentId(Integer studentId);
 
