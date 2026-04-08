@@ -3,15 +3,19 @@ package com.sport.project.service.impl;
 import com.sport.project.dao.entity.LessonsEntity;
 import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.LessonsRepository;
-import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.TeacherRepository;
+import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
+import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.TeacherService;
+import com.sport.project.service.interfaces.teacher.TeacherCreationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,7 +25,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TeacherServiceImpl implements TeacherService {
+public class TeacherServiceImpl implements TeacherService, TeacherCreationService {
 
     private final TeacherRepository teacherRepository;
     private final LessonsRepository lessonsRepository;
@@ -89,5 +93,44 @@ public class TeacherServiceImpl implements TeacherService {
         Optional<TeacherEntity> entityOptional = this.teacherRepository.findByLogin(login);
 
         return entityOptional.isPresent();
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED,
+            rollbackFor = {
+                    jakarta.persistence.EntityNotFoundException.class,
+                    EntityAlreadyExistsException.class,
+                    EntityNotFoundException.class
+            })
+    public TeacherDTO create(TeacherCreationDTO dto) throws EntityAlreadyExistsException {
+        final String teacherLogin = dto.getLogin();
+
+        final String firstName = dto.getFirstName();
+        final String lastName = dto.getLastName();
+        final String patronymic = dto.getPatronymic();
+        final LocalDate birthday = dto.getBirthday();
+
+        final String password = dto.getPassword();
+        final boolean moderator = dto.getModerator();
+
+        if (this.existsByLogin(teacherLogin)) {
+            throw new EntityAlreadyExistsException(
+                    String.format("Teacher with login '%s' already exists", dto.getLogin())
+            );
+        }
+
+        TeacherEntity entity = TeacherEntity.builder()
+                .login(teacherLogin)
+                .firstName(firstName)
+                .lastName(lastName)
+                .patronymic(patronymic)
+                .passwordHash(password)
+                .moderator(moderator)
+                .birthday(birthday)
+                .build();
+
+        TeacherEntity saved = teacherRepository.save(entity);
+
+        return Mapper.map(saved);
     }
 }

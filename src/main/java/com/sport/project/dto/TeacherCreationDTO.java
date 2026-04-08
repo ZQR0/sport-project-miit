@@ -1,20 +1,26 @@
 package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
+
+/**
+ * Creation DTO for {@link com.sport.project.dao.entity.TeacherEntity}
+ */
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TeacherCreationDTO {
 
     @JsonProperty(namespace = "firstName", required = true)
     private String firstName;
 
-    @JsonProperty(namespace = "secondName", required = true)
-    private String secondName;
+    @JsonProperty(namespace = "lastName", required = true)
+    private String lastName;
 
     @JsonProperty(namespace = "patronymic")
     private String patronymic;
@@ -25,6 +31,10 @@ public class TeacherCreationDTO {
     @JsonProperty(namespace = "password", required = true)
     private String password;
 
-    private Boolean isModerator;
+    @JsonProperty(namespace = "moderator", required = true)
+    private Boolean moderator;
+
+    @JsonProperty(namespace = "birthday", required = false)
+    private LocalDate birthday;
 
 }
