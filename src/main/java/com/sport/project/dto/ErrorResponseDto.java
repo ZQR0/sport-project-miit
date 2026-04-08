@@ -2,6 +2,7 @@ package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sport.project.utils.StackTraceSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,11 @@ import tools.jackson.databind.annotation.JsonSerialize;
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
 public class ErrorResponseDto {
+
+    @JsonProperty(namespace = "status_code")
+    private int statusCode;
 
     @JsonProperty(namespace = "message")
     private String message;

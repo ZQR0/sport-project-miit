@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.io.IOException;
 
 @Controller
-@ControllerAdvice
+//@ControllerAdvice
 @Slf4j
 public class AdviceErrorController {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public void printEntityNotFoundException(EntityNotFoundException exception, HttpServletResponse response) {
-        log.info(exception.getMessage());
-    }
-
-    @ExceptionHandler(EntityAlreadyExistsException.class)
-    public void printEntityAlreadyExistsException(EntityAlreadyExistsException exception, HttpServletResponse response) {
-        log.info(exception.getMessage());
-        try {
-            response.sendRedirect("/already-exists");
-        } catch (IOException ex) {
-            log.info(ex.getMessage());
-        }
-    }
+//    @ExceptionHandler(EntityNotFoundException.class)
+//    public void printEntityNotFoundException(EntityNotFoundException exception, HttpServletResponse response) {
+//        log.info(exception.getMessage());
+//    }
+//
+//    @ExceptionHandler(EntityAlreadyExistsException.class)
+//    public void printEntityAlreadyExistsException(EntityAlreadyExistsException exception, HttpServletResponse response) {
+//        log.info(exception.getMessage());
+//        try {
+//            response.sendRedirect("/already-exists");
+//        } catch (IOException ex) {
+//            log.info(ex.getMessage());
+//        }
+//    }
 
 }
