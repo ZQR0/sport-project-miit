@@ -4,7 +4,6 @@ import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
 import com.sport.project.service.impl.TeacherServiceImpl;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/teachers")
 @RequiredArgsConstructor
-@Slf4j
-public class TeacherController {
+public class RestTeacherController {
 
     private final TeacherServiceImpl teacherService;
 
