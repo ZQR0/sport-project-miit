@@ -56,7 +56,7 @@ public class Mapper {
         return StudentDTO.builder()
                 .id(entity.getId())
                 .firstName(entity.getFullName().getFirstName())
-                .secondName(entity.getFullName().getLastName())
+                .lastName(entity.getFullName().getLastName())
                 .patronymic(entity.getFullName().getPatronymic())
                 .login(entity.getLogin())
                 .healthGroup(entity.getHealthGroup().getId())
