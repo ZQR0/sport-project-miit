@@ -84,7 +84,7 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
             return this;
         }
 
-        public TeacherEntityBuilder isModerator(boolean isModerator){
+        public TeacherEntityBuilder moderator(boolean isModerator){
             teacherEntity.setModerator(isModerator);
             return this;
         }

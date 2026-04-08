@@ -89,11 +89,11 @@ public class Mapper {
         return TeacherDTO.builder()
                 .id(entity.getId())
                 .firstName(entity.getFullName().getFirstName())
-                .secondName(entity.getFullName().getLastName())
+                .lastName(entity.getFullName().getLastName())
                 .patronymic(entity.getFullName().getPatronymic())
                 .login(entity.getLogin())
                 .passwordHash(entity.getPasswordHash())
-                .isModerator(entity.isModerator())
+                .moderator(entity.isModerator())
                 .schedule(schedule)
                 .students(students)
                 .build();
