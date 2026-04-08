@@ -7,6 +7,7 @@ import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.VisitService;
 import com.sport.project.service.impl.VisitServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,7 +80,7 @@ public class VisitsController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody VisitCreationDTO dto) throws EntityAlreadyExistsException {
         VisitDTO visit = visitService.create(dto);
-        return ResponseEntity.ok(visit);
+        return ResponseEntity.status(HttpStatus.CREATED).body(visit);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -106,7 +107,7 @@ public class VisitsController {
             @PathVariable(name = "exists") boolean isExists
     ) throws EntityNotFoundException {
         visitService.updateStatus(visitId, isExists);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.accepted().build();
     }
 }
 
