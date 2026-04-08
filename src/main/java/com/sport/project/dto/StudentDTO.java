@@ -18,14 +18,16 @@ import java.util.Map;
 @Builder
 public class StudentDTO {
 
+    //TODO: вывод group, sections и birthday
+
     @JsonProperty(namespace = "id", required = true)
     private Integer id;
 
     @JsonProperty(namespace = "firstName", required = true)
     private String firstName;
 
-    @JsonProperty(namespace = "secondName", required = true)
-    private String secondName;
+    @JsonProperty(namespace = "lastName", required = true)
+    private String lastName;
 
     @JsonProperty(namespace = "patronymic")
     private String patronymic;
@@ -38,7 +40,4 @@ public class StudentDTO {
 
     @JsonProperty(namespace = "exist", required = true)
     private Map<LocalDate, Boolean> exist;
-
-    @JsonProperty(namespace = "teacherId", required = true)
-    private Integer teacherId;
 }
