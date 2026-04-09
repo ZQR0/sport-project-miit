@@ -1,9 +1,9 @@
 package com.sport.project.controller.rest;
 
 import com.sport.project.dto.*;
+import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.DisciplineService;
 import com.sport.project.service.impl.DisciplineServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,28 +26,28 @@ public class DisciplineController {
     //Поиск дисциплины по айди
     @GetMapping("/{id}")
     public ResponseEntity<DisciplineDTO> findById(
-            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+            @PathVariable(name = "id") Integer id) throws com.sport.project.exception.EntityNotFoundException {
         return ResponseEntity.ok(disciplineService.findById(id));
     }
 
     //Поиск по имени дисциплины
     @GetMapping("/by-name")
     public ResponseEntity<DisciplineDTO> findByName(
-            @RequestParam(name = "name") String name) throws EntityNotFoundException {
+            @RequestParam(name = "name") String name) throws com.sport.project.exception.EntityNotFoundException {
         return ResponseEntity.ok(disciplineService.findByName(name));
     }
 
-    // Получение всех занятий дисциплины по айди TODO
-    @GetMapping("/{disciplineId}/lessons")
-    public ResponseEntity<List<LessonDTO>> getLessons(
-            @PathVariable(name = "disciplineId") Integer disciplineId) throws EntityNotFoundException{
+
+    @GetMapping("/by-discipline-id/{disciplineId}/lessons")
+    public ResponseEntity<List<LessonDTO>> getLessonsByDisciplineId(
+            @PathVariable(name = "disciplineId") Integer disciplineId) throws com.sport.project.exception.EntityNotFoundException {
         return ResponseEntity.ok(disciplineService.getLessons(disciplineId));
     }
 
-    // Получение всех занятий дисциплины по названию TODO
-    @GetMapping("/{disciplineName}/lessons")
+    //FIXME: перенести ввод названия группы из URL в Request Body
+    @GetMapping("/by-discipline-name/{disciplineName}/lessons")
     public ResponseEntity<List<LessonDTO>> getLessons(
-            @PathVariable(name = "disciplineName") String disciplineName) throws EntityNotFoundException{
+            @PathVariable(name = "disciplineName") String disciplineName) throws EntityNotFoundException {
         return ResponseEntity.ok(disciplineService.getLessons(disciplineName));
     }
 
