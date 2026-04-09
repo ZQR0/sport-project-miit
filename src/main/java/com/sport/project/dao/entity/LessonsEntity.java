@@ -76,6 +76,8 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         return this.visits.add(visit);
     }
 
+    public static LessonEntityBuilder builder() { return new LessonEntityBuilder(); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,5 +89,32 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
     @Override
     public int hashCode() {
         return Objects.hash(discipline, dateOfLesson);
+    }
+
+    public static class LessonEntityBuilder {
+        LessonsEntity lesson = new LessonsEntity();
+
+        public LessonEntityBuilder discipline(DisciplineEntity discipline) {
+            lesson.setDiscipline(discipline);
+            return this;
+        }
+
+        public LessonEntityBuilder dateOfLesson(LocalDate dateOfLesson) {
+            lesson.setDateOfLesson(dateOfLesson);
+            return this;
+        }
+
+        public LessonEntityBuilder teacher(TeacherEntity teacher) {
+            lesson.setTeacher(teacher);
+            return this;
+        }
+
+        public LessonEntityBuilder visits(List<VisitsEntity> visits) {
+            lesson.setVisits(visits);
+            return this;
+        }
+
+        public LessonsEntity build() { return this.lesson; }
+
     }
 }

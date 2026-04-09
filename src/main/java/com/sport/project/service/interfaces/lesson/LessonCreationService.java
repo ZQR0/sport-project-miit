@@ -4,6 +4,7 @@ import com.sport.project.dto.LessonCreationDTO;
 import com.sport.project.dto.LessonDTO;
 import com.sport.project.exception.EntityAlreadyExistsException;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -29,5 +30,5 @@ public interface LessonCreationService {
      * @return данные созданного занятия
      * @throws EntityAlreadyExistsException если занятие с такими параметрами уже существует
      */
-    LessonDTO create(Date dateOfLesson, Integer teacherId, Integer disciplineId) throws EntityAlreadyExistsException;
+    LessonDTO create(LocalDate dateOfLesson, Integer teacherId, Integer disciplineId) throws EntityAlreadyExistsException;
 }

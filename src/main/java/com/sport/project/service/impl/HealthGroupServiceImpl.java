@@ -3,21 +3,26 @@ package com.sport.project.service.impl;
 
 import com.sport.project.dao.entity.HealthGroupsEntity;
 import com.sport.project.dao.repository.HealthGroupRepository;
+import com.sport.project.dto.HealthGroupCreationDTO;
 import com.sport.project.dto.HealthGroupDTO;
 import com.sport.project.dto.StudentDTO;
+import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.HealthGroupService;
+import com.sport.project.service.interfaces.healthgroup.HealthGroupCreationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HealthGroupServiceImpl implements HealthGroupService {
+public class HealthGroupServiceImpl implements HealthGroupService, HealthGroupCreationService {
 
     private final HealthGroupRepository healthGroupRepository;
 
@@ -71,5 +76,53 @@ public class HealthGroupServiceImpl implements HealthGroupService {
     public boolean existsByName(String name) {
         return this.healthGroupRepository
                 .existsByName(name);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED,
+            rollbackFor = {
+                    jakarta.persistence.EntityNotFoundException.class,
+                    EntityAlreadyExistsException.class,
+                    EntityNotFoundException.class
+            })
+    public HealthGroupDTO create(HealthGroupCreationDTO dto) throws EntityAlreadyExistsException {
+        final String name = dto.getName();
+        final String description = dto.getDescription();
+
+        log.info("Health Group creation [1] started: {}, {}", name, description);
+
+        HealthGroupsEntity healthGroups = HealthGroupsEntity.builder()
+                .name(name)
+                .description(description)
+                .build();
+
+        this.healthGroupRepository.save(healthGroups);
+
+        log.info("Health Group saved [1] {}", healthGroups.getId());
+
+        return Mapper.map(healthGroups);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED,
+            rollbackFor = {
+                    jakarta.persistence.EntityNotFoundException.class,
+                    EntityAlreadyExistsException.class,
+                    EntityNotFoundException.class
+            })
+    public HealthGroupDTO create(String name, String description) throws EntityAlreadyExistsException {
+
+        log.info("Health Group creation [2] started: {}, {}", name, description);
+
+        HealthGroupsEntity healthGroups = HealthGroupsEntity.builder()
+                .name(name)
+                .description(description)
+                .build();
+
+        this.healthGroupRepository.save(healthGroups);
+
+        log.info("Health Group saved [2] {}", healthGroups.getId());
+
+        return Mapper.map(healthGroups);
     }
 }
