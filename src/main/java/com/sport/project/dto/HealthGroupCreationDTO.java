@@ -1,16 +1,16 @@
 package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * DTO для создания {@link com.sport.project.dao.entity.HealthGroupsEntity}
  */
+@Builder
 @Getter
 @Setter
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class HealthGroupCreationDTO {
 
     @JsonProperty(namespace = "name", required = true)
