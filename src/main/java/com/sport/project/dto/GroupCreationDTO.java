@@ -10,12 +10,14 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class GroupCreationDTO {
 
-    @JsonProperty(namespace = "name", required = true)
+    @JsonProperty(value = "name", required = true)
     private String name;
 
-    @JsonProperty(namespace = "institute", required = true)
+    @JsonProperty(value = "institute", required = true)
     private String institute;
 }
