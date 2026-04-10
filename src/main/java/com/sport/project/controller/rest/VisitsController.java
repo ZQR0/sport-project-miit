@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/visits")
@@ -75,6 +76,12 @@ public class VisitsController {
     public ResponseEntity<?> existsById(@PathVariable(name = "id") Integer id) {
         boolean exists = visitService.existsById(id);
         return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/get-total-absences/{studentLogin}")
+    public Map<String, Integer> getTotalAbsences(@PathVariable(name = "studentLogin") String studentLogin) {
+        int count = this.visitService.getTotalAbsences(studentLogin);
+        return Map.of("totalCount", count);
     }
 
     @PostMapping("/create")
