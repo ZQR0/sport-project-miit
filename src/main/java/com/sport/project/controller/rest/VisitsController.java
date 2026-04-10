@@ -42,9 +42,9 @@ public class VisitsController {
     }
 
     @GetMapping("/student/{login}")
-    public ResponseEntity<?> findByStudent(@PathVariable(name = "login") String login) {
+    public ResponseEntity<?> findByStudent(@PathVariable(name = "login") String login) throws EntityNotFoundException {
         List<VisitDTO> visits = visitService.findByStudent(login);
-        return ResponseEntity.ok(visits);
+        return ResponseEntity.status(HttpStatus.OK).body(visits);
     }
 
     @GetMapping("/lesson/{lessonId}")

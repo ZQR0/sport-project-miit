@@ -42,4 +42,14 @@ public class RestAdviceErrorController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(build);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegaArgumentException(IllegalArgumentException ex) {
+        ErrorResponseDto build = ErrorResponseDto.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .trace(ex.getStackTrace())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(build);
+    }
+
 }

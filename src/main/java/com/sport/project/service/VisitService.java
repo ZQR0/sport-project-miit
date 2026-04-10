@@ -44,7 +44,7 @@ public interface VisitService {
      * @param studentLogin логин студента
      * @return список записей о посещениях студента
      */
-    List<VisitDTO> findByStudent(String studentLogin);
+    List<VisitDTO> findByStudent(String studentLogin) throws EntityNotFoundException;
 
     /**
      * Получение всех записей о посещениях занятия.

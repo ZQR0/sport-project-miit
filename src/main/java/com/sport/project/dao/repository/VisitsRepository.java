@@ -24,9 +24,11 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
     List<VisitsEntity> findAllOptimized();
 
     /*Поиск посещений студента по id студента*/
+    //FIXME: починить ошибку N+1
     List<VisitsEntity> findByStudentId(Integer studentId);
 
     /*Поиск посещений студента по логину студента*/
+    //FIXME: починить ошибку N+1
     @Query("SELECT v FROM visits_entity v WHERE v.student.login = :studentLogin")
     List<VisitsEntity> findByStudentLogin(@Param("studentLogin") String studentLogin);
 
@@ -35,6 +37,7 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
      * @param lessonId Id посещения
      * @param studentLogin логин студента
      * */
+    //FIXME: починить ошибку N+1
     @Query("SELECT v FROM visits_entity v " +
             "WHERE v.student.login = :studentLogin AND v.lessons.id = :lessonId")
     Optional<VisitsEntity> findByStudentIdAndLessonId(@Param("studentLogin") String studentLogin, @Param("lessonId") Integer lessonId);
@@ -43,12 +46,15 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
      * Метод для получения посещения по Id занятия
      * @param lessonId Id занятия
      * */
+    //FIXME: починить ошибку N+1
     @Query("SELECT v FROM visits_entity v WHERE v.lessons.id = :lessonId")
     List<VisitsEntity> findByLessonId(@Param("lessonId") Integer lessonId);
 
+    //FIXME: починить ошибку N+1
     //Удаление посещений по логину студента
     void deleteByStudent_Login(@Param("studentLogin") String studentLogin);
 
+    //TODO: фиксануть N+1
     @Query("SELECT v FROM visits_entity v WHERE v.lessons.dateOfLesson BETWEEN :from AND :to")
     List<VisitsEntity> findByDateRange(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
