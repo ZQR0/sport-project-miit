@@ -1,9 +1,7 @@
 package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * DTO для {@link com.sport.project.dao.entity.SectionEntity}
@@ -11,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SectionDTO {
 
     @JsonProperty(namespace = "id", required = true)

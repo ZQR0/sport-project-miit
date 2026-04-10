@@ -1,23 +1,31 @@
 package com.sport.project.service.impl;
 
 import com.sport.project.dao.entity.SectionEntity;
+import com.sport.project.dao.entity.StudentEntity;
 import com.sport.project.dao.repository.SectionRepository;
 import com.sport.project.dao.repository.StudentRepository;
+import com.sport.project.dto.SectionCreationDTO;
 import com.sport.project.dto.SectionDTO;
 import com.sport.project.dto.StudentDTO;
+import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.SectionService;
+import com.sport.project.service.interfaces.section.SectionCreationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SectionServiceImpl implements SectionService {
+public class SectionServiceImpl implements SectionService,
+        SectionCreationService
+{
 
     private final SectionRepository sectionRepository;
     private final StudentRepository studentRepository;
@@ -77,5 +85,49 @@ public class SectionServiceImpl implements SectionService {
     public boolean existsByName(String name) {
         return this.sectionRepository
                 .existsByName(name);
+    }
+
+    @Override
+    @Transactional
+    public SectionDTO create(SectionCreationDTO dto) throws EntityAlreadyExistsException {
+
+        final String sectionName = dto.getName();
+        final String sectionDescription = dto.getDescription();
+        final List<StudentEntity> students = new ArrayList<>();
+
+        log.info("Section creation [1] started: {}, {}, {}", sectionName, sectionDescription, students);
+
+        if (this.existsByName(sectionName)) {
+            throw new EntityAlreadyExistsException(
+                    String.format("Section with name '%s' already exists", sectionName)
+            );
+        }
+
+        SectionEntity entity = SectionEntity.builder()
+                .name(sectionName)
+                .description(sectionDescription)
+                .studentsOnSection(students)
+                .build();
+
+        SectionEntity saved = sectionRepository.save(entity);
+
+        return Mapper.map(saved);
+    }
+
+    @Override
+    public SectionDTO create(String name, String description) throws EntityAlreadyExistsException {
+
+        log.info("Section creation [2] started: {}, {}", name, description);
+
+        SectionEntity section = SectionEntity.builder()
+                .name(name)
+                .description(description)
+                .build();
+
+        this.sectionRepository.save(section);
+
+        log.info("Section saved [2] {}", section.getId());
+
+        return Mapper.map(section);
     }
 }
