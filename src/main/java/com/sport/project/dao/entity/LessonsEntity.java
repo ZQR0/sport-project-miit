@@ -31,7 +31,7 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         setTeacher(teacher);
     }
 
-    @OneToMany(mappedBy = "lessons", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "lessons", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     public List<VisitsEntity> getVisits() {
         return this.visits;
     }
@@ -59,7 +59,7 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
     }
 
     @ManyToOne
-    @JoinColumn(name = "teacher_id")
+    @JoinColumn(name = "teacher_id", nullable = false)
     public TeacherEntity getTeacher() {
         return this.teacher;
     }

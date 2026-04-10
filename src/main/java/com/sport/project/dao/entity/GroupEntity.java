@@ -36,7 +36,7 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
         return institute;
     }
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     public List<StudentEntity> getStudents() {
         return this.students;
     }

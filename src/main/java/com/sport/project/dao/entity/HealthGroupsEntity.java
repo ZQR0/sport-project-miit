@@ -39,8 +39,7 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
         return name;
     }
 
-    //TODO: определить нормальный каскад
-    @OneToMany(mappedBy = "healthGroup", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "healthGroup", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     public List<StudentEntity> getStudents() {
         return students;
     }
