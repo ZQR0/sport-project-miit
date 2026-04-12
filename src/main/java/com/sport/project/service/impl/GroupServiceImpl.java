@@ -19,10 +19,34 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GroupServiceImpl implements GroupService {
+public class GroupServiceImpl implements GroupService, GroupCreationService {
 
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
+
+
+    @Override
+    public GroupDTO create(String name, String institute) throws EntityAlreadyExistsException {
+        if (this.existsByName(name)) {
+            throw new EntityAlreadyExistsException(
+                    String.format("Group with name '%s' already exists", name)
+            );
+        }
+
+        GroupEntity entity = GroupEntity.builder()
+                .name(name)
+                .institute(institute)
+                .build();
+
+        GroupEntity saved = groupRepository.save(entity);
+
+        return Mapper.map(saved);
+    }
+
+    @Override
+    public GroupDTO create(GroupCreationDTO dto) throws EntityAlreadyExistsException {
+        return create(dto.getName(), dto.getInstitute());
+    }
 
     @Override
     public GroupDTO findById(Integer id) throws EntityNotFoundException {

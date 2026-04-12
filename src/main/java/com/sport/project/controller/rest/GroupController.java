@@ -17,6 +17,13 @@ public class GroupController {
 
     private final GroupService groupService;
     private final StudentService studentService;
+    private final GroupCreationService groupCreationService;
+
+    @PostMapping("/create")
+    public ResponseEntity<GroupDTO> create(@RequestBody GroupCreationDTO groupCreationDTO) {
+        GroupDTO created = groupCreationService.create(groupCreationDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 
     //Получить все группы
     @GetMapping("/get-all")
