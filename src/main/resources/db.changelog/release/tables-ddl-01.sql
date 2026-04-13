@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset olesya:ddl-01
+--changeset olesya:ddl-02
 CREATE TABLE IF NOT EXISTS groups (
     id    INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name        VARCHAR(15)      NOT NULL,
@@ -89,6 +89,8 @@ CREATE TABLE IF NOT EXISTS lessons (
     discipline_id   INTEGER NOT NULL,
     date_of_lesson  DATE NOT NULL,
     teacher_id      INTEGER NOT NULL,
+    start_at        TIME NOT NULL,
+    end_at          TIME NOT NULL,
 
     CONSTRAINT discipline_id_foreign_key FOREIGN KEY (discipline_id) REFERENCES disciplines(id) ON DELETE CASCADE,
     CONSTRAINT teacher_id_foreign_key FOREIGN KEY (teacher_id) REFERENCES teachers(id) ON DELETE SET NULL

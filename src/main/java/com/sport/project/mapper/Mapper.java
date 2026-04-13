@@ -187,11 +187,13 @@ public class Mapper {
                 .disciplineName(entity.getDiscipline().getName())
                 .dateOfLesson(entity.getDateOfLesson())
                 .teacherId(entity.getTeacher() != null ? entity.getTeacher().getId() : null)
-                .teacherFsp(entity.getTeacher() != null
+                .teacherFullName(entity.getTeacher() != null
                         ? entity.getTeacher().getFullName().getLastName() + " " +
                           entity.getTeacher().getFullName().getFirstName() + " " +
                           entity.getTeacher().getFullName().getPatronymic()
-                        : null)
+                        : "NOTHING")
+                .startAt(entity.getStartAt())
+                .endAt(entity.getEndAt())
                 .build();
     }
 

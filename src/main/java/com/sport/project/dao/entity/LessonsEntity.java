@@ -8,6 +8,7 @@ import org.hibernate.Hibernate;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +22,8 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
     LocalDate dateOfLesson;
     TeacherEntity teacher;
     List<VisitsEntity> visits;
+    LocalTime startAt;
+    LocalTime endAt;
 
     public LessonsEntity(LocalDate dateOfLesson) {
         setDateOfLesson(dateOfLesson);
@@ -64,12 +67,30 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         return this.teacher;
     }
 
+    @Column(name = "start_at", nullable = false)
+    public LocalTime getStartAt() {
+        return this.startAt;
+    }
+
+    @Column(name = "end_at", nullable = false)
+    public LocalTime getEndAt() {
+        return this.endAt;
+    }
+
     public void setTeacher(@NonNull TeacherEntity newTeacher) {
         this.teacher = newTeacher;
     }
 
     public void setVisits(@NonNull List<VisitsEntity> visits) {
         this.visits = visits;
+    }
+
+    public void setStartAt(@NonNull LocalTime startAt) {
+        this.startAt = startAt;
+    }
+
+    public void setEndAt(@NonNull LocalTime endAt) {
+        this.endAt = endAt;
     }
 
     public boolean addVisit(@NonNull VisitsEntity visit) {
@@ -83,12 +104,13 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         LessonsEntity that = (LessonsEntity) o;
-        return Objects.equals(discipline.getName(), that.discipline.getName()) && Objects.equals(dateOfLesson, that.dateOfLesson) && Objects.equals(teacher, that.teacher);
+        return Objects.equals(discipline.getName(), that.discipline.getName()) && Objects.equals(dateOfLesson, that.dateOfLesson) && Objects.equals(teacher, that.teacher)
+                && Objects.equals(startAt, that.startAt) && Objects.equals(endAt, that.endAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(discipline, dateOfLesson);
+        return Objects.hash(discipline, dateOfLesson, teacher);
     }
 
     public static class LessonEntityBuilder {
@@ -111,6 +133,16 @@ public class LessonsEntity extends AbstractEntity<Integer> implements Serializab
 
         public LessonEntityBuilder visits(List<VisitsEntity> visits) {
             lesson.setVisits(visits);
+            return this;
+        }
+
+        public LessonEntityBuilder startAt(LocalTime startAt) {
+            lesson.setStartAt(startAt);
+            return this;
+        }
+
+        public LessonEntityBuilder endAt(LocalTime endAt) {
+            lesson.setEndAt(endAt);
             return this;
         }
 

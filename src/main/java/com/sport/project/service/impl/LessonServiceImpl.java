@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -115,8 +116,12 @@ public class LessonServiceImpl implements LessonService, LessonCreationService {
         final LocalDate dateOfLesson = dto.getDateOfLesson();
         final Integer teacherId = dto.getTeacherId();
         final Integer disciplineId = dto.getDisciplineId();
+        final LocalTime startAt = dto.getStartAt();
+        final LocalTime endAt = dto.getEndAt();
 
-        log.info("Lesson creation [1] started: {}, {}, {}", dateOfLesson, teacherId, disciplineId);
+        validateTime(startAt, endAt);
+
+        log.info("Lesson creation [DTO] started: {}, {}, {}", dateOfLesson, teacherId, disciplineId);
 
         TeacherEntity teacher = this.teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(String.format("Teacher with id %s not found", teacherId)));
@@ -128,11 +133,13 @@ public class LessonServiceImpl implements LessonService, LessonCreationService {
                 .dateOfLesson(dateOfLesson)
                 .teacher(teacher)
                 .discipline(discipline)
+                .startAt(startAt)
+                .endAt(endAt)
                 .build();
 
         this.lessonsRepository.save(lesson);
 
-        log.info("Lesson saved [1] {}", lesson.getId());
+        log.info("Lesson saved [DTO] {}", lesson.getId());
         return Mapper.map(lesson);
     }
 
@@ -143,8 +150,9 @@ public class LessonServiceImpl implements LessonService, LessonCreationService {
                     EntityAlreadyExistsException.class,
                     EntityNotFoundException.class
             })
+    //TODO: можно в целом этот метод не использовать и не обновлять, пока делаем всё через DTO
     public LessonDTO create(LocalDate dateOfLesson, Integer teacherId, Integer disciplineId) throws EntityAlreadyExistsException {
-        log.info("Lesson creation [2] started: {}, {}, {}", dateOfLesson, teacherId, disciplineId);
+        log.info("Lesson creation [PARAMS] started: {}, {}, {}", dateOfLesson, teacherId, disciplineId);
 
         TeacherEntity teacher = this.teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException(String.format("Teacher with id %s not found", teacherId)));
@@ -160,7 +168,12 @@ public class LessonServiceImpl implements LessonService, LessonCreationService {
 
         this.lessonsRepository.save(lesson);
 
-        log.info("Lesson saved [2] {}", lesson.getId());
+        log.info("Lesson saved [PARAMS] {}", lesson.getId());
         return Mapper.map(lesson);
+    }
+
+    private static void validateTime(LocalTime startTime, LocalTime endTime) {
+        //TODO: валидация на то, что конец пары не раньше начала. Ещё нужно добавить валидацию, что временные промежутки входят в предел пары (типо начало в 8:30 а не в 8:40 и т.п.)
+        //TODO: также нужно добавить валидацию на то, что в это время у преподавателя уже нет пары в это время (мб придётся новый метод в репозиторий засунуть, но это определять будем позже уже)
     }
 }
