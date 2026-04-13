@@ -198,7 +198,8 @@ public class VisitServiceImpl implements VisitService,
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Visit with this id %s not found", visitId)));
 
         visit.setExists(isExists);
-        this.visitsRepository.save(visit);
+//        this.visitsRepository.save(visit);
+        // save не нужен, т.к. merge hibernate сам вызывает
         log.info("Visit {} updated", visitId);
     }
 
