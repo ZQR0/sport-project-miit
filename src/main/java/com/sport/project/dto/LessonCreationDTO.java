@@ -1,18 +1,18 @@
 package com.sport.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 /**
  * DTO для создания {@link com.sport.project.dao.entity.LessonsEntity}
  */
+@Builder
 @Getter
 @Setter
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LessonCreationDTO {
 
     //FIXME: вот надо подумать, стоит указывать ФИО препода или так оставить. То же самое с дисциплиной

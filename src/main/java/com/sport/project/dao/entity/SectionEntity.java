@@ -76,6 +76,8 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
         return this.studentsOnSection.add(student);
     }
 
+    public static SectionEntityBuilder builder() {return new SectionEntityBuilder(); }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
@@ -87,5 +89,26 @@ public class SectionEntity extends AbstractEntity<Integer> implements Serializab
     @Override
     public int hashCode() {
         return Objects.hash(name, description);
+    }
+
+    public static class SectionEntityBuilder {
+        SectionEntity section = new SectionEntity();
+
+        public SectionEntityBuilder name(String name) {
+            section.setName(name);
+            return this;
+        }
+
+        public SectionEntityBuilder description(String description) {
+            section.setDescription(description);
+            return this;
+        }
+
+        public SectionEntityBuilder studentsOnSection(List<StudentEntity> studentOnSection) {
+            section.setStudentsOnSection(studentOnSection);
+            return this;
+        }
+
+        public SectionEntity build() { return this.section; }
     }
 }

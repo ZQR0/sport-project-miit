@@ -39,8 +39,7 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
         return name;
     }
 
-    //TODO: определить нормальный каскад
-    @OneToMany(mappedBy = "healthGroup", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "healthGroup", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     public List<StudentEntity> getStudents() {
         return students;
     }
@@ -69,6 +68,8 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
         return this.students.add(student);
     }
 
+    public static HealthEntityBuilder builder() { return new HealthEntityBuilder(); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,5 +81,26 @@ public class HealthGroupsEntity extends AbstractEntity<Integer> implements Seria
     @Override
     public int hashCode() {
         return Objects.hash(name, description);
+    }
+
+    public static class HealthEntityBuilder {
+        HealthGroupsEntity healthGroups = new HealthGroupsEntity();
+
+        public HealthEntityBuilder name(String name) {
+            healthGroups.setName(name);
+            return this;
+        }
+
+        public HealthEntityBuilder description(String description) {
+            healthGroups.setDescription(description);
+            return this;
+        }
+
+        public HealthEntityBuilder students(List<StudentEntity> students) {
+            healthGroups.setStudents(students);
+            return this;
+        }
+
+        public HealthGroupsEntity build() { return this.healthGroups; }
     }
 }

@@ -1,23 +1,30 @@
 package com.sport.project.service.impl;
 
 import com.sport.project.dao.entity.DisciplineEntity;
+import com.sport.project.dao.entity.LessonsEntity;
+import com.sport.project.dao.entity.TeacherEntity;
 import com.sport.project.dao.repository.DisciplineRepository;
 import com.sport.project.dao.repository.LessonsRepository;
-import com.sport.project.dto.DisciplineDTO;
-import com.sport.project.dto.LessonDTO;
+import com.sport.project.dto.*;
+import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.DisciplineService;
+import com.sport.project.service.interfaces.discipline.DisciplineCreationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DisciplineServiceImpl implements DisciplineService {
+public class DisciplineServiceImpl implements DisciplineService, DisciplineCreationService {
 
     private final DisciplineRepository disciplineRepository;
     private final LessonsRepository lessonsRepository;
@@ -67,6 +74,44 @@ public class DisciplineServiceImpl implements DisciplineService {
                 .stream()
                 .map(Mapper::map)
                 .toList();
+    }
+
+    @Override
+    public DisciplineDTO create(DisciplineCreationDTO dto) throws EntityAlreadyExistsException {
+
+        final String disciplineName = dto.getName();
+
+        if (this.existsByName(disciplineName)) {
+            throw new EntityAlreadyExistsException(
+                    String.format("Discipline with name '%s' already exists", dto.getName())
+            );
+        }
+
+        DisciplineEntity entity = DisciplineEntity.builder()
+                .name(disciplineName)
+                .build();
+
+        DisciplineEntity saved = disciplineRepository.save(entity);
+
+        return Mapper.map(saved);
+    }
+
+    @Override
+    public DisciplineDTO create(String name) throws EntityAlreadyExistsException {
+
+        if (this.existsByName(name)) {
+            throw new EntityAlreadyExistsException(
+                    String.format("Discipline with name '%s' already exists", name)
+            );
+        }
+
+        DisciplineEntity entity = DisciplineEntity.builder()
+                .name(name)
+                .build();
+
+        this.disciplineRepository.save(entity);
+
+        return Mapper.map(entity);
     }
 
     @Override

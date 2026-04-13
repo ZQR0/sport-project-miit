@@ -36,7 +36,7 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
         return institute;
     }
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     public List<StudentEntity> getStudents() {
         return this.students;
     }
@@ -69,6 +69,8 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
         return this.students.add(student);
     }
 
+    public static GroupEntityBuilder builder() { return new GroupEntityBuilder(); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -80,5 +82,26 @@ public class GroupEntity extends AbstractEntity<Integer> implements Serializable
     @Override
     public int hashCode() {
         return Objects.hash(name, institute);
+    }
+
+    public static class GroupEntityBuilder {
+        GroupEntity group = new GroupEntity();
+
+        public GroupEntityBuilder name(String name) {
+            group.setName(name);
+            return this;
+        }
+
+        public GroupEntityBuilder institute(String institute) {
+            group.setInstitute(institute);
+            return this;
+        }
+
+        public GroupEntityBuilder student(List<StudentEntity> students) {
+            group.setStudents(students);
+            return this;
+        }
+
+        public GroupEntity build() { return this.group; }
     }
 }

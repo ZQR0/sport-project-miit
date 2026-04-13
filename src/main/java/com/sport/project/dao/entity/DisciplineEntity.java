@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,7 +38,7 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
         return this.name;
     }
 
-    @OneToMany(mappedBy = "discipline", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "discipline", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     public List<LessonsEntity> getLessonsEntities() {
         return this.lessonsEntities;
     }
@@ -54,6 +55,28 @@ public class DisciplineEntity extends AbstractEntity<Integer> implements Seriali
             throw new IllegalArgumentException("Lesson cannot be null");
         }
         return this.lessonsEntities.add(lesson);
+    }
+
+    public static DisciplineEntity.DisciplineEntityBuilder builder() {
+        return new DisciplineEntity.DisciplineEntityBuilder();
+    }
+
+    public static class DisciplineEntityBuilder {
+        DisciplineEntity disciplineEntity = new DisciplineEntity();
+
+        public DisciplineEntity.DisciplineEntityBuilder name(String name) {
+            disciplineEntity.setName(name);
+            return this;
+        }
+
+        public DisciplineEntity.DisciplineEntityBuilder lessonsEntities(List<LessonsEntity>  lessonsEntities) {
+            disciplineEntity.setLessonsEntities(lessonsEntities);
+            return this;
+        }
+
+        public DisciplineEntity build() {
+            return disciplineEntity;
+        }
     }
 
     @Override

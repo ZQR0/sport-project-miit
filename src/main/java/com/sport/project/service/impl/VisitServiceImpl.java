@@ -74,7 +74,13 @@ public class VisitServiceImpl implements VisitService,
     }
 
     @Override
-    public List<VisitDTO> findByStudent(String studentLogin) {
+    public List<VisitDTO> findByStudent(String studentLogin) throws EntityNotFoundException {
+
+        if (!this.studentRepository.existsByLogin(studentLogin)) {
+            log.info("Student with login {} not found [findByStudent Method]", studentLogin);
+            throw new EntityNotFoundException(String.format("Student with login %s not found", studentLogin));
+        }
+
         return this.visitsRepository.findByStudentLogin(studentLogin)
                 .stream()
                 .map(Mapper::map)
@@ -91,6 +97,11 @@ public class VisitServiceImpl implements VisitService,
 
     @Override
     public List<VisitDTO> findByDateRange(LocalDate from, LocalDate to) {
+
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Params of date cannot be null");
+        }
+
         return this.visitsRepository.findByDateRange(from, to)
                 .stream()
                 .map(Mapper::map)
@@ -173,18 +184,33 @@ public class VisitServiceImpl implements VisitService,
         log.info("Deleting visit by id {} completed", id);
     }
 
+
+    //TODO: Оттестировать после пд
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void deleteByStudentLogin(@NonNull String studentLogin) throws EntityNotFoundException {
         if (studentLogin.isBlank()) throw new IllegalArgumentException("Login cannot be blank");
+
+        if (!this.studentRepository.existsByLogin(studentLogin)) {
+            log.info("Student with login {} not found [deleteByStudentLogin]", studentLogin);
+            throw new EntityNotFoundException(String.format("Student with login %s not found", studentLogin));
+        }
+
         this.visitsRepository.deleteByStudent_Login(studentLogin);
         log.info("Deleting visit by student login {} completed", studentLogin);
     }
 
+    //TODO: оттестировать после пд
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void deleteByLesson(@NonNull Integer lessonId) throws EntityNotFoundException {
-        if (lessonId <= 0) throw new IllegalArgumentException("");
+        if (lessonId <= 0) throw new IllegalArgumentException("Lesson id cannot be negative");
+
+        if (this.lessonsRepository.existsById(lessonId)) {
+            log.info("Lesson with id {} not found", lessonId);
+            throw new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId));
+        }
+
         this.visitsRepository.deleteByLessonId(lessonId);
         log.info("Deleting visit by lesson id {} completed", lessonId);
     }
@@ -205,7 +231,14 @@ public class VisitServiceImpl implements VisitService,
 
     @Override
     public Map<LocalDate, Boolean> getStudentAttendanceMap(String studentLogin) throws EntityNotFoundException {
-        return Map.of();
+        StudentEntity student = this.studentRepository.findByLogin(studentLogin)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", studentLogin)));
+
+        List<VisitsEntity> visits = student.getVisits();
+
+
+        // Временная заглушка
+        return null;
     }
 
     @Override
@@ -222,7 +255,7 @@ public class VisitServiceImpl implements VisitService,
 
         return Math.toIntExact(student.getVisits()
                 .stream()
-                .filter(VisitsEntity::isExists)
+                .filter(visit -> !visit.isExists())
                 .count());
     }
 

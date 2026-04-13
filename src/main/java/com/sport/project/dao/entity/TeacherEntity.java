@@ -24,7 +24,7 @@ public class TeacherEntity extends UserEntity<Integer> implements Serializable {
         return this.moderator;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "teacher", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "teacher", fetch = FetchType.LAZY)
     public List<LessonsEntity> getLessons() {
         return lessons;
     }

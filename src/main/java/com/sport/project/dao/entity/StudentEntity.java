@@ -42,7 +42,7 @@ public class StudentEntity extends UserEntity<Integer> implements Serializable {
         return this.section;
     }
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     public List<VisitsEntity> getVisits() {
         return this.visits;
     }
