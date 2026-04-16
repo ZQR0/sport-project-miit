@@ -1,824 +1,1034 @@
 # Документация по проекту «Все на спорт»
 
+**Дата обновления:** 2026-04-16
+**Версия API:** 0.1.0
+**Сервер:** http://localhost:4444
+
+---
+
 ## 1. Иерархия сущностей
 
-### 1.1. AbstractEntity
+### 1.1. AbstractEntity<ID>
 
 Базовый абстрактный класс для всех сущностей. Содержит идентификатор `id` с автоматической генерацией (IDENTITY). Использует аннотацию `@MappedSuperclass`.
 
 **Пакет:** `com.sport.project.dao.entity`
 
-- `id` (ID, Serializable): первичный ключ, генерируется автоматически.
+- `id` (ID extends Serializable): первичный ключ, генерируется автоматически через `@GeneratedValue(strategy = GenerationType.IDENTITY)`
 
-### 1.2. Entity
+### 1.2. FullName
 
-Устаревший интерфейс, помечен `@Deprecated`. Не используется.
+Встраиваемый класс (Embeddable) для хранения ФИО.
 
-### 1.3. BaseEntity
+**Пакет:** `com.sport.project.dao.entity`
 
-Устаревший класс, помечен `@Deprecated`. Не используется.
+- `firstName` (String): имя, column: `first_name`, NOT NULL
+- `lastName` (String): фамилия, column: `last_name`, NOT NULL
+- `patronymic` (String): отчество, column: `patronymic`, может быть NULL
+
+### 1.3. UserEntity<ID>
+
+Абстрактный базовый класс для пользователей. Наследует `AbstractEntity<ID>`. Помечен `@MappedSuperclass`.
+
+**Пакет:** `com.sport.project.dao.entity`
+
+- `login` (String): уникальный логин, column: `login`, unique, length=50, NOT NULL
+- `passwordHash` (String): хэш пароля, column: `password_hash`, NOT NULL
+- `fullName` (FullName): встраиваемый объект (Embedded) с именем, фамилией, отчеством
+- `birthday` (LocalDate): дата рождения, column: `birthday`, columnDefinition="DATE"
 
 ---
 
 ## 2. Сущности (Entity)
 
-Ниже приведено описание всех JPA-сущностей, их полей, связей и особенностей.
-
-### 2.1. UserEntity
-
-Абстрактный класс, наследующий `AbstractEntity`. Содержит общие поля для `StudentEntity` и `TeacherEntity`. Помечен `@MappedSuperclass`.
-
-**Таблица:** не имеет своей таблицы (mapped superclass)
-
-- `login` (String): уникальный логин, не может быть null, длина 50.
-- `passwordHash` (String): хэш пароля, не может быть null.
-- `fullName` (FullName): встраиваемый объект (Embedded) с именем, фамилией, отчеством.
-- `birthday` (LocalDate): дата рождения, не может быть null, проверка на прошедшую дату.
-
-### 2.2. FullName
-
-Встраиваемый класс (Embeddable), используется в `UserEntity`.
-
-- `firstName` (String): имя, не может быть null.
-- `lastName` (String): фамилия, не может быть null.
-- `patronymic` (String): отчество, может быть null.
-
-### 2.3. StudentEntity
+### 2.1. StudentEntity
 
 Наследник `UserEntity`, представляет студента.
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `students`
 **JPA name:** `student_entity`
 
 **Собственные поля:**
-- `healthGroup` (HealthGroupsEntity): многие-к-одному (ManyToOne) к `health_groups`. Обязательное поле.
-- `group` (GroupEntity): многие-к-одному к `groups`. Обязательное поле.
-- `section` (SectionEntity): многие-к-одному к `sections`. Может быть null (студент может не быть записан на секцию).
-- `visits` (List<VisitsEntity>): один-ко-многим (OneToMany) с `visits`, каскад ALL, mappedBy = "student".
+- `healthGroup` (HealthGroupsEntity): ManyToOne(fetch=LAZY), joinColumn: `health_group_id`, NOT NULL
+- `group` (GroupEntity): ManyToOne(fetch=LAZY), joinColumn: `group_id`, NOT NULL
+- `section` (SectionEntity): ManyToOne(fetch=LAZY), joinColumn: `section_id`, может быть NULL
+- `visits` (List<VisitsEntity>): OneToMany(mappedBy="student", cascade={PERSIST, MERGE, REMOVE}, fetch=LAZY)
 
-**Builder:** `StudentEntityBuilder` (неполная реализация, TODO: закинуть всё остальное)
+**Cascade:** на visits: `{PERSIST, MERGE, REMOVE}`
 
-### 2.4. TeacherEntity
+**Builder:** `StudentEntity.StudentEntityBuilder`
+- `login(String)`, `passwordHash(String)`, `firstName(String)`, `lastName(String)`, `patronymic(String)`, `birthday(LocalDate)`, `healthGroup(HealthGroupsEntity)`, `group(GroupEntity)`, `section(SectionEntity)`, `visits(List<VisitsEntity>)`
+
+### 2.2. TeacherEntity
 
 Наследник `UserEntity`, представляет преподавателя.
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `teachers`
 **JPA name:** `teacher_entity`
 
 **Собственные поля:**
-- `isModerator` (boolean): флаг, является ли преподаватель модератором. Не может быть null.
-- `lessons` (List<LessonsEntity>): один-ко-многим (OneToMany) с `lessons` (преподаватель проводит занятия). Каскад ALL, orphanRemoval = true, fetch = LAZY, mappedBy = "teacher".
+- `moderator` (boolean): флаг модератора, column: `is_moderator`, NOT NULL
+- `lessons` (List<LessonsEntity>): OneToMany(mappedBy="teacher", cascade={PERSIST, MERGE}, fetch=LAZY)
 
-**Builder:** `TeacherEntityBuilder` (полная реализация)
+**Cascade:** на lessons: `{PERSIST, MERGE}` (без REMOVE, т.к. в БД SET NULL)
 
-### 2.5. GroupEntity
+**Builder:** `TeacherEntity.TeacherEntityBuilder`
+- `login(String)`, `passwordHash(String)`, `firstName(String)`, `lastName(String)`, `patronymic(String)`, `birthday(LocalDate)`, `moderator(boolean)`, `lessons(List<LessonsEntity>)`
+
+### 2.3. GroupEntity
 
 Учебная группа.
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `groups`
 **JPA name:** `groups_entity`
 
 **Поля:**
-- `name` (String): уникальное название, не может быть null, длина 15.
-- `institute` (String): название института, не может быть null, длина 100.
-- `students` (List<StudentEntity>): один-ко-многим (OneToMany) со студентами, каскад PERSIST, mappedBy = "group".
+- `name` (String): уникальное название, column: `name`, unique, length=15, NOT NULL
+- `institute` (String): название института, column: `institute`, length=100, NOT NULL
+- `students` (List<StudentEntity>): OneToMany(mappedBy="group", cascade={PERSIST, MERGE}, fetch=LAZY)
 
-**Конструктор:** `GroupEntity(String name, String institute)`
+**Cascade:** на students: `{PERSIST, MERGE}` (без REMOVE, т.к. в БД RESTRICT)
 
-### 2.6. HealthGroupsEntity
+**Конструкторы:**
+- `GroupEntity(String name, String institute)`
+- `@NoArgsConstructor`
+
+**Builder:** `GroupEntityBuilder`
+
+### 2.4. HealthGroupsEntity
 
 Медицинская группа здоровья.
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `health_groups`
 **JPA name:** `health_groups_entity`
 
 **Поля:**
-- `name` (String): уникальное название, не может быть null.
-- `description` (String): описание, не может быть null, длина 100.
-- `students` (List<StudentEntity>): один-ко-многим (OneToMany) со студентами, каскад PERSIST, mappedBy = "healthGroup".
+- `name` (String): уникальное название, column: `name`, unique, NOT NULL
+- `description` (String): описание, column: `description`, length=100, NOT NULL
+- `students` (List<StudentEntity>): OneToMany(mappedBy="healthGroup", cascade={PERSIST, MERGE}, fetch=LAZY)
+
+**Cascade:** на students: `{PERSIST, MERGE}`
 
 **Конструкторы:**
 - `HealthGroupsEntity(String name, String description)`
 - `HealthGroupsEntity(String name, String description, List<StudentEntity> students)`
 
-### 2.7. SectionEntity
+**Builder:** `HealthEntityBuilder`
+
+### 2.5. SectionEntity
 
 Спортивная секция.
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `sections`
 **JPA name:** `section_entity`
 
 **Поля:**
-- `name` (String): уникальное название, не может быть null, длина 100.
-- `description` (String): описание, не может быть null, длина 100.
-- `studentsOnSection` (List<StudentEntity>): один-ко-многим (OneToMany) со студентами (те, кто записан на секцию). Без каскада, mappedBy = "section".
+- `name` (String): уникальное название, column: `name`, unique, length=100, NOT NULL
+- `description` (String): описание, column: `description`, length=100, NOT NULL
+- `studentsOnSection` (List<StudentEntity>): OneToMany(mappedBy="section") — **без cascade**
+
+**Cascade:** нет (в БД SET NULL)
 
 **Конструкторы:**
 - `SectionEntity(String name, String description)`
 - `SectionEntity(String name, String description, List<StudentEntity> studentsOnSection)`
 
-### 2.8. DisciplineEntity
+**Builder:** `SectionEntityBuilder`
+
+### 2.6. DisciplineEntity
 
 Дисциплина (например, «Физическая культура и спорт»).
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `disciplines`
 **JPA name:** `discipline_entity`
 
 **Поля:**
-- `name` (String): уникальное название, не может быть null, длина 100.
-- `lessonsEntities` (List<LessonsEntity>): один-ко-многим (OneToMany) с занятиями, каскад ALL, mappedBy = "discipline".
+- `name` (String): уникальное название, column: `name`, unique, length=100, NOT NULL
+- `lessonsEntities` (List<LessonsEntity>): OneToMany(mappedBy="discipline", cascade={PERSIST, MERGE, REMOVE}, fetch=LAZY)
+
+**Cascade:** на lessons: `{PERSIST, MERGE, REMOVE}` (в БД CASCADE)
 
 **Конструкторы:**
 - `DisciplineEntity(String name)`
 - `DisciplineEntity(String name, List<LessonsEntity> lessonsEntities)`
 
-### 2.9. LessonsEntity
+**Builder:** `DisciplineEntityBuilder`
+
+### 2.7. LessonsEntity
 
 Занятие (пара).
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `lessons`
 **JPA name:** `lessons_entity`
 
 **Поля:**
-- `discipline` (DisciplineEntity): многие-к-одному (ManyToOne) к дисциплине, обязательное поле, join column = "discipline_id".
-- `dateOfLesson` (Date): дата занятия, не может быть null, column definition = "DATE".
-- `teacher` (TeacherEntity): многие-к-одному (ManyToOne) к преподавателю, может быть null, join column = "teacher_id".
+- `discipline` (DisciplineEntity): ManyToOne, joinColumn: `discipline_id`, NOT NULL
+- `dateOfLesson` (LocalDate): дата занятия, column: `date_of_lesson`, columnDefinition="DATE", NOT NULL
+- `teacher` (TeacherEntity): ManyToOne, joinColumn: `teacher_id`, NOT NULL
+- `visits` (List<VisitsEntity>): OneToMany(mappedBy="lessons", cascade={PERSIST, MERGE, REMOVE}, fetch=LAZY)
+- `startAt` (LocalTime): время начала, column: `start_at`, NOT NULL
+- `endAt` (LocalTime): время окончания, column: `end_at`, NOT NULL
+
+**Cascade:** на visits: `{PERSIST, MERGE, REMOVE}` (в БД CASCADE)
 
 **Конструкторы:**
-- `LessonsEntity(Date dateOfLesson)`
-- `LessonsEntity(Date dateOfLesson, TeacherEntity teacher)`
+- `LessonsEntity(LocalDate dateOfLesson)`
+- `LessonsEntity(LocalDate dateOfLesson, TeacherEntity teacher)`
+- `@NoArgsConstructor`
 
-### 2.10. VisitsEntity
+**Builder:** `LessonsEntity.LessonEntityBuilder`
+
+### 2.8. VisitsEntity
 
 Посещаемость студента на занятии.
 
+**Пакет:** `com.sport.project.dao.entity`
 **Таблица:** `visits`
 **JPA name:** `visits_entity`
 
 **Поля:**
-- `student` (StudentEntity): многие-к-одному (ManyToOne) к студенту, join column = "student_id".
-- `lessons` (LessonsEntity): многие-к-одному (ManyToOne) к занятию, join column = "lesson_id".
-- `isExists` (boolean): присутствовал ли студент. Не может быть null.
+- `student` (StudentEntity): ManyToOne(fetch=LAZY), joinColumn: `student_id`
+- `lessons` (LessonsEntity): ManyToOne(fetch=LAZY), joinColumn: `lesson_id`
+- `isExists` (boolean): присутствие, column: `is_exists`, NOT NULL
 
-**Конструктор:** `VisitsEntity(boolean isExists)`
+**Cascade:** нет (родительские сущности управляют cascade)
+
+**Конструкторы:**
+- `VisitsEntity(boolean isExists)`
+- `@NoArgsConstructor`
+
+**Builder:** `VisitsEntityBuilder`
 
 ---
 
-## 3. Репозитории (Repository)
+## 3. Сводная таблица связей сущностей
 
-Репозитории используют Spring Data JPA. Ниже приведено подробное описание всех методов.
+| Сущность | Таблица | Связи | Cascade |
+|----------|---------|-------|---------|
+| StudentEntity | students | ManyToOne: healthGroup, group, section; OneToMany: visits | {PERSIST, MERGE, REMOVE} на visits |
+| TeacherEntity | teachers | OneToMany: lessons | {PERSIST, MERGE} на lessons |
+| GroupEntity | groups | OneToMany: students | {PERSIST, MERGE} на students |
+| HealthGroupsEntity | health_groups | OneToMany: students | {PERSIST, MERGE} на students |
+| SectionEntity | sections | OneToMany: studentsOnSection | нет |
+| DisciplineEntity | disciplines | OneToMany: lessonsEntities | {PERSIST, MERGE, REMOVE} на lessons |
+| LessonsEntity | lessons | ManyToOne: discipline, teacher; OneToMany: visits | {PERSIST, MERGE, REMOVE} на visits |
+| VisitsEntity | visits | ManyToOne: student, lessons | нет |
 
-### 3.1. AbstractRepository
+---
 
-**Статус:** `@Deprecated` (не используется)
+## 4. Репозитории (Repository)
 
-**Пакет:** `com.sport.project.dao.repository`
-
-**Тип:** Дженерик интерфейс `AbstractRepository<E extends Entity<ID>, ID extends Number>`
-
-**Методы:**
-- `Optional<E> findById(ID id)`: поиск сущности по ID.
-- `E save(E entity)`: сохранение сущности.
-- `List<E> findAll()`: получение всех сущностей.
-
-### 3.2. DisciplineRepository
-
-**Пакет:** `com.sport.project.dao.repository`
-
-**Сущность:** `DisciplineEntity`
-**Тип ID:** `Integer`
-
-**Наследует:** `JpaRepository<DisciplineEntity, Integer>`
-
-**Объявленные методы:**
-
-| Метод                     | Возвращает                   | Описание                              |
-|---------------------------|------------------------------|---------------------------------------|
-| `findByName(String name)` | `Optional<DisciplineEntity>` | Поиск дисциплины по уникальному имени |
-
-**Замечания:**
-- Стандартные методы `JpaRepository` (например, `findById`, `findAll`, `save`, `delete`) доступны из базового интерфейса.
-
-### 3.3. GroupRepository
+### 4.1. StudentRepository
 
 **Пакет:** `com.sport.project.dao.repository`
-
-**Сущность:** `GroupEntity`
-**Тип ID:** `Integer`
-
-**Наследует:** `JpaRepository<GroupEntity, Integer>`
-
-**Объявленные методы:**
-
-| Метод                                                         | Возвращает              | Описание                                                        |
-|---------------------------------------------------------------|-------------------------|-----------------------------------------------------------------|
-| `findByName(String name)`                                     | `Optional<GroupEntity>` | Поиск группы по уникальному названию                            |
-| `findStudentsByGroup(@Param("group_name") String group_name)` | `List<StudentEntity>`   | JPQL-запрос: получение всех студентов группы по названию группы |
-| `findByInstitute(String institute)`                           | `List<GroupEntity>`     | Поиск групп по названию института (возвращает список)           |
-| `findAll()`                                                   | `List<GroupEntity>`     | Получение всех групп (переопределение стандартного метода)      |
-
-**JPQL-запрос:**
-```java
-@Query("SELECT student FROM student_entity student WHERE student.group.name = :group_name")
-```
-
-### 3.4. LessonsRepository
-
-**Пакет:** `com.sport.project.dao.repository`
-
-**Сущность:** `LessonsEntity`
-**Тип ID:** `Integer`
-
-**Наследует:** `JpaRepository<LessonsEntity, Integer>`
-
-**Объявленные методы:**
-- Нет кастомных методов (используются только стандартные `JpaRepository`)
-
-**Замечания:**
-- В документации не указан, но может понадобиться для работы с занятиями.
-
-**Требуемые методы для сервисов:**
-
-| Метод                                                                        | Возвращает                | Описание                                |
-|------------------------------------------------------------------------------|---------------------------|-----------------------------------------|
-| `findByDateOfLesson(LocalDate date)`                                         | `List<LessonsEntity>`     | Получение занятий по дате               |
-| `findByTeacherId(Integer teacherId)`                                         | `List<LessonsEntity>`     | Получение занятий преподавателя         |
-| `findByDisciplineNameAndDateOfLesson(String disciplineName, LocalDate date)` | `Optional<LessonsEntity>` | Поиск занятия по дисциплине и дате      |
-| `findByDisciplineName(String disciplineName)`                                | `List<LessonsEntity>`     | Получение всех занятий дисциплины       |
-| `deleteByDisciplineName(String disciplineName)`                              | `void`                    | Очистка занятий при удалении дисциплины |
-
-### 3.5. StudentRepository
-
-**Пакет:** `com.sport.project.dao.repository`
-
 **Сущность:** `StudentEntity`
-**Тип ID:** `Integer`
-
 **Наследует:** `JpaRepository<StudentEntity, Integer>`
 
-**Объявленные методы:**
+**Методы:**
 
-| Метод                               | Возвращает                | Описание                             |
-|-------------------------------------|---------------------------|--------------------------------------|
-| `findByLogin(String login)`         | `Optional<StudentEntity>` | Поиск студента по уникальному логину |
-| `findByGroupName(String groupName)` | `Optional<StudentEntity>` | Поиск студента по названию группы    |
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findByLogin(String login)` | `Optional<StudentEntity>` | Поиск студента по логину |
+| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(firstName, lastName, patronymic)` | `List<StudentEntity>` | Поиск по ФИО |
+| `findByFullNameLastName(String lastName)` | `List<StudentEntity>` | Поиск по фамилии |
+| `findBySectionName(String sectionName)` | `List<StudentEntity>` | Студенты с секцией |
+| `findByDateOfLesson(LocalDate date)` | `List<StudentEntity>` | Студенты с занятиями на дату (JOIN FETCH) |
+| `findByDisciplineAndAttendance(String disciplineName)` | `List<StudentEntity>` | Студенты, посетившие дисциплину |
+| `deleteByGroup_Name(String groupName)` | `void` | Удаление студентов группы |
+| `countByGroup_Name(String groupName)` | `int` | Подсчёт студентов в группе |
+| `findByGroupId(Integer groupId)` | `List<StudentEntity>` | Студенты по ID группы |
+| `findBySectionId(Integer sectionId)` | `List<StudentEntity>` | Студенты по ID секции |
+| `findByHealthGroupId(Integer healthGroupId)` | `List<StudentEntity>` | Студенты по ID мед. группы |
+| `existsByLogin(String login)` | `boolean` | Проверка существования по логину |
+| `findByGroupName(String groupName)` | `List<StudentEntity>` | Студенты по названию группы (JPQL) |
 
-**Требуемые методы для сервисов:**
-
-| Метод                                                                                                                   | Возвращает                | Описание                                  |
-|-------------------------------------------------------------------------------------------------------------------------|---------------------------|-------------------------------------------|
-| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` | `Optional<StudentEntity>` | Поиск студента по полному ФИО             |
-| `findByGroupId(Integer groupId)`                                                                                        | `List<StudentEntity>`     | Получение всех студентов группы по ID     |
-| `existsByLogin(String login)`                                                                                           | `boolean`                 | Проверка существования студента по логину |
-| `findBySectionName(String sectionName)`                                                                                 | `List<StudentEntity>`     | Получение всех студентов секции           |
-| `deleteByGroupName(String groupName)`                                                                                   | `void`                    | Удаление всех студентов группы            |
-| `countByGroupName(String groupName)`                                                                                    | `int`                     | Подсчёт количества студентов в группе     |
-
-### 3.6. TeacherRepository
+### 4.2. TeacherRepository
 
 **Пакет:** `com.sport.project.dao.repository`
-
 **Сущность:** `TeacherEntity`
-**Тип ID:** `Integer`
-
 **Наследует:** `JpaRepository<TeacherEntity, Integer>`
 
-**Объявленные методы:**
+**Методы:**
 
-| Метод                                                                                                                   | Возвращает                | Описание                                   |
-|-------------------------------------------------------------------------------------------------------------------------|---------------------------|--------------------------------------------|
-| `findByLogin(String login)`                                                                                             | `Optional<TeacherEntity>` | Поиск преподавателя по уникальному логину  |
-| `findByIsModerator(boolean isModerator)`                                                                                | `List<TeacherEntity>`     | Фильтрация по флагу модератора             |
-| `findByFullNameFirstName(String firstName)`                                                                             | `List<TeacherEntity>`     | Поиск по имени (FirstName из FullName)     |
-| `findByFullNameLastName(String lastName)`                                                                               | `List<TeacherEntity>`     | Поиск по фамилии (LastName из FullName)    |
-| `findByFullNamePatronymic(String patronymic)`                                                                           | `List<TeacherEntity>`     | Поиск по отчеству (Patronymic из FullName) |
-| `findByFullNameFirstNameAndFullNameLastName(String firstName, String lastName)`                                         | `List<TeacherEntity>`     | Поиск по имени и фамилии                   |
-| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` | `List<TeacherEntity>`     | Поиск по полному ФИО                       |
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findByLogin(String login)` | `Optional<TeacherEntity>` | Поиск по логину |
+| `findByIsModerator(boolean moderator)` | `List<TeacherEntity>` | Поиск по статусу модератора (JPQL) |
+| `findByFullNameFirstName(String firstName)` | `List<TeacherEntity>` | Поиск по имени |
+| `findByFullNameLastName(String lastName)` | `List<TeacherEntity>` | Поиск по фамилии |
+| `findByFullNamePatronymic(String patronymic)` | `List<TeacherEntity>` | Поиск по отчеству |
+| `findByFullNameFirstNameAndFullNameLastName(firstName, lastName)` | `List<TeacherEntity>` | Поиск по имени и фамилии |
+| `findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(firstName, lastName, patronymic)` | `List<TeacherEntity>` | Поиск по полному ФИО |
 
-**TODO:**
-- Методы для работы с расписанием (`api/teachers/update-schedule`)
-- Методы для уведомлений (`api/teachers/notice`)
-
-**Требуемые методы для сервисов:**
-
-| Метод                                       | Возвращает                | Описание                                             |
-|---------------------------------------------|---------------------------|------------------------------------------------------|
-| `existsByLogin(String login)`               | `boolean`                 | Проверка существования преподавателя по логину       |
-| `findByIdWithLessons(Integer id)`           | `Optional<TeacherEntity>` | Получение преподавателя с занятиями (eager fetch)    |
-| `findByLessonsDateOfLesson(LocalDate date)` | `List<TeacherEntity>`     | Получение преподавателей, проводящих занятия на дату |
-
-### 3.7. VisitsRepository
+### 4.3. GroupRepository
 
 **Пакет:** `com.sport.project.dao.repository`
+**Сущность:** `GroupEntity`
+**Наследует:** `JpaRepository<GroupEntity, Integer>`
 
+**Методы:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `Optional<GroupEntity>` | Поиск по ID |
+| `findByName(String name)` | `Optional<GroupEntity>` | Поиск по названию |
+| `findStudentsByGroupId(Integer group_id)` | `List<StudentEntity>` | Студенты группы по ID (JPQL) |
+| `findStudentsByGroupName(String group_name)` | `List<StudentEntity>` | Студенты группы по названию (JPQL) |
+| `findByInstitute(String institute)` | `List<GroupEntity>` | Группы по институту |
+| `findByInstitute(String institute, Pageable pageable)` | `List<GroupEntity>` | Группы по институту с пагинацией |
+| `existsByName(String name)` | `boolean` | Проверка существования по названию |
+
+### 4.4. HealthGroupRepository
+
+**Пакет:** `com.sport.project.dao.repository`
+**Сущность:** `HealthGroupsEntity`
+**Наследует:** `JpaRepository<HealthGroupsEntity, Integer>`
+
+**Методы:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `Optional<HealthGroupsEntity>` | Поиск по ID |
+| `findByName(String name)` | `Optional<HealthGroupsEntity>` | Поиск по названию |
+| `findStudentsByHealthGroupId(Integer healthGroup_id)` | `List<StudentEntity>` | Студенты по ID мед. группы (JPQL) |
+| `findStudentsByHealthGroupName(String healthGroup_name)` | `List<StudentEntity>` | Студенты по названию мед. группы (JPQL) |
+| `existsByName(String name)` | `boolean` | Проверка существования по названию |
+
+### 4.5. SectionRepository
+
+**Пакет:** `com.sport.project.dao.repository`
+**Сущность:** `SectionEntity`
+**Наследует:** `JpaRepository<SectionEntity, Integer>`
+
+**Методы:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findByName(String name)` | `Optional<SectionEntity>` | Поиск по названию |
+| `existsByName(String name)` | `boolean` | Проверка существования по названию |
+
+### 4.6. DisciplineRepository
+
+**Пакет:** `com.sport.project.dao.repository`
+**Сущность:** `DisciplineEntity`
+**Наследует:** `JpaRepository<DisciplineEntity, Integer>`
+
+**Методы:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findByName(String name)` | `Optional<DisciplineEntity>` | Поиск по названию |
+| `existsByName(String name)` | `boolean` | Проверка существования по названию |
+
+### 4.7. LessonsRepository
+
+**Пакет:** `com.sport.project.dao.repository`
+**Сущность:** `LessonsEntity`
+**Наследует:** `JpaRepository<LessonsEntity, Integer>`
+
+**Методы:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findByDisciplineId(Integer disciplineId)` | `List<LessonsEntity>` | Занятия по ID дисциплины (JPQL) |
+| `findByDiscipline_Name(String disciplineName)` | `List<LessonsEntity>` | Занятия по названию дисциплины |
+| `findByTeacher_Login(String teacherLogin)` | `List<LessonsEntity>` | Занятия преподавателя (JPQL, JOIN FETCH) |
+| `findByTeacherId(Integer teacher_id)` | `List<LessonsEntity>` | Занятия по ID преподавателя (JPQL) |
+| `findByDateOfLesson(LocalDate date)` | `List<LessonsEntity>` | Занятия по дате |
+| `findByDisciplineAndDate(Integer disciplineId, LocalDate date)` | `Optional<LessonsEntity>` | Занятие по дисциплине и дате (JPQL) |
+| `findByDateRange(LocalDate from, LocalDate to)` | `List<LessonsEntity>` | Занятия по диапазону дат (JPQL) |
+| `deleteByDiscipline_Name(String disciplineName)` | `void` | Удаление занятий по дисциплине |
+
+### 4.8. VisitsRepository
+
+**Пакет:** `com.sport.project.dao.repository`
 **Сущность:** `VisitsEntity`
-**Тип ID:** `Integer` (наследуется от AbstractEntity)
-
 **Наследует:** `JpaRepository<VisitsEntity, Integer>`
 
-**Объявленные методы:**
-
-| Метод                                     | Возвращает               | Описание                                    |
-|-------------------------------------------|--------------------------|---------------------------------------------|
-| `findByStudentId(Integer studentId)`      | `Optional<VisitsEntity>` | Поиск записи о посещении по ID студента     |
-| `findByStudentLogin(String studentLogin)` | `Optional<VisitsEntity>` | Поиск записи о посещении по логину студента |
-
-**Требуемые методы для сервисов:**
-
-| Метод                                                             | Возвращает               | Описание                                        |
-|-------------------------------------------------------------------|--------------------------|-------------------------------------------------|
-| `findByStudentIdAndLessonId(Integer studentId, Integer lessonId)` | `Optional<VisitsEntity>` | Поиск записи о посещении по студенту и занятию  |
-| `findByLessonId(Integer lessonId)`                                | `List<VisitsEntity>`     | Получение всех посещений занятия                |
-| `deleteByStudentLogin(String studentLogin)`                       | `void`                   | Очистка истории посещений при удалении студента |
-
----
-
-## 4. Реализации репозиториев (Impl)
-
-Классы в пакете `com.sport.project.dao.repository.impl` помечены `@Deprecated` и не используются.
-
-### 4.1. AbstractRepositoryImpl
-
-**Статус:** `@Deprecated`
-
-Базовая реализация репозитория с использованием `EntityManager`. Не используется.
-
-### 4.2. StudentRepositoryImpl
-
-**Статус:** `@Deprecated`
-
-Закомментированная реализация с методами:
-- `findAll()`
-- `findByFullName(String fullName)`
-- `findByLogin(String login)`
-
-### 4.3. TeacherRepositoryImpl
-
-**Статус:** `@Deprecated`
-
-Закомментированная реализация с методами:
-- `findAll()`
-- `findByFullName(String fullName)`
-- `findByLogin(String login)`
-- `findAllModerators()`
-
----
-
-## 5. Проектирование бизнес-методов
-
-Для реализации функциональности, описанной в ролевой модели и API-документации, необходимо дополнить репозитории кастомными запросами, а также определить методы в сервисном слое. В данном разделе мы опишем необходимые бизнес-методы, их назначение, параметры и предполагаемую реализацию с использованием Spring Data JPA.
-
-**Примечание:** некоторые методы, указанные в API, могут быть реализованы на уровне сервисов с использованием стандартных методов репозиториев (например, `findById`). Здесь мы акцентируем внимание на сложных запросах, требующих кастомных JPQL-запросов или использования спецификаций.
-
-### 4.1. Методы для работы с посещаемостью
-
-#### 4.1.1. Отметка посещаемости студента
-
-**Бизнес-сценарий:** преподаватель отмечает, присутствовал студент на занятии или нет.
-
-- **Endpoint:** `POST /api/teachers/notice`
-- **Входные данные:**
-  - `firstName` (String) — имя студента
-  - `lastName` (String) — фамилия студента
-  - `patronymic` (String) — отчество студента (может быть null)
-  - `lessonId` (Integer) — идентификатор занятия
-  - `isExists` (boolean) — присутствие (true/false)
-- **Действие:** найти студента по ФИО, создать или обновить запись в `visits` для данного студента и занятия.
-
-**Реализация:**
-В `StudentRepository` добавить метод для поиска студента по ФИО:
-```java
-Optional<StudentEntity> findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(
-    String firstName, String lastName, String patronymic);
-```
-
-В `VisitsRepository` добавить метод для проверки существующей записи:
-```java
-Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer lessonId);
-```
-
----
-
-### 5.2. Дополнительные бизнес-методы репозиториев
-
-#### 5.2.1. Получение студентов по секции
-
-**Метод:** `List<StudentEntity> findBySectionName(String sectionName)`
-**Репозиторий:** `StudentRepository`
-**Возвращает:** Список всех студентов, записанных на секцию
-**Назначение:** Получить всех студентов конкретной спортивной секции для отображения списка участников или массовой операции.
-
-#### 5.2.2. Получение занятий по дисциплине
-
-**Метод:** `List<LessonsEntity> findByDisciplineName(String disciplineName)`
-**Репозиторий:** `LessonsRepository`
-**Возвращает:** Список всех занятий дисциплины
-**Назначение:** Получить расписание занятий по конкретной дисциплине.
-
-#### 5.2.3. Получение занятий по преподавателю
-
-**Метод:** `List<LessonsEntity> findByTeacherLogin(String teacherLogin)`
-**Репозиторий:** `LessonsRepository`
-**Возвращает:** Список всех занятий, которые проводит преподаватель
-**Назначение:** Получить расписание преподавателя.
-
-#### 5.2.4. Получение занятий по дате
-
-**Метод:** `List<LessonsEntity> findByDateOfLesson(LocalDate date)`
-**Репозиторий:** `LessonsRepository`
-**Возвращает:** Список всех занятий на указанную дату
-**Назначение:** Получить расписание на конкретный день.
-
-#### 5.2.5. Получение групп по институту с пагинацией
-
-**Метод:** `List<GroupEntity> findByInstitute(String institute, Pageable pageable)`
-**Репозиторий:** `GroupRepository`
-**Возвращает:** Список групп института с пагинацией
-**Назначение:** Эффективная загрузка больших списков групп.
-
-#### 5.2.6. Удаление студентов группы
-
-**Метод:** `void deleteByGroupName(String groupName)`
-**Репозиторий:** `StudentRepository`
-**Возвращает:** `void` (удаление записей)
-**Назначение:** Удаление всех студентов группы при её удалении (если не настроен cascade).
-
-#### 5.2.7. Поиск студентов по фамилии
-
-**Метод:** `List<StudentEntity> findByFullNameLastName(String lastName)`
-**Репозиторий:** `StudentRepository`
-**Возвращает:** Список студентов с указанной фамилией
-**Назначение:** Поиск студентов по фамилии (например, для алфавитного списка).
-
-#### 5.2.8. Подсчёт количества студентов в группе
-
-**Метод:** `int countByGroupName(String groupName)`
-**Репозиторий:** `StudentRepository`
-**Возвращает:** Количество студентов в группе
-**Назначение:** Быстрое получение размера группы без загрузки всех сущностей.
-
-#### 5.2.9. Проверка существования группы по названию
-
-**Метод:** `boolean existsByName(String name)`
-**Репозиторий:** `GroupRepository`
-**Возвращает:** `true` если группа существует, иначе `false`
-**Назначение:** Валидация уникальности названия группы перед созданием.
-
-#### 5.2.10. Проверка существования дисциплины по названию
-
-**Метод:** `boolean existsByName(String name)`
-**Репозиторий:** `DisciplineRepository`
-**Возвращает:** `true` если дисциплина существует, иначе `false`
-**Назначение:** Валидация уникальности названия дисциплины.
-
-#### 5.2.11. Получение преподавателей-модераторов
-
-**Метод:** `List<TeacherEntity> findByIsModeratorTrue()`
-**Репозиторий:** `TeacherRepository`
-**Возвращает:** Список всех преподавателей со статусом модератора
-**Назначение:** Быстрое получение активных модераторов системы.
-
-#### 5.2.12. Удаление посещений по студенту
-
-**Метод:** `void deleteByStudentLogin(String studentLogin)`
-**Репозиторий:** `VisitsRepository`
-**Возвращает:** `void`
-**Назначение:** Очистка истории посещений при удалении студента.
-
-#### 5.2.13. Удаление занятий по дисциплине
-
-**Метод:** `void deleteByDisciplineName(String disciplineName)`
-**Репозиторий:** `LessonsRepository`
-**Возвращает:** `void`
-**Назначение:** Очистка занятий при удалении дисциплины.
-
----
-
-## 6. Сервисы (Service Layer)
-
-Сервисный слой разделён на интерфейсы по ответственности: создание, обновление, удаление и бизнес-логика. Это соответствует принципу единственной ответственности (SRP).
-
-### 6.1. Student Service Interfaces
-
-#### 6.1.1. StudentCreationService
-
-**Пакет:** `com.sport.project.service.interfaces.student`
-
-**Назначение:** Создание нового студента. Валидирует входные данные, проверяет уникальность логина, создаёт сущность `StudentEntity` и сохраняет её через репозиторий.
-
 **Методы:**
 
-| Метод                                   | Возвращает   | Параметры                                                                             | Исключения                     | Описание                                                                                                                                |
-|-----------------------------------------|--------------|---------------------------------------------------------------------------------------|--------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `createStudent(StudentCreationDTO dto)` | `StudentDTO` | `dto` — DTO для создания студента (fullName, login, password, healthGroup, teacherId) | `EntityAlreadyExistsException` | Создание нового студента. Валидация уникальности логина, хеширование пароля, связывание с группой, медицинской группой и преподавателем |
-
-**Зависимости:**
-- `StudentRepository` — для сохранения сущности
-- `TeacherRepository` — для получения преподавателя по ID
-- `GroupRepository` — для получения группы по названию
-- `HealthGroupsRepository` — для получения медицинской группы по ID
-- `PasswordEncoder` — для хеширования пароля
-
----
-
-#### 6.1.2. StudentUpdatingService
-
-**Пакет:** `com.sport.project.service.interfaces.student`
-
-**Назначение:** Обновление данных студента. Находит студента по идентификатору (логину) и обновляет переданные поля.
-
-**Методы:**
-
-| Метод                                                                                         | Возвращает | Параметры                                                                | Исключения                                                | Описание                                                        |
-|-----------------------------------------------------------------------------------------------|------------|--------------------------------------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------|
-| `updateFullName(String newFirstName, String newLastName, String newPatronymic, String login)` | `void`     | `newFullName` — новое ФИО, `login` — текущий логин студента              | `EntityNotFoundException`                                 | Обновление ФИО студента                                         |
-| `updateLogin(String newLogin, String login)`                                                  | `void`     | `newLogin` — новый логин, `login` — текущий логин                        | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина студента. Проверка уникальности нового логина |
-| `updateHealthGroup(int newHealthGroup, String login)`                                         | `void`     | `newHealthGroup` — ID новой медицинской группы, `login` — логин студента | `EntityNotFoundException`                                 | Присвоение студенту новой медицинской группы                    |
-| `updateStudentTeacher(TeacherEntity teacher, String login)`                                   | `void`     | `teacher` — сущность преподавателя, `login` — логин студента             | `EntityNotFoundException`                                 | Привязка студента к преподавателю                               |
-
-**Зависимости:**
-- `StudentRepository` — для поиска и обновления студента
-- `TeacherRepository` — для получения преподавателя
-- `HealthGroupsRepository` — для получения медицинской группы
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findAllOptimized()` | `List<VisitsEntity>` | Все посещения с JOIN FETCH (JPQL) |
+| `findByStudentId(Integer studentId)` | `List<VisitsEntity>` | Посещения по ID студента |
+| `findByStudentLogin(String studentLogin)` | `List<VisitsEntity>` | Посещения по логину студента (JPQL) |
+| `findByStudentIdAndLessonId(String studentLogin, Integer lessonId)` | `Optional<VisitsEntity>` | Посещение по студенту и занятию (JPQL) |
+| `findByLessonId(Integer lessonId)` | `List<VisitsEntity>` | Посещения по ID занятия (JPQL) |
+| `deleteByStudent_Login(String studentLogin)` | `void` | Удаление посещений студента |
+| `findByDateRange(LocalDate from, LocalDate to)` | `List<VisitsEntity>` | Посещения по диапазону дат (JPQL) |
+| `deleteByLessonId(Integer lessonId)` | `void` | Удаление посещений занятия (@Modifying, JPQL) |
 
 ---
 
-#### 6.1.3. StudentDeletingService
+## 5. Сервисы (Service Layer)
 
-**Пакет:** `com.sport.project.service.interfaces.student`
+### 5.1. StudentService
 
-**Назначение:** Удаление студента. Удаляет сущность из базы данных, каскадно удаляя связанные записи посещаемости.
+**Пакет интерфейса:** `com.sport.project.service`
+**Пакет реализации:** `com.sport.project.service.impl`
 
-**Методы:**
+**Методы интерфейса:**
 
-| Метод                                                                    | Возвращает | Параметры                     | Исключения                | Описание                    |
-|--------------------------------------------------------------------------|------------|-------------------------------|---------------------------|-----------------------------|
-| `deleteById(int id)`                                                     | `void`     | `id` — идентификатор студента | `EntityNotFoundException` | Удаление студента по ID     |
-| `deleteByFullName(String firstName, String lastName, String patronymic)` | `void`     | `fullName` — ФИО студента     | `EntityNotFoundException` | Удаление студента по ФИО    |
-| `deleteByLogin(String login)`                                            | `void`     | `login` — логин студента      | `EntityNotFoundException` | Удаление студента по логину |
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `StudentDTO` | Поиск по ID |
+| `findByLogin(String login)` | `StudentDTO` | Поиск по логину |
+| `findByFullName(firstName, lastName, patronymic)` | `List<StudentDTO>` | Поиск по ФИО |
+| `findAll()` | `List<StudentDTO>` | Все студенты |
+| `findByGroup(Integer groupId)` | `List<StudentDTO>` | Студенты группы |
+| `findBySection(Integer sectionId)` | `List<StudentDTO>` | Студенты секции |
+| `findByHealthGroup(Integer healthGroupId)` | `List<StudentDTO>` | Студенты мед. группы |
+| `existsByLogin(String login)` | `boolean` | Проверка существования |
 
-**Зависимости:**
-- `StudentRepository` — для поиска и удаления сущности
-- `VisitsRepository` — для удаления записей о посещении (каскадно через CascadeType.ALL)
+**StudentCreationService:**
+- `create(StudentCreationDTO dto): StudentDTO` — создание студента
+
+**StudentServiceImpl** реализует: `StudentService`, `StudentCreationService`
+
+### 5.2. TeacherService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `TeacherDTO` | Поиск по ID |
+| `findByLogin(String login)` | `TeacherDTO` | Поиск по логину |
+| `findByFullName(firstName, lastName, patronymic)` | `List<TeacherDTO>` | Поиск по ФИО |
+| `findAll()` | `List<TeacherDTO>` | Все преподаватели |
+| `findAllModerators()` | `List<TeacherDTO>` | Все модераторы |
+| `findByLessonsDate(LocalDate date)` | `List<TeacherDTO>` | Преподаватели с занятиями на дату |
+| `existsByLogin(String login)` | `boolean` | Проверка существования |
+
+**TeacherCreationService:**
+- `create(TeacherCreationDTO dto): TeacherDTO` — создание преподавателя
+
+### 5.3. GroupService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `GroupDTO` | Поиск по ID |
+| `findByName(String name)` | `GroupDTO` | Поиск по названию |
+| `findAll()` | `List<GroupDTO>` | Все группы |
+| `findByInstitute(String institute)` | `List<GroupDTO>` | Группы института |
+| `getStudents(Integer groupId)` | `List<StudentDTO>` | Студенты группы по ID |
+| `getStudents(String groupName)` | `List<StudentDTO>` | Студенты группы по названию |
+| `existsByName(String name)` | `boolean` | Проверка существования |
+
+**GroupCreationService:** `create(GroupCreationDTO): GroupDTO`, `create(String, String): GroupDTO`
+**GroupUpdatingService:** `updateName(Integer, String): GroupDTO`, `updateInstitute(Integer, String): GroupDTO`
+**GroupDeletingService:** `deleteById(Integer): void`, `deleteByName(String): void`
+**GroupBusinessService:** `getStudentCount(Integer): int`, `isEmpty(Integer): boolean`, `getStudentsWithAttendance(Integer, LocalDate, LocalDate): List<StudentDTO>`, `transferStudents(Integer, Integer): void`
+
+### 5.4. HealthGroupService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `HealthGroupDTO` | Поиск по ID |
+| `findByName(String name)` | `HealthGroupDTO` | Поиск по названию |
+| `findAll()` | `List<HealthGroupDTO>` | Все мед. группы |
+| `getStudents(Integer healthGroupId)` | `List<StudentDTO>` | Студенты по ID |
+| `getStudents(String healthGroupName)` | `List<StudentDTO>` | Студенты по названию |
+| `existsByName(String name)` | `boolean` | Проверка существования |
+
+**HealthGroupCreationService:** `create(HealthGroupCreationDTO): HealthGroupDTO`, `create(String, String): HealthGroupDTO`
+**HealthGroupUpdatingService:** `updateName(Integer, String): HealthGroupDTO`, `updateDescription(Integer, String): HealthGroupDTO`
+**HealthGroupDeletingService:** `deleteById(Integer): void`, `deleteByName(String): void`
+**HealthGroupBusinessService:** `getStudentCount(Integer): int`, `canDelete(Integer): boolean`, `getStudentsWithDetails(Integer): List<StudentDTO>`
+
+### 5.5. SectionService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `SectionDTO` | Поиск по ID |
+| `findByName(String name)` | `SectionDTO` | Поиск по названию |
+| `findAll()` | `List<SectionDTO>` | Все секции |
+| `getStudents(Integer sectionId)` | `List<StudentDTO>` | Студенты по ID |
+| `getStudents(String sectionName)` | `List<StudentDTO>` | Студенты по названию |
+| `existsByName(String name)` | `boolean` | Проверка существования |
+
+**SectionCreationService:** `create(SectionCreationDTO): SectionDTO`, `create(String, String): SectionDTO`
+**SectionUpdatingService:** `updateName(Integer, String): SectionDTO`, `updateDescription(Integer, String): SectionDTO`
+**SectionDeletingService:** `deleteById(Integer): void`, `deleteByName(String): void`
+**SectionBusinessService:** `getStudentCount(Integer): int`, `canDelete(Integer): boolean`, `addStudent(Integer, String): void`, `removeStudent(Integer, String): void`, `getStudentsWithAttendance(Integer): List<StudentDTO>`
+
+### 5.6. DisciplineService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `DisciplineDTO` | Поиск по ID |
+| `findByName(String name)` | `DisciplineDTO` | Поиск по названию |
+| `findAll()` | `List<DisciplineDTO>` | Все дисциплины |
+| `getLessons(Integer disciplineId)` | `List<LessonDTO>` | Занятия по ID |
+| `getLessons(String disciplineName)` | `List<LessonDTO>` | Занятия по названию |
+| `existsByName(String name)` | `boolean` | Проверка существования |
+
+**DisciplineCreationService:** `create(DisciplineCreationDTO): DisciplineDTO`, `create(String): DisciplineDTO`
+**DisciplineUpdatingService:** `updateName(Integer, String): DisciplineDTO`
+**DisciplineDeletingService:** `deleteById(Integer): void`, `deleteByName(String): void`
+**DisciplineBusinessService:** `getLessonCount(Integer): int`, `canDelete(Integer): boolean`, `getLessonsWithTeacher(Integer): List<LessonDTO>`, `getLessonsByDateRange(Integer, LocalDate, LocalDate): List<LessonDTO>`
+
+### 5.7. LessonService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `LessonDTO` | Поиск по ID |
+| `findByDisciplineAndDate(Integer disciplineId, LocalDate date)` | `LessonDTO` | Занятие по дисциплине и дате |
+| `findAll()` | `List<LessonDTO>` | Все занятия |
+| `findByDate(LocalDate date)` | `List<LessonDTO>` | Занятия по дате |
+| `findByTeacher(Integer teacherId)` | `List<LessonDTO>` | Занятия преподавателя |
+| `findByDiscipline(Integer disciplineId)` | `List<LessonDTO>` | Занятия дисциплины по ID |
+| `findByDisciplineName(String disciplineName)` | `List<LessonDTO>` | Занятия по названию |
+| `findByDateRange(LocalDate from, LocalDate to)` | `List<LessonDTO>` | Занятия по диапазону дат |
+| `existsById(Integer id)` | `boolean` | Проверка существования |
+
+**LessonCreationService:** `create(LessonCreationDTO): LessonDTO`, `create(LocalDate, Integer, Integer): LessonDTO`
+**LessonUpdatingService:** `updateDate(Integer, Date): LessonDTO`, `updateTeacher(Integer, Integer): LessonDTO`, `updateDiscipline(Integer, Integer): LessonDTO`
+**LessonDeletingService:** `deleteById(Integer): void`, `deleteByDiscipline(Integer): void`, `deleteByTeacher(Integer): void`, `deleteByDate(LocalDate): void`
+**LessonBusinessService:** `getAttendance(Integer): List<VisitDTO>`, `markAttendance(Integer, String, boolean): void`, `getExpectedStudents(Integer): List<StudentDTO>`, `getAttendanceCount(Integer): int`, `canDelete(Integer): boolean`, `getWithFullDetails(Integer): LessonDTO`, `bulkMarkAttendance(Integer, Map<String, Boolean>): void`
+
+### 5.8. VisitService
+
+**Пакет интерфейса:** `com.sport.project.service`
+
+**Методы интерфейса:**
+
+| Метод | Возвращает | Описание |
+|-------|------------|----------|
+| `findById(Integer id)` | `VisitDTO` | Поиск по ID |
+| `findByStudentAndLesson(String studentLogin, Integer lessonId)` | `VisitDTO` | Посещение по студенту и занятию |
+| `findAll()` | `List<VisitDTO>` | Все посещения |
+| `findByStudent(String studentLogin)` | `List<VisitDTO>` | Посещения студента |
+| `findByLesson(Integer lessonId)` | `List<VisitDTO>` | Посещения занятия |
+| `findByDateRange(LocalDate from, LocalDate to)` | `List<VisitDTO>` | Посещения по диапазону дат |
+| `existsById(Integer id)` | `boolean` | Проверка существования |
+
+**VisitCreationService:** `create(VisitCreationDTO): VisitDTO`, `create(String, Integer, boolean): VisitDTO`
+**VisitUpdatingService:** `updateStatus(Integer, boolean): void`
+**VisitDeletingService:** `deleteById(Integer): void`, `deleteByStudentLogin(String): void`, `deleteByLesson(Integer): void`
+**VisitBusinessService:** `getStudentAttendanceMap(String): Map<LocalDate, Boolean>`, `getTotalVisits(String): int`, `getTotalAbsences(String): int`, `getAttendancePercentage(String): double`, `getAbsentStudentsForLesson(Integer): List<StudentDTO>`, `bulkMarkAttendance(Integer, Map<String, Boolean>): void`
 
 ---
 
-#### 6.1.4. StudentBusiness
+## 6. DTO (Data Transfer Objects)
 
-**Пакет:** `com.sport.project.service.interfaces.student`
-
-**Назначение:** Бизнес-логика студента. Содержит методы, специфичные для предметной области.
-
-**Методы:**
-
-| Метод                                       | Возвращает               | Параметры                     | Исключения | Описание                                                                                   |
-|---------------------------------------------|--------------------------|-------------------------------|------------|--------------------------------------------------------------------------------------------|
-| `getStudentSchedule(StudentEntity student)` | `Map<LocalDate, String>` | `student` — сущность студента | —          | Получение расписания занятий студента. Возвращает мапу: дата → название занятия/дисциплины |
-
-**Зависимости:**
-- `LessonsRepository` — для получения занятий по дате
-- `DisciplineRepository` — для получения названия дисциплины
-
----
-
-### 6.2. Teacher Service Interfaces
-
-#### 6.2.1. TeacherCreationService
-
-**Пакет:** `com.sport.project.service.interfaces.teacher`
-
-**Назначение:** Создание нового преподавателя. Валидирует входные данные, проверяет уникальность логина, создаёт сущность `TeacherEntity` и сохраняет её.
-
-**Методы:**
-
-| Метод                                   | Возвращает   | Параметры                                                                       | Исключения                     | Описание                                                                                                     |
-|-----------------------------------------|--------------|---------------------------------------------------------------------------------|--------------------------------|--------------------------------------------------------------------------------------------------------------|
-| `createTeacher(TeacherCreationDTO dto)` | `TeacherDTO` | `dto` — DTO для создания преподавателя (fullName, login, password, isModerator) | `EntityAlreadyExistsException` | Создание нового преподавателя. Валидация уникальности логина, хеширование пароля, установка флага модератора |
-
-**Зависимости:**
-- `TeacherRepository` — для сохранения сущности
-- `PasswordEncoder` — для хеширования пароля
-
----
-
-#### 6.2.2. TeacherUpdatingService
-
-**Пакет:** `com.sport.project.service.interfaces.teacher`
-
-**Назначение:** Обновление данных преподавателя. Находит преподавателя по идентификатору и обновляет переданные поля.
-
-**Методы:**
-
-| Метод                                                                                         | Возвращает | Параметры                                                        | Исключения                                                | Описание                                   |
-|-----------------------------------------------------------------------------------------------|------------|------------------------------------------------------------------|-----------------------------------------------------------|--------------------------------------------|
-| `updateFullName(String newFirstName, String newLastName, String newPatronymic, String login)` | `void`     | `newFullName` — новое ФИО, `login` — текущий логин               | `EntityNotFoundException`                                 | Обновление ФИО преподавателя               |
-| `updateLogin(String newLogin, String login)`                                                  | `void`     | `newLogin` — новый логин, `login` — текущий логин                | `EntityNotFoundException`, `EntityAlreadyExistsException` | Обновление логина преподавателя            |
-| `updateIsModerator(boolean isModerator, int id)`                                              | `void`     | `isModerator` — новый статус модератора, `id` — ID преподавателя | `EntityNotFoundException`                                 | Изменение статуса модератора преподавателя |
-
-**Зависимости:**
-- `TeacherRepository` — для поиска и обновления сущности
-
----
-
-#### 6.2.3. TeacherDeletingService
-
-**Пакет:** `com.sport.project.service.interfaces.teacher`
-
-**Назначение:** Удаление преподавателя. Удаляет сущность из базы данных, каскадно удаляя связанные занятия.
-
-**Методы:**
-
-| Метод                                                                    | Возвращает | Параметры                          | Исключения                | Описание                         |
-|--------------------------------------------------------------------------|------------|------------------------------------|---------------------------|----------------------------------|
-| `deleteById(int id)`                                                     | `void`     | `id` — идентификатор преподавателя | `EntityNotFoundException` | Удаление преподавателя по ID     |
-| `deleteByFullName(String firstName, String lastName, String patronymic)` | `void`     | `fullName` — ФИО преподавателя     | `EntityNotFoundException` | Удаление преподавателя по ФИО    |
-| `deleteByLogin(String login)`                                            | `void`     | `login` — логин преподавателя      | `EntityNotFoundException` | Удаление преподавателя по логину |
-
-**Зависимости:**
-- `TeacherRepository` — для поиска и удаления сущности
-- `LessonsRepository` — для удаления связанных занятий (orphanRemoval = true)
-
----
-
-#### 6.2.4. TeacherBusiness
-
-**Пакет:** `com.sport.project.service.interfaces.teacher`
-
-**Назначение:** Бизнес-логика преподавателя. Содержит методы для работы с расписанием и уведомлениями.
-
-**Методы:**
-
-| Метод                                               | Возвращает | Параметры                                              | Исключения                | Описание                                                                                              |
-|-----------------------------------------------------|------------|--------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------|
-| `updateSchedule(LocalDate date, String lessonName)` | `void`     | `date` — дата занятия, `lessonName` — название занятия | —                         | Обновление расписания преподавателя на указанную дату                                                 | - этот метод делать не обязательно, можно сделать потом
-| `noticeStudent(String login)`                       | `boolean`  | `login` — логин студента                               | `EntityNotFoundException` | Отметка посещаемости студента. Проверка наличия студента, создание/обновление записи в `VisitsEntity` |
-
-**Зависимости:**
-- `TeacherRepository` — для получения преподавателя
-- `StudentRepository` — для поиска студента по логину
-- `LessonsRepository` — для работы с занятиями
-- `VisitsRepository` — для отметки посещаемости
-
----
-
-### 6.3. Общие сервисы (CRUD)
-
-#### 6.3.1. StudentService
-
-**Пакет:** `com.sport.project.service`
-
-**Назначение:** Базовые CRUD-операции для студентов. Используется для чтения данных.
-
-**Методы:**
-
-| Метод                                                                  | Возвращает         | Параметры                     | Исключения                | Описание                            |
-|------------------------------------------------------------------------|--------------------|-------------------------------|---------------------------|-------------------------------------|
-| `findById(Integer id)`                                                 | `StudentDTO`       | `id` — идентификатор студента | `EntityNotFoundException` | Получение данных студента по ID     |
-| `findByLogin(String login)`                                            | `StudentDTO`       | `login` — логин студента      | `EntityNotFoundException` | Получение данных студента по логину |
-| `findByFullName(String firstName, String lastName, String patronymic)` | `StudentDTO`       | `fullName` — ФИО студента     | `EntityNotFoundException` | Получение данных студента по ФИО    |
-| `findAll()`                                                            | `List<StudentDTO>` | —                             | —                         | Получение всех студентов            |
-
-**Зависимости:**
-- `StudentRepository` — для поиска сущностей
-- `Mapper` — для преобразования Entity → DTO
-
----
-
-#### 6.3.2. TeacherService
-
-**Пакет:** `com.sport.project.service`
-
-**Назначение:** Базовые CRUD-операции для преподавателей. Используется для чтения данных.
-
-**Методы:**
-
-| Метод                                                                  | Возвращает         | Параметры                          | Исключения                | Описание                                             |
-|------------------------------------------------------------------------|--------------------|------------------------------------|---------------------------|------------------------------------------------------|
-| `findById(Integer id)`                                                 | `TeacherDTO`       | `id` — идентификатор преподавателя | `EntityNotFoundException` | Получение данных преподавателя по ID                 |
-| `findByLogin(String login)`                                            | `TeacherDTO`       | `login` — логин преподавателя      | `EntityNotFoundException` | Получение данных преподавателя по логину             |
-| `findByFullName(String firstName, String lastName, String patronymic)` | `TeacherDTO`       | `fullName` — ФИО преподавателя     | `EntityNotFoundException` | Получение данных преподавателя по ФИО                |
-| `findAllModerators()`                                                  | `List<TeacherDTO>` | —                                  | —                         | Получение всех преподавателей со статусом модератора |
-| `findAll()`                                                            | `List<TeacherDTO>` | —                                  | —                         | Получение всех преподавателей                        |
-
-**Зависимости:**
-- `TeacherRepository` — для поиска сущностей
-- `Mapper` — для преобразования Entity → DTO
-
----
-
-### 6.4. DTO (Data Transfer Objects)
-
-#### 6.4.1. StudentCreationDTO
+### 6.1. StudentDTO
 
 **Пакет:** `com.sport.project.dto`
 
-**Назначение:** DTO для создания нового студента. Содержит только необходимые для создания поля.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `firstName` | String | Имя |
+| `lastName` | String | Фамилия |
+| `patronymic` | String | Отчество |
+| `login` | String | Логин |
+| `healthGroup` | Integer | ID медицинской группы |
+| `exist` | Map<LocalDate, Boolean> | Статус посещения по датам |
 
-**Поля:**
-- `firstName` (String) — Имя
-- `lastName` (String) — Фамилия
-- `patronymic` (String) - Отчество
-- `login` (String) — логин (обязательное)
-- `password` (String) — пароль (обязательное)
-- `healthGroup` (Integer) — ID медицинской группы
-- `teacherId` (Integer) — ID преподавателя
-
----
-
-#### 6.4.2. StudentDTO
+### 6.2. StudentCreationDTO
 
 **Пакет:** `com.sport.project.dto`
 
-**Назначение:** DTO для отображения данных студента.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `firstName` | String | Имя |
+| `lastName` | String | Фамилия |
+| `patronymic` | String | Отчество |
+| `login` | String | Логин |
+| `password` | String | Пароль |
+| `healthGroupId` | Integer | ID медицинской группы |
+| `groupId` | Integer | ID группы |
+| `birthday` | LocalDate | Дата рождения |
 
-**Поля:**
-- `id` (Integer) — идентификатор
-- `firstName` (String) — Имя
-- `lastName` (String) — Фамилия
-- `patronymic` (String) - Отчество
-- `login` (String) — логин
-- `passwordHash` (String) — хеш пароля
-- `healthGroup` (Integer) — ID медицинской группы
-- `exist` (Map<LocalDate, Boolean>) — карта посещаемости: дата → статус
-- `teacherId` (Integer) — ID преподавателя
-
----
-
-#### 6.4.3. TeacherCreationDTO
+### 6.3. TeacherDTO
 
 **Пакет:** `com.sport.project.dto`
 
-**Назначение:** DTO для создания нового преподавателя.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `firstName` | String | Имя |
+| `lastName` | String | Фамилия |
+| `patronymic` | String | Отчество |
+| `login` | String | Логин |
+| `passwordHash` | String | Хэш пароля |
+| `moderator` | boolean | Статус модератора |
+| `schedule` | Map<LocalDate, String> | Расписание занятий |
+| `students` | List<StudentDTO> | Список студентов |
 
-**Поля:**
-- `firstName` (String) — Имя
-- `lastName` (String) — Фамилия
-- `patronymic` (String) - Отчество
-- `login` (String) — логин (обязательное)
-- `password` (String) — пароль (обязательное)
-- `isModerator` (Boolean) — статус модератора
-
----
-
-#### 6.4.4. TeacherDTO
+### 6.4. TeacherCreationDTO
 
 **Пакет:** `com.sport.project.dto`
 
-**Назначение:** DTO для отображения данных преподавателя.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `firstName` | String | Имя |
+| `lastName` | String | Фамилия |
+| `patronymic` | String | Отчество |
+| `login` | String | Логин |
+| `password` | String | Пароль |
+| `moderator` | Boolean | Статус модератора |
+| `birthday` | LocalDate | Дата рождения |
 
-**Поля:**
-- `id` (Integer) — идентификатор
-- `firstName` (String) — Имя
-- `lastName` (String) — Фамилия
-- `patronymic` (String) - Отчество
-- `login` (String) — логин
-- `passwordHash` (String) — хеш пароля
-- `isModerator` (boolean) — статус модератора
-- `schedule` (Map<LocalDate, String>) — расписание: дата → название занятия
-- `students` (List<StudentEntity>) — список студентов преподавателя
+### 6.5. GroupDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `name` | String | Название группы |
+| `institute` | String | Название института |
+
+### 6.6. GroupCreationDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `name` | String | Название группы |
+| `institute` | String | Название института |
+
+### 6.7. HealthGroupDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `name` | String | Название |
+| `description` | String | Описание |
+
+### 6.8. HealthGroupCreationDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `name` | String | Название |
+| `description` | String | Описание |
+
+### 6.9. SectionDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `name` | String | Название секции |
+| `description` | String | Описание |
+
+### 6.10. SectionCreationDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `name` | String | Название |
+| `description` | String | Описание |
+
+### 6.11. DisciplineDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `name` | String | Название дисциплины |
+
+### 6.12. DisciplineCreationDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `name` | String | Название дисциплины |
+
+### 6.13. LessonDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `disciplineId` | Integer | ID дисциплины |
+| `disciplineName` | String | Название дисциплины |
+| `dateOfLesson` | LocalDate | Дата занятия |
+| `teacherId` | Integer | ID преподавателя |
+| `teacherFullName` | String | ФИО преподавателя |
+| `startAt` | LocalTime | Время начала |
+| `endAt` | LocalTime | Время окончания |
+
+### 6.14. LessonCreationDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `dateOfLesson` | LocalDate | Дата занятия |
+| `teacherId` | Integer | ID преподавателя |
+| `disciplineId` | Integer | ID дисциплины |
+| `startAt` | LocalTime | Время начала |
+| `endAt` | LocalTime | Время окончания |
+
+### 6.15. VisitDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Уникальный идентификатор |
+| `studentId` | Integer | ID студента |
+| `studentLogin` | String | Логин студента |
+| `lessonId` | Integer | ID занятия |
+| `isExists` | boolean | Статус присутствия |
+
+### 6.16. VisitCreationDTO
+
+**Пакет:** `com.sport.project.dto`
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `studentLogin` | String | Логин студента |
+| `lessonId` | Integer | ID занятия |
+| `isExists` | boolean | Статус присутствия |
+
+### 6.17. Другие DTO
+
+**UserDetailsImpl** — данные пользователя для Spring Security
+**ErrorResponseDto** — формат ошибок API (statusCode, message, trace)
 
 ---
 
-### 6.5. Исключения
+## 7. Контроллеры (Controllers)
 
-#### EntityNotFoundException
+### 7.1. MVC Контроллеры
+
+#### IndexController
+- `GET /index` — главная страница
+
+#### AdminController
+- `GET /admin/dashboard` — панель администратора
+- `GET /admin/students` — страница студентов
+- `POST /admin/students/create` — создание студента
+- `GET /admin/teachers` — страница преподавателей
+- `POST /admin/teachers/create` — создание преподавателя
+- `GET /admin/groups` — страница групп
+- `GET /admin/health-groups` — страница медицинских групп
+- `POST /admin/health-groups/create` — создание медицинской группы
+- `GET /admin/sections` — страница секций
+- `POST /admin/sections/create` — создание секции
+- `GET /admin/disciplines` — страница дисциплин
+- `POST /admin/disciplines/create` — создание дисциплины
+- `GET /admin/lessons` — страница занятий
+- `POST /admin/lessons/create` — создание занятия
+- `GET /admin/visits` — страница посещений
+- `POST /admin/visits/create` — создание посещения
+- `POST /admin/visits/update/{id}` — обновление статуса посещения
+
+#### StudentLoginController
+- `GET /student-by-login` — страница поиска студента по логину
+- `POST /student-by-login` — поиск студента по логину
+- `GET /api/student/full-name` — поиск студента по ФИО (REST)
+
+#### CustomErrorController
+- `GET /error` — страница ошибки
+- `GET /already-exists` — страница "уже существует"
+
+### 7.2. REST Контроллеры
+
+#### RestStudentController (`/students`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/students/find-by-login?login=` | Получить студента по логину |
+| `GET` | `/students/find-by-full-name?first-name=&last-name=&patronymic=` | Получить по ФИО |
+| `GET` | `/students/find-all` | Получить всех студентов |
+| `GET` | `/students/find-by-group?group-id=` | Получить студентов группы |
+| `GET` | `/students/find-by-health-group?health-group-id=` | Получить студентов мед. группы |
+| `GET` | `/students/find-by-section?section-id=` | Получить студентов секции |
+| `GET` | `/students/is-exists-by-login?login=` | Проверка существования по логину |
+| `POST` | `/students/create` | Создать студента |
+
+#### RestTeacherController (`/teachers`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/teachers/find-by-login?login=` | Получить преподавателя по логину |
+| `GET` | `/teachers/find-by-full-name?first-name=&last-name=&patronymic=` | Получить по ФИО |
+| `GET` | `/teachers/find-all` | Получить всех преподавателей |
+| `GET` | `/teachers/find-all-moderators` | Получить всех модераторов |
+| `GET` | `/teachers/get-by-lesson-date?date=` | Получить преподавателей по дате занятия |
+| `GET` | `/teachers/is-exists-by-login?login=` | Проверка существования по логину |
+| `POST` | `/teachers/create` | Создать преподавателя |
+
+#### GroupController (`/api/group`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/api/group/get-all` | Получить все группы |
+| `GET` | `/api/group/{id}` | Получить группу по ID |
+| `GET` | `/api/group/by-name?name=` | Получить группу по названию |
+| `GET` | `/api/group/by-institute?institute=` | Получить группы института |
+| `GET` | `/api/group/{groupId}/students` | Получить студентов группы по ID |
+| `GET` | `/api/group/{groupName}/students` | Получить студентов группы по названию |
+
+#### HealthGroupController (`/api/healthGroup`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/api/healthGroup/{id}` | Получить мед. группу по ID |
+| `GET` | `/api/healthGroup/name/{name}` | Получить мед. группу по названию |
+| `GET` | `/api/healthGroup/find-all` | Получить все мед. группы |
+| `GET` | `/api/healthGroup/{id}/students` | Получить студентов мед. группы по ID |
+| `GET` | `/api/healthGroup/name/{name}/students` | Получить студентов мед. группы по названию |
+| `GET` | `/api/healthGroup/exists/name/{name}` | Проверка существования по названию |
+| `POST` | `/api/healthGroup/create` | Создать мед. группу |
+
+#### SectionController (`/api/section`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/api/section/get-all` | Получить все секции |
+| `GET` | `/api/section/{id}` | Получить секцию по ID |
+| `GET` | `/api/section/by-name?name=` | Получить секцию по названию |
+| `GET` | `/api/section/section-student-by-section-id/{sectionId}/students` | Студенты секции по ID |
+| `GET` | `/api/section/section-student-by-section-name/{sectionName}/students` | Студенты секции по названию |
+| `POST` | `/api/section/create` | Создать секцию |
+
+#### DisciplineController (`/api/discipline`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/api/discipline/find-all` | Получить все дисциплины |
+| `GET` | `/api/discipline/{id}` | Получить дисциплину по ID |
+| `GET` | `/api/discipline/by-name?name=` | Получить дисциплину по названию |
+| `GET` | `/api/discipline/by-discipline-id/{disciplineId}/lessons` | Занятия по ID дисциплины |
+| `GET` | `/api/discipline/by-discipline-name/{disciplineName}/lessons` | Занятия по названию дисциплины |
+| `GET` | `/api/discipline/is-exists-by-name?disciplineName=` | Проверка существования |
+| `POST` | `/api/discipline/create` | Создать дисциплину (DTO) |
+| `POST` | `/api/discipline/create-by-name` | Создать дисциплину (по названию) |
+
+#### LessonsController (`/api/lessons`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/api/lessons/{id}` | Получить занятие по ID |
+| `GET` | `/api/lessons/discipline-and-date?disciplineId=&date=` | Занятие по дисциплине и дате |
+| `GET` | `/api/lessons/find-all` | Получить все занятия |
+| `GET` | `/api/lessons/date?date=` | Занятия по дате |
+| `GET` | `/api/lessons/teacher/{teacherId}` | Занятия преподавателя |
+| `GET` | `/api/lessons/discipline/{disciplineId}` | Занятия дисциплины по ID |
+| `GET` | `/api/lessons/discipline-name/{name}` | Занятия дисциплины по названию |
+| `GET` | `/api/lessons/range?from=&to=` | Занятия по диапазону дат |
+| `GET` | `/api/lessons/exists/{id}` | Проверка существования |
+| `POST` | `/api/lessons/create` | Создать занятие |
+
+#### VisitsController (`/api/visits`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/api/visits/find-all` | Получить все посещения |
+| `GET` | `/api/visits/{id}` | Получить посещение по ID |
+| `GET` | `/api/visits/student/{login}` | Посещения студента |
+| `GET` | `/api/visits/lesson/{lessonId}` | Посещения занятия |
+| `GET` | `/api/visits/student/{login}/lesson/{lessonId}` | Посещение студента на занятии |
+| `GET` | `/api/visits/range?from=&to=` | Посещения по диапазону дат |
+| `GET` | `/api/visits/exists/{id}` | Проверка существования |
+| `GET` | `/api/visits/get-total-absences/{studentLogin}` | Общее количество пропусков |
+| `POST` | `/api/visits/create` | Создать посещение |
+| `DELETE` | `/api/visits/delete/{id}` | Удалить посещение по ID |
+| `DELETE` | `/api/visits/delete/student/{login}` | Удалить все посещения студента |
+| `DELETE` | `/api/visits/delete/lesson/{lessonId}` | Удалить все посещения занятия |
+| `PUT` | `/api/visits/update/{id}/status/{exists}` | Обновить статус посещения |
+
+#### TestController (`/test`)
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| `GET` | `/test/findDisciplineByName?name=` | Найти дисциплину по названию (тест) |
+| `GET` | `/test/findTeacherByLogin?login=` | Найти преподавателя по логину (тест) |
+
+---
+
+## 8. Обработка исключений
+
+### 8.1. RestAdviceErrorController
+
+**Пакет:** `com.sport.project.controller.rest`
+
+Обработчик исключений для REST API:
+
+| Исключение | HTTP статус | Описание |
+|------------|-------------|----------|
+| `EntityNotFoundException` | 404 | Сущность не найдена |
+| `EntityAlreadyExistsException` | 400 | Сущность уже существует |
+| `IllegalArgumentException` | 400 | Некорректный аргумент |
+
+### 8.2. EntityNotFoundException
 
 **Пакет:** `com.sport.project.exception`
+**Наследует:** `RuntimeException`
 
-**Назначение:** Бросается, когда сущность не найдена в базе данных.
+Конструктор: `EntityNotFoundException(String message)`
 
----
-
-#### EntityAlreadyExistsException
+### 8.3. EntityAlreadyExistsException
 
 **Пакет:** `com.sport.project.exception`
+**Наследует:** `RuntimeException`
 
-**Назначение:** Бросается при попытке создать сущность с дублирующимся уникальным полем (логин, название).
+Конструктор: `EntityAlreadyExistsException(String message)`
 
 ---
 
-## 7. Требуемые методы репозиториев для сервисов
+## 9. Конфигурация
 
-Для корректной работы сервисов необходимо добавить следующие методы в репозитории:
+### 9.1. WebSecurityConfig
 
-### StudentRepository
-- `Optional<StudentEntity> findByFullNameFirstNameAndFullNameLastNameAndFullNamePatronymic(String firstName, String lastName, String patronymic)` — поиск студента по ФИО
-- `List<StudentEntity> findByGroupId(Integer groupId)` — получение всех студентов группы по ID
-- `boolean existsByLogin(String login)` — проверка существования студента по логину
+**Пакет:** `com.sport.project.config`
+**Аннотации:** `@EnableWebSecurity`, `@Configuration`, `@RequiredArgsConstructor`
 
-### TeacherRepository
-- `boolean existsByLogin(String login)` — проверка существования преподавателя по логину
-- `Optional<TeacherEntity> findByIdWithLessons(Integer id)` — получение преподавателя с занятиями (eager fetch)
+- Отключена аутентификация (все запросы разрешены для разработки)
+- `SecurityFilterChain securityFilterChain(HttpSecurity http)` — разрешает все запросы, отключает CSRF и formLogin
 
-### VisitsRepository
-- `Optional<VisitsEntity> findByStudentIdAndLessonId(Integer studentId, Integer lessonId)` — поиск записи о посещении по студенту и занятию
-- `List<VisitsEntity> findByStudentId(Integer studentId)` — получение всех посещений студента
-- `List<VisitsEntity> findByLessonId(Integer lessonId)` — получение всех посещений занятия
+### 9.2. MvcConfig
 
-### LessonsRepository
-- `List<LessonsEntity> findByDateOfLesson(LocalDate date)` — получение занятий по дате
-- `List<LessonsEntity> findByTeacherId(Integer teacherId)` — получение занятий преподавателя
-- `Optional<LessonsEntity> findByDisciplineNameAndDateOfLesson(String disciplineName, LocalDate date)` — поиск занятия по дисциплине и дате
+**Пакет:** `com.sport.project.config`
 
+- `SpringResourceTemplateResolver templateResolver()` — настройка Thymeleaf (classpath:/templates/, .html)
 
-# На текущий момент реализуем именно StudentService, TeacherEntity и подобные интерфейсы. Интерфейсы с префиксами Business или Updation и т.п. делать на недо
+### 9.3. OpenApiConfig
+
+**Пакет:** `com.sport.project.config`
+
+Настройка Swagger OpenAPI:
+- **Title:** "Sport Project API"
+- **Version:** "0.1.0"
+- **Server:** http://localhost:4444
+
+---
+
+## 10. Технологический стек
+
+- **Framework:** Spring Boot 4.0.3
+- **Language:** Java 21
+- **Database:** PostgreSQL 18 (Docker Compose, порт 5432)
+- **ORM:** Spring Data JPA + Hibernate
+- **Security:** Spring Security (временно все запросы разрешены)
+- **Template Engine:** Thymeleaf
+- **Migrations:** Liquibase (changelog: `classpath:/db.changelog/changelog-master.yml`)
+- **Build:** Gradle
+- **Server Port:** 4444
+- **API Docs:** OpenAPI Swagger
+
+---
+
+## 11. Build & Run Commands
+
+```bash
+# Build the project
+./gradlew build
+
+# Run tests
+./gradlew test
+
+# Run a specific test class
+./gradlew test --tests "com.sport.project.ProjectApplicationTests"
+
+# Run the application (requires PostgreSQL running)
+./gradlew bootRun
+
+# Start PostgreSQL database
+docker-compose -f docker-compose.dev.yaml up
+
+# Stop database
+docker-compose -f docker-compose.dev.yaml stop
+```
+
+### Environment Setup
+
+Создать `.env` файл в корне проекта:
+```
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=all-on-sport
+POSTGRES_DB_PORT=5432
+```
+
+---
+
+## 12. Database Configuration
+
+```yaml
+spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:/db.changelog/changelog-master.yml
+  jpa:
+    hibernate:
+      ddl-auto: none  # используется Liquibase
+```
+
+---
+
+## 13. Mapper
+
+**Пакет:** `com.sport.project.mapper`
+
+Утилитарный класс для маппинга Entity <-> DTO.
+
+**Методы:**
+- `map(Entity entity): DTO` — конвертация сущности в DTO
+
+---
+
+## 14. Утилиты
+
+### UserUtils
+
+**Пакет:** `com.sport.project.utils`
+
+Утилиты для работы с пользователями.
+
+### AuthorizedUserUtils
+
+**Пакет:** `com.sport.project.utils`
+
+Утилиты для работы с авторизованными пользователями.
+
+---
+
+## 15. Примечания
+
+### FIXME и TODO
+
+1. **StudentRepository:74** — `findByLFP` закомментирован, CONCAT не поддерживается в HQL, требуется замена
+2. **StudentRepository:81** — `findByGroupName` JPQL может требовать исправления
+3. **TeacherRepository** — требуются методы для работы с расписанием (`api/teachers/update-schedule`) и уведомлениями (`api/teachers/notice`)
+4. **LessonServiceImpl** — не реализованы интерфейсы `LessonUpdatingService`, `LessonDeletingService`, `LessonBusinessService`
+5. **VisitBusinessService** — некоторые методы являются заглушками (`getStudentAttendanceMap`, `getAttendancePercentage`, `getAbsentStudentsForLesson`, `bulkMarkAttendance`)
+
+### Временные решения
+
+1. **StudentEntity:79-82** — `equals()` возвращает `true` (временная заглушка)
+2. **StudentEntity:84-88** — `hashCode()` закомментирован
