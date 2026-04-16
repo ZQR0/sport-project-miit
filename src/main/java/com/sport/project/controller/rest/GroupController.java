@@ -1,15 +1,18 @@
 package com.sport.project.controller.rest;
 
+import com.sport.project.dto.GroupCreationDTO;
 import com.sport.project.dto.GroupDTO;
 import com.sport.project.dto.StudentDTO;
 import com.sport.project.service.GroupService;
 import com.sport.project.service.StudentService;
+import com.sport.project.service.interfaces.group.GroupCreationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,13 @@ public class GroupController {
 
     private final GroupService groupService;
     private final StudentService studentService;
+    private final GroupCreationService groupCreationService;
+
+    @PostMapping("/create")
+    public ResponseEntity<GroupDTO> create(@RequestBody GroupCreationDTO groupCreationDTO) {
+        GroupDTO created = groupCreationService.create(groupCreationDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
 
     @Operation(summary = "Получить все группы", description = "Возвращает список всех учебных групп")
     @ApiResponse(responseCode = "200", description = "Группы успешно получены")
