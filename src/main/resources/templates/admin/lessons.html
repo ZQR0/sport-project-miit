@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/admin_style.css}">
+    <title>Занятия</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <h1 class="page-title">Занятия</h1>
+
+    <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+    <div class="form-container">
+        <h2 class="form-title">Добавить занятие</h2>
+        <form th:action="@{/admin/lessons/create}" method="post" class="add-form">
+            <div class="form-row">
+                <label for="dateOfLesson">Дата:</label>
+                <input type="date" id="dateOfLesson" name="dateOfLesson" required>
+            </div>
+
+            <div class="form-row">
+                <label for="teacherId">Преподаватель:</label>
+                <select id="teacherId" name="teacherId" required>
+                    <option value="">Выберите преподавателя</option>
+                    <option th:each="teacher : ${teachers}"
+                            th:value="${teacher.id}"
+                            th:text="${teacher.lastName + ' ' + teacher.firstName + ' ' + (teacher.patronymic != null ? teacher.patronymic : '')}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="disciplineId">Дисциплина:</label>
+                <select id="disciplineId" name="disciplineId" required>
+                    <option value="">Выберите дисциплину</option>
+                    <option th:each="discipline : ${disciplines}"
+                            th:value="${discipline.id}"
+                            th:text="${discipline.name}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="startAt">Время начала:</label>
+                <input type="time" id="startAt" name="startAt" required>
+            </div>
+
+            <div class="form-row">
+                <label for="endAt">Время окончания:</label>
+                <input type="time" id="endAt" name="endAt" required>
+            </div>
+
+            <button type="submit" class="submit-button">Создать занятие</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2 class="table-title">Список занятий</h2>
+        <table class="user-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Дата</th>
+                <th>Преподаватель</th>
+                <th>Дисциплина</th>
+                <th>Время</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="lesson : ${lessons}">
+                <td th:text="${lesson.id}"></td>
+                <td th:text="${lesson.dateOfLesson}"></td>
+                <td th:text="${lesson.teacherFullName}"></td>
+                <td th:text="${lesson.disciplineName}"></td>
+                <td th:text="${lesson.startAt} + ' - ' + ${lesson.endAt}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(lessons)}">
+                <td colspan="5" class="no-data">Занятия не найдены</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/admin/dashboard" class="back-link">Вернуться на главную</a>
+</div>
+
+<style>
+    .page-title {
+        font-family: 'K2D', sans-serif;
+        color: rgba(29,108,255,1);
+        margin-bottom: 30px;
+    }
+
+    .form-container, .table-container {
+        background: white;
+        border: 1px solid rgba(38,36,36,1);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        width: 90%;
+        max-width: 800px;
+    }
+
+    .form-title, .table-title {
+        font-family: 'K2D', sans-serif;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-row {
+        margin-bottom: 15px;
+    }
+
+    .form-row label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .form-row input, .form-row select, .form-row textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .message {
+        padding: 10px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        width: 90%;
+        max-width: 800px;
+    }
+
+    .message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .no-data {
+        text-align: center;
+        color: #666;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .back-link:hover {
+        background-color: #5a6268;
+    }
+</style>
+</body>
+</html>

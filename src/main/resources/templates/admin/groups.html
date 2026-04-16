@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/admin_style.css}">
+    <title>Управление группами</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <h1 class="page-title">Управление учебными группами</h1>
+
+    <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
+
+    <div class="form-container">
+        <h2 class="form-title">Добавить группу</h2>
+        <form th:action="@{/admin/groups/create}" method="post" class="add-form">
+            <div class="form-row">
+                <label for="name">Название группы:</label>
+                <input type="text" id="name" name="name" placeholder="ИУ7-12Б" required>
+            </div>
+
+            <div class="form-row">
+                <label for="institute">Институт:</label>
+                <input type="text" id="institute" name="institute" placeholder="ИУ" required>
+            </div>
+
+            <button type="submit" class="submit-button">Создать группу</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2 class="table-title">Список групп</h2>
+        <table class="user-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Институт</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="group : ${groups}">
+                <td th:text="${group.id}"></td>
+                <td th:text="${group.name}"></td>
+                <td th:text="${group.institute}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(groups)}">
+                <td colspan="3" class="no-data">Группы не найдены</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/admin/dashboard" class="back-link">Вернуться на главную</a>
+</div>
+
+<style>
+    .page-title {
+        font-family: 'K2D', sans-serif;
+        color: rgba(29,108,255,1);
+        margin-bottom: 30px;
+    }
+
+    .form-container, .table-container {
+        background: white;
+        border: 1px solid rgba(38,36,36,1);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        width: 90%;
+        max-width: 800px;
+    }
+
+    .form-title, .table-title {
+        font-family: 'K2D', sans-serif;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-row {
+        margin-bottom: 15px;
+    }
+
+    .form-row label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .form-row input, .form-row select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .message {
+        padding: 10px 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        width: 90%;
+        max-width: 800px;
+    }
+
+    .message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .no-data {
+        text-align: center;
+        color: #666;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .back-link:hover {
+        background-color: #5a6268;
+    }
+</style>
+</body>
+</html>

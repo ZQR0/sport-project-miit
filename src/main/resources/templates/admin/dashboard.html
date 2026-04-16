@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/admin_style.css}">
+    <title>Админ-панель</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+    <div class="if_authorized" sec:authorize="isAuthenticated()">
+        <div class="authorized_username">
+            Приветствуем вас, <span sec:authentication="name"></span>!
+        </div>
+        <div class="logout_container">
+            <a class="logout_link" href="/logout">Выйти</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <h1 class="dashboard-title">Панель администратора</h1>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Студенты</h3>
+            <p class="stat-number" th:text="${studentsCount}">0</p>
+            <a href="/admin/students" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Преподаватели</h3>
+            <p class="stat-number" th:text="${teachersCount}">0</p>
+            <a href="/admin/teachers" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Учебные группы</h3>
+            <p class="stat-number" th:text="${groupsCount}">0</p>
+            <a href="/admin/groups" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Мед. группы</h3>
+            <p class="stat-number" th:text="${healthGroupsCount}">0</p>
+            <a href="/admin/health-groups" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Секции</h3>
+            <p class="stat-number" th:text="${sectionsCount}">0</p>
+            <a href="/admin/sections" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Дисциплины</h3>
+            <p class="stat-number" th:text="${disciplinesCount}">0</p>
+            <a href="/admin/disciplines" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Занятия</h3>
+            <p class="stat-number" th:text="${lessonsCount}">0</p>
+            <a href="/admin/lessons" class="stat-link">Управление</a>
+        </div>
+
+        <div class="stat-card">
+            <h3>Посещения</h3>
+            <p class="stat-number" th:text="${visitsCount}">0</p>
+            <a href="/admin/visits" class="stat-link">Управление</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-title {
+        font-family: 'K2D', sans-serif;
+        color: rgba(29,108,255,1);
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        width: 90%;
+        max-width: 1000px;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid rgba(38,36,36,1);
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card h3 {
+        font-family: 'K2D', sans-serif;
+        color: rgba(29,108,255,1);
+        margin: 0 0 10px 0;
+        font-size: 16px;
+    }
+
+    .stat-number {
+        font-size: 36px;
+        font-weight: bold;
+        color: #333;
+        margin: 10px 0;
+    }
+
+    .stat-link {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 8px 16px;
+        background-color: #4979F2;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .stat-link:hover {
+        background-color: #4929F2;
+    }
+</style>
+</body>
+</html>
