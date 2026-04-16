@@ -16,14 +16,6 @@ public interface StudentDeletingService {
     void deleteByID(int id) throws EntityNotFoundException;
 
     /**
-     * Удаление студента по FSP
-     *
-     * @param fsp FSP студента
-     * @throws EntityNotFoundException если студент не найден
-     */
-    void deleteByFSP(String fsp) throws EntityNotFoundException;
-
-    /**
      * Удаление студента по логину
      *
      * @param login логин студента
