@@ -266,7 +266,20 @@ public class VisitServiceImpl implements VisitService,
 
     @Override
     public List<StudentDTO> getAbsentStudentsForLesson(Integer lessonId) throws EntityNotFoundException {
-        return List.of();
+
+        if (!this.lessonsRepository.existsById(lessonId)) {
+            throw new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId));
+        }
+
+        List<StudentEntity> absentStudents = this.studentRepository.findAbsentStudentsForLesson(lessonId);
+
+        if (absentStudents.isEmpty()) {
+            log.info("Absent student list is empty");
+        }
+
+        return absentStudents.stream()
+                .map(Mapper::map)
+                .toList();
     }
 
     @Override

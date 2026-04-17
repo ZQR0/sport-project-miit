@@ -82,4 +82,13 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     /*Поиск по группе. Найти всех студентов группы.*/
     @Query("SELECT s FROM student_entity s WHERE s.group.name = :groupName")
     List<StudentEntity> findByGroupName(String groupName);
+
+    /**
+     * Список отсутствующих студентов на занятии
+     * */
+    @Query("SELECT s FROM student_entity s " +
+            "JOIN FETCH visits_entity v ON v.student.id = s.id " +
+            "JOIN FETCH lessons_entity l ON l.id = v.lessons.id " +
+            "WHERE l.id = :lessonId AND v.exists = false")
+    List<StudentEntity> findAbsentStudentsForLesson(Integer lessonId);
 }

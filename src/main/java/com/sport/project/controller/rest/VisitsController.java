@@ -1,5 +1,6 @@
 package com.sport.project.controller.rest;
 
+import com.sport.project.dto.StudentDTO;
 import com.sport.project.dto.VisitCreationDTO;
 import com.sport.project.dto.VisitDTO;
 import com.sport.project.exception.EntityAlreadyExistsException;
@@ -130,6 +131,16 @@ public class VisitsController {
             @PathVariable(name = "studentLogin") String studentLogin) {
         int count = this.visitService.getTotalAbsences(studentLogin);
         return Map.of("totalCount", count);
+    }
+
+    @Operation(summary = "Получение отсутствующих студентов на паре", description = "Возвращает список студентов, которых нет на паре")
+    @GetMapping("/students/absent/{lessonId}")
+    public ResponseEntity<?> getAbsentStudentsForLesson(@PathVariable(name = "lessonId") Integer lessonId) throws EntityNotFoundException {
+        List<StudentDTO> absentStudents = this.visitService.getAbsentStudentsForLesson(lessonId);
+        return new ResponseEntity<>(
+                absentStudents,
+                HttpStatus.OK
+        );
     }
 
     @Operation(summary = "Создать запись о посещении", description = "Создаёт новую запись о посещении занятия")
