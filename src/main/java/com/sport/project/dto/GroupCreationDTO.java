@@ -15,11 +15,11 @@ import lombok.*;
 @Builder
 public class GroupCreationDTO {
     
-    @Schema(description = "Название группы", example = "ИУ7-12Б", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Название группы", example = "УВП-111", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "name", required = true)
     private String name;
     
-    @Schema(description = "Название института", example = "ИУ", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "Название института", example = "ИУЦТ", requiredMode = Schema.RequiredMode.REQUIRED)
     @JsonProperty(value = "institute", required = true)
     private String institute;
 }
