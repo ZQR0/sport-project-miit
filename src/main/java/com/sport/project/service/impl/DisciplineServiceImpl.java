@@ -10,7 +10,10 @@ import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.DisciplineService;
+import com.sport.project.service.interfaces.discipline.DisciplineBusinessService;
 import com.sport.project.service.interfaces.discipline.DisciplineCreationService;
+import com.sport.project.service.interfaces.discipline.DisciplineDeletingService;
+import com.sport.project.service.interfaces.discipline.DisciplineUpdatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DisciplineServiceImpl implements DisciplineService, DisciplineCreationService {
+public class DisciplineServiceImpl implements DisciplineService, DisciplineCreationService, DisciplineBusinessService, DisciplineDeletingService, DisciplineUpdatingService {
 
     private final DisciplineRepository disciplineRepository;
     private final LessonsRepository lessonsRepository;
@@ -55,7 +58,7 @@ public class DisciplineServiceImpl implements DisciplineService, DisciplineCreat
     @Override
     public List<LessonDTO> getLessons(Integer disciplineId) throws EntityNotFoundException {
         if (!disciplineRepository.existsById(disciplineId)) {
-            throw new EntityNotFoundException("Дисциплина с ID: " + disciplineId + " не найдена");
+            throw new EntityNotFoundException(String.format("Discipline with id %s not found", disciplineId));
         }
 
         return this.lessonsRepository.findByDisciplineId(disciplineId)
@@ -67,7 +70,7 @@ public class DisciplineServiceImpl implements DisciplineService, DisciplineCreat
     @Override
     public List<LessonDTO> getLessons(String disciplineName) throws EntityNotFoundException {
         if (!disciplineRepository.existsByName(disciplineName)) {
-            throw new EntityNotFoundException("Дисциплина с названием: " + disciplineName + " не найдена");
+            throw new EntityNotFoundException(String.format("Discipline with name %s not found", disciplineName));
         }
 
         return this.lessonsRepository.findByDiscipline_Name(disciplineName)
@@ -118,5 +121,79 @@ public class DisciplineServiceImpl implements DisciplineService, DisciplineCreat
     public boolean existsByName(String name) {
         return this.disciplineRepository
                 .existsByName(name);
+    }
+
+    @Override
+    public int getLessonCount(Integer disciplineId) throws EntityNotFoundException {
+        DisciplineEntity discipline = this.disciplineRepository.findById(disciplineId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Discipline with id %s not found", disciplineId)));
+        return discipline.getLessonsEntities().size();
+    }
+
+    @Override
+    public List<LessonDTO> getLessonsByDateRange(Integer disciplineId, LocalDate from, LocalDate to) throws EntityNotFoundException {
+
+        if (!disciplineRepository.existsById(disciplineId)) {
+            throw new EntityNotFoundException(String.format("Discipline with id %s not found", disciplineId));
+        }
+
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Params of date cannot be null");
+        }
+
+        return this.disciplineRepository.getLessonsByDateRange(disciplineId, from, to)
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    // FIXME будто метод дубликат getLessons (ну или поиска занятий по айди)
+    @Override
+    public List<LessonDTO> getLessonsWithTeacher(Integer disciplineId) throws EntityNotFoundException {
+
+        if (!disciplineRepository.existsById(disciplineId)) {
+            throw new EntityNotFoundException(String.format("Discipline with id %s not found", disciplineId));
+        }
+
+        return this.lessonsRepository.findByDisciplineId(disciplineId)
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    @Override
+    public boolean canDelete(Integer disciplineId) throws EntityNotFoundException {
+        if (!disciplineRepository.existsById(disciplineId)) {
+            throw new EntityNotFoundException(String.format("Discipline with id %s not found", disciplineId));
+        }
+        return this.disciplineRepository.canDelete(disciplineId);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public void deleteById(Integer id) throws EntityNotFoundException {
+        if (id <= 0) throw new IllegalArgumentException("ID cannot be less or equal zero");
+        this.disciplineRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public void deleteByName(String disciplineName) throws EntityNotFoundException {
+        if (!disciplineRepository.existsByName(disciplineName)) {
+            throw new EntityNotFoundException(String.format("Discipline with name %s not found", disciplineName));
+        }
+        this.disciplineRepository.deleteByName(disciplineName);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public DisciplineDTO updateName(Integer disciplineId, String disciplineName) throws EntityNotFoundException {
+        DisciplineEntity discipline = this.disciplineRepository.findById(disciplineId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Discipline with id %s not found", disciplineId)));
+
+        discipline.setName(disciplineName);
+        this.disciplineRepository.save(discipline);
+
+        return Mapper.map(discipline);
     }
 }
