@@ -143,4 +143,105 @@ public class LessonsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(lesson);
     }
 
+    @Operation(summary = "Удалить запись о занятии по ID", description = "Удаляет запись о занятии по её ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Запись успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteById(
+            @Parameter(description = "ID записи о занятии", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+        lessonService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Удалить запись о занятии по id дисциплины", description = "Удалить запись о занятии по id дисциплины")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Записи успешно удалены"),
+            @ApiResponse(responseCode = "404", description = "Дисциплина не найдена")
+    })
+    @DeleteMapping("/delete/discipline/{id}")
+    public ResponseEntity<Void> deleteByDiscipline(
+            @Parameter(description = "ID дисциплины", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+        lessonService.deleteByDiscipline(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Удалить запись о занятии по id учителя", description = "Удалить запись о занятии по id учителя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Записи успешно удалены"),
+            @ApiResponse(responseCode = "404", description = "Учитель не найден")
+    })
+    @DeleteMapping("/delete/teacher/{id}")
+    public ResponseEntity<Void> deleteByTeacher(
+            @Parameter(description = "ID учителя", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+        lessonService.deleteByTeacher(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Удалить занятия по дате", description = "Удаляет все занятия, запланированные на указанную дату")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Занятия успешно удалены"),
+            @ApiResponse(responseCode = "404", description = "Занятия на указанную дату не найдены")
+    })
+    @DeleteMapping("/delete/date/{date}")
+    public ResponseEntity<Void> deleteByDate(
+            @Parameter(description = "Дата занятия", example = "2024-12-25")
+            @PathVariable(name = "date") LocalDate date) throws EntityNotFoundException {
+        lessonService.deleteByDate(date);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Обновить дату занятия", description = "Обновляет дату занятия")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Дата успешно обновлёна"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/date/{date}")
+    public ResponseEntity<Void> updateDate(
+            @Parameter(description = "ID записи о занятии", example = "1")
+            @PathVariable(name = "id") Integer lessonsId,
+            @Parameter(description = "Дата проведения занятия", example = "2024-12-25")
+            @PathVariable(name = "date") LocalDate date
+    ) throws EntityNotFoundException {
+        lessonService.updateDate(lessonsId, date);
+        return ResponseEntity.accepted().build();
+    }
+
+    @Operation(summary = "Обновить преподавателя занятия", description = "Обновляет id преподавателя, проводящего занятие")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Преподаватель успешно обновлен"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/teacher/{teacher_id}")
+    public ResponseEntity<Void> updateTeacher(
+            @Parameter(description = "ID записи о занятии", example = "1")
+            @PathVariable(name = "id") Integer lessonsId,
+            @Parameter(description = "Id преподавателя", example = "1")
+            @PathVariable(name = "teacher_id") Integer teacher_id
+    ) throws EntityNotFoundException {
+        lessonService.updateTeacher(lessonsId, teacher_id);
+        return ResponseEntity.accepted().build();
+    }
+
+    @Operation(summary = "Обновить дисциплину занятия", description = "Обновляет id дисциплины занятия")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Дисциплина успешно обновлена"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/discipline/{discipline_id}")
+    public ResponseEntity<Void> updateDiscipline(
+            @Parameter(description = "ID записи о занятии", example = "1")
+            @PathVariable(name = "id") Integer lessonsId,
+            @Parameter(description = "Id дисциплины", example = "1")
+            @PathVariable(name = "discipline_id") Integer discipline_id
+            ) throws EntityNotFoundException {
+        lessonService.updateDiscipline(lessonsId, discipline_id);
+        return ResponseEntity.accepted().build();
+    }
+
+
 }

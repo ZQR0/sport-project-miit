@@ -61,4 +61,10 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
     @Modifying
     @Query("DELETE FROM visits_entity v WHERE v.lessons.id = :lessonId")
     void deleteByLessonId(@Param("lessonId") Integer lessonId);
+
+    //Поиск посещений и их студентов по id занятия
+    @Query("SELECT v FROM visits_entity v " +
+            "JOIN FETCH v.student s " +
+            "WHERE v.lessons.id = :lessonId")
+    List<VisitsEntity> findByLessonIdWithStudent(@Param("lessonId") Integer lessonId);
 }

@@ -2,6 +2,7 @@ package com.sport.project.dao.repository;
 
 import com.sport.project.dao.entity.LessonsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -50,5 +51,22 @@ public interface LessonsRepository extends JpaRepository<LessonsEntity, Integer>
     List<LessonsEntity> findByDateRange(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
     //Очистка занятий при удалении дисциплины
-    void deleteByDiscipline_Name(String disciplineName);
+    @Modifying
+    @Query("DELETE FROM lessons_entity l WHERE l.discipline.name = :disciplineName")
+    void deleteByDiscipline_Name(@Param("disciplineName") String disciplineName);
+
+    //Удаление занятий по id дисциплины
+    @Modifying
+    @Query("DELETE FROM lessons_entity l WHERE l.discipline.id = :disciplineId")
+    void deleteByDisciplineId(@Param("disciplineId") Integer disciplineId);
+
+    //Удаление занятий по id учителя
+    @Modifying
+    @Query("DELETE FROM lessons_entity l WHERE l.teacher.id = :teacher_id")
+    void deleteByTeacher(@Param("teacher_id") Integer teacherId);
+
+    //Удаление занятий по его дате
+    @Modifying
+    @Query("DELETE FROM lessons_entity l WHERE l.dateOfLesson = :date")
+    void deleteByDate(@Param("date") LocalDate date);
 }
