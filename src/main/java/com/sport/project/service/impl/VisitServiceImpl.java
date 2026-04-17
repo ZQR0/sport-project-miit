@@ -278,7 +278,7 @@ public class VisitServiceImpl implements VisitService,
         }
 
         return absentStudents.stream()
-                .map(Mapper::map)
+                .map(Mapper::mapWithoutExists)
                 .toList();
     }
 
