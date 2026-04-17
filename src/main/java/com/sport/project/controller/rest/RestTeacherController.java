@@ -2,6 +2,7 @@ package com.sport.project.controller.rest;
 
 import com.sport.project.dto.TeacherCreationDTO;
 import com.sport.project.dto.TeacherDTO;
+import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.impl.TeacherServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/teachers")
 @RequiredArgsConstructor
+@Slf4j
 public class RestTeacherController {
 
     private final TeacherServiceImpl teacherService;
@@ -98,4 +101,79 @@ public class RestTeacherController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @Operation(summary = "Удалить преподавателя по ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Преподаватель удален"),
+            @ApiResponse(responseCode = "404", description = "Преподаватель не найден")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(
+            @Parameter(description = "ID преподавателя", example = "1")
+            @PathVariable("id") Integer id) {
+        teacherService.deleteByID(id);
+        return ResponseEntity.ok("Teacher with id " + id + " deleted");
+    }
+
+    @Operation(summary = "Удалить преподавателя по логину")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Преподаватель удален"),
+            @ApiResponse(responseCode = "404", description = "Преподаватель не найден")
+    })
+    @DeleteMapping("/by-login/{login}")
+    public ResponseEntity<String> deleteByLogin(
+            @Parameter(description = "Логин преподавателя", example = "petrov")
+            @PathVariable("login") String login) {
+        teacherService.deleteByLogin(login);
+        return ResponseEntity.ok("Teacher with login '" + login + "' deleted");
+    }
+
+    @Operation(summary = "Обновить ФИО преподавателя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "ФИО обновлено"),
+            @ApiResponse(responseCode = "404", description = "Преподаватель не найден")
+    })
+    @PutMapping("/update-full-name")
+    public ResponseEntity<String> updateFullName(
+            @Parameter(description = "Имя", example = "Петр")
+            @RequestParam(value = "firstName", required = false) String firstName,
+            @Parameter(description = "Фамилия", example = "Петров")
+            @RequestParam(value = "lastName", required = false) String lastName,
+            @Parameter(description = "Отчество", example = "Петрович")
+            @RequestParam(value = "patronymic", required = false) String patronymic,
+            @Parameter(description = "Логин преподавателя", example = "petrov")
+            @RequestParam(value = "login") String login) {
+        teacherService.updateFullName(firstName, lastName, patronymic, login);
+        return ResponseEntity.ok("Full name updated for teacher: " + login);
+    }
+
+    @Operation(summary = "Обновить логин преподавателя")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Логин обновлен"),
+            @ApiResponse(responseCode = "404", description = "Преподаватель не найден"),
+            @ApiResponse(responseCode = "409", description = "Новый логин уже занят")
+    })
+    @PutMapping("/update-login")
+    public ResponseEntity<String> updateLogin(
+            @Parameter(description = "Новый логин", example = "petrov_new")
+            @RequestParam(value = "newLogin") String newLogin,
+            @Parameter(description = "Текущий логин", example = "petrov")
+            @RequestParam(value = "oldLogin") String oldLogin) {
+        teacherService.updateLogin(newLogin, oldLogin);
+        return ResponseEntity.ok("Login updated from '" + oldLogin + "' to '" + newLogin + "'");
+    }
+
+    @Operation(summary = "Обновить статус модератора")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Статус модератора обновлен"),
+            @ApiResponse(responseCode = "404", description = "Преподаватель не найден")
+    })
+    @PutMapping("/update-moderator")
+    public ResponseEntity<String> updateModerator(
+            @Parameter(description = "Логин преподавателя", example = "petrov")
+            @RequestParam(value = "login") String login,
+            @Parameter(description = "Статус модератора", example = "true")
+            @RequestParam(value = "moderator") boolean moderator) {
+        teacherService.updateModerator(login, moderator);
+        return ResponseEntity.ok("Moderator status updated for teacher: " + login + " -> " + moderator);
+    }
 }

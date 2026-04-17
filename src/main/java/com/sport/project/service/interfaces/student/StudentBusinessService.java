@@ -13,8 +13,8 @@ public interface StudentBusinessService {
     /**
      * Получение расписания занятий студента
      *
-     * @param student сущность студента
+     * @param login логин студента
      * @return map: дата → название занятия/дисциплины
      */
-    Map<LocalDate, String> getStudentSchedule(StudentEntity student);
+    Map<LocalDate, String> getStudentSchedule(String login);
 }

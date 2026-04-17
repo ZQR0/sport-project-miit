@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST контроллер для управления студентами
@@ -106,5 +108,91 @@ public class RestStudentController {
         StudentDTO created = studentService.create(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @Operation(summary = "Получить расписание студента")
+    @ApiResponse(responseCode = "200", description = "Расписание получено")
+    @GetMapping("/schedule")
+    public ResponseEntity<Map<LocalDate, String>> getSchedule(
+            @Parameter(description = "Логин студента", example = "sidorov_pp")
+            @RequestParam(value = "login") String login) {
+        Map<LocalDate, String> schedule = studentService.getStudentSchedule(login);
+        return ResponseEntity.ok(schedule);
+    }
+
+    @Operation(summary = "Удалить студента по ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Студент удален"),
+            @ApiResponse(responseCode = "404", description = "Студент не найден")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(
+            @Parameter(description = "ID студента", example = "1")
+            @PathVariable("id") Integer id) {
+        studentService.deleteByID(id);
+        return ResponseEntity.ok("Student with id " + id + " deleted");
+    }
+
+    @Operation(summary = "Удалить студента по логину")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Студент удален"),
+            @ApiResponse(responseCode = "404", description = "Студент не найден")
+    })
+    @DeleteMapping("/by-login/{login}")
+    public ResponseEntity<String> deleteByLogin(
+            @Parameter(description = "Логин студента", example = "sidorov_pp")
+            @PathVariable("login") String login) {
+        studentService.deleteByLogin(login);
+        return ResponseEntity.ok("Student with login '" + login + "' deleted");
+    }
+
+    @Operation(summary = "Обновить ФИО студента")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "ФИО обновлено"),
+            @ApiResponse(responseCode = "404", description = "Студент не найден")
+    })
+    @PutMapping("/update-full-name")
+    public ResponseEntity<String> updateFullName(
+            @Parameter(description = "Имя", example = "Петр")
+            @RequestParam(value = "firstName", required = false) String firstName,
+            @Parameter(description = "Фамилия", example = "Сидоров")
+            @RequestParam(value = "lastName", required = false) String lastName,
+            @Parameter(description = "Отчество", example = "Петрович")
+            @RequestParam(value = "patronymic", required = false) String patronymic,
+            @Parameter(description = "Логин студента", example = "sidorov_pp")
+            @RequestParam(value = "login") String login) {
+        studentService.updateFullName(firstName, lastName, patronymic, login);
+        return ResponseEntity.ok("Full name updated for student: " + login);
+    }
+
+    @Operation(summary = "Обновить логин студента")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Логин обновлен"),
+            @ApiResponse(responseCode = "404", description = "Студент не найден"),
+            @ApiResponse(responseCode = "409", description = "Новый логин уже занят")
+    })
+    @PutMapping("/update-login")
+    public ResponseEntity<String> updateLogin(
+            @Parameter(description = "Новый логин", example = "sidorov_new")
+            @RequestParam(value = "newLogin") String newLogin,
+            @Parameter(description = "Текущий логин", example = "sidorov_pp")
+            @RequestParam(value = "oldLogin") String oldLogin) {
+        studentService.updateLogin(newLogin, oldLogin);
+        return ResponseEntity.ok("Login updated from '" + oldLogin + "' to '" + newLogin + "'");
+    }
+
+    @Operation(summary = "Обновить группу здоровья студента")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Группа здоровья обновлена"),
+            @ApiResponse(responseCode = "404", description = "Студент или группа здоровья не найдены")
+    })
+    @PutMapping("/update-health-group")
+    public ResponseEntity<String> updateHealthGroup(
+            @Parameter(description = "ID новой группы здоровья", example = "2")
+            @RequestParam(value = "healthGroupId") Integer healthGroupId,
+            @Parameter(description = "Логин студента", example = "sidorov_pp")
+            @RequestParam(value = "login") String login) {
+        studentService.updateHealthGroup(healthGroupId, login);
+        return ResponseEntity.ok("Health group updated for student: " + login);
     }
 }
