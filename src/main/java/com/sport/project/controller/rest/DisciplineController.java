@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST контроллер для управления учебными дисциплинами
@@ -117,5 +119,94 @@ public class DisciplineController {
         DisciplineDTO created = disciplineService.create(name);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @Operation(summary = "Получить количество занятий дисциплины", description = "Возвращает общее количество занятий дисциплины")
+    @ApiResponse(responseCode = "200", description = "Количество занятий успешно получено")
+    @GetMapping("/lessons-count/{disciplineId}")
+    public Map<String, Integer> getLessonCount(
+            @Parameter(description = "ID дисциплины", example = "1")
+            @PathVariable(name = "disciplineId") Integer disciplineId) {
+        int count = this.disciplineService.getLessonCount(disciplineId);
+        return Map.of("lessonCount", count);
+    }
+
+    @Operation(summary = "Получить занятия дисциплины по диапазону дат", description = "Возвращает список занятий дисциплины за указанный период")
+    @ApiResponse(responseCode = "200", description = "Занятия найдены")
+    @GetMapping("/lessons-by-date-range")
+    public ResponseEntity<?> getLessonsByDateRange(
+            @Parameter(description = "ID дисциплины", example = "1")
+            @RequestParam(name = "disciplineId") Integer disciplineId,
+            @Parameter(description = "Начальная дата", example = "2024-09-01")
+            @RequestParam(name = "from") LocalDate from,
+            @Parameter(description = "Конечная дата", example = "2024-09-30")
+            @RequestParam(name = "to") LocalDate to
+    ) {
+        List<LessonDTO> lessons = disciplineService.getLessonsByDateRange(disciplineId, from, to);
+        return ResponseEntity.ok(lessons);
+    }
+
+    // FIXME - чем отличается от getLessonsByDisciplineId() ? - оба возвращают List<LessonDTO>, где есть препод и его фио
+    @Operation(summary = "Получить занятия дисциплины с информацией о преподавателе", description = "Возвращает список занятий с информацией о преподавателе по ID учебной дисциплины")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Занятия дисциплины найдены"),
+            @ApiResponse(responseCode = "404", description = "Дисциплина не найдена")
+    })
+    @GetMapping("/by-id/{disciplineId}/lessons-with-teacher")
+    public ResponseEntity<List<LessonDTO>> getLessonsWithTeacher(
+            @Parameter(description = "ID дисциплины", example = "1")
+            @PathVariable(name = "disciplineId") Integer disciplineId) throws com.sport.project.exception.EntityNotFoundException {
+        return ResponseEntity.ok(disciplineService.getLessonsWithTeacher(disciplineId));
+    }
+
+    @Operation(summary = "Проверить возможность удаления дисциплины", description = "Возвращает можно ли удалить дисциплину")
+    @ApiResponse(responseCode = "200", description = "Дисциплина может быть удалена")
+    @GetMapping("/can-delete/{disciplineId}")
+    public boolean canDelete(
+            @Parameter(description = "ID дисциплина", example = "1")
+            @PathVariable(name = "disciplineId") Integer disciplineId) throws EntityNotFoundException {
+        return this.disciplineService.canDelete(disciplineId);
+    }
+
+    @Operation(summary = "Удалить дисциплину по ID", description = "Удаляет дисциплину по её ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Дисциплина успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Дисциплина не найдена")
+    })
+    @DeleteMapping("/delete/{disciplineId}")
+    public ResponseEntity<Void> deleteById(
+            @Parameter(description = "ID дисциплина", example = "1")
+            @PathVariable(name = "disciplineId") Integer disciplineId) throws EntityNotFoundException {
+        disciplineService.deleteById(disciplineId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Удалить дисциплину по ее названию", description = "Удаляет дисциплину по её названию")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Дисциплина успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Дисциплина не найдена")
+    })
+    @DeleteMapping("/delete-by-name")
+    public ResponseEntity<Void> deleteByName(
+            @Parameter(description = "Название дисциплины", example = "Физическая культура и спорт")
+            @RequestParam(name = "disciplineName") String disciplineName) throws EntityNotFoundException {
+        disciplineService.deleteByName(disciplineName);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Обновить название дисциплины", description = "Обновляет название дисциплины и возвращает обновленные данные")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Название дисциплины успешно обновлено"),
+            @ApiResponse(responseCode = "404", description = "Дисциплина не найдена")
+    })
+    @PutMapping("/update/{disciplineId}")
+    public ResponseEntity<DisciplineDTO> updateName(
+            @Parameter(description = "ID дисциплины", example = "1")
+            @PathVariable(name = "disciplineId") Integer disciplineId,
+            @Parameter(description = "Название дисциплины", example = "Физическая культура и спорт")
+            @RequestParam(name = "disciplineName") String disciplineName
+    ) throws EntityNotFoundException {
+        disciplineService.updateName(disciplineId, disciplineName);
+        return ResponseEntity.accepted().body(disciplineService.findById(disciplineId));
     }
 }
