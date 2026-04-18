@@ -10,6 +10,9 @@ import tools.jackson.databind.ValueDeserializer;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Десериализатор для LocalTime, чтобы в DTO отображалось всё корректно
+ * */
 @JacksonComponent
 @Slf4j
 public class LocalTimeDeserializer extends ValueDeserializer<LocalTime> {
