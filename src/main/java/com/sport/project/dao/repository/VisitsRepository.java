@@ -1,6 +1,7 @@
 package com.sport.project.dao.repository;
 
 import com.sport.project.dao.entity.VisitsEntity;
+import com.sport.project.dao.repository.projection.AttendanceProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -67,4 +68,12 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
             "JOIN FETCH v.student s " +
             "WHERE v.lessons.id = :lessonId")
     List<VisitsEntity> findByLessonIdWithStudent(@Param("lessonId") Integer lessonId);
+
+    @Query("SELECT v.lessons.dateOfLesson AS lessonDate, " +
+            "v.exists AS isExists, " +
+            "v.lessons.startAt AS startAt, " +
+            "v.lessons.endAt " +
+            "FROM visits_entity v " +
+            "WHERE v.student.login = :studentLogin")
+    List<AttendanceProjection> findAttendanceByStudentLogin(@Param("studentLogin") String studentLogin);
 }

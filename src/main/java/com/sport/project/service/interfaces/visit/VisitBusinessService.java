@@ -1,5 +1,6 @@
 package com.sport.project.service.interfaces.visit;
 
+import com.sport.project.dto.AttendanceInfo;
 import com.sport.project.dto.StudentDTO;
 import com.sport.project.exception.EntityNotFoundException;
 
@@ -19,7 +20,7 @@ public interface VisitBusinessService {
      * @return мапа: дата → статус посещения (true - присутствовал)
      * @throws EntityNotFoundException если студент не найден
      */
-    Map<LocalDate, Boolean> getStudentAttendanceMap(String studentLogin) throws EntityNotFoundException;
+    Map<LocalDate, List<AttendanceInfo>> getStudentAttendanceMap(String studentLogin) throws EntityNotFoundException;
 
     /**
      * Получение общего количества посещений студента.
