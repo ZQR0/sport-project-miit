@@ -138,7 +138,7 @@ public class SectionController {
     public ResponseEntity<Void> updateName(
             @Parameter(description = "ID секции для обновления", example = "1")
             @PathVariable(name = "id") Integer id,
-            @Parameter(description = "Новое название секции", example = "Гимнастика"),
+            @Parameter(description = "Новое название секции", example = "Гимнастика")
             @PathVariable(name = "name") String name
     )throws EntityNotFoundException {
         sectionService.updateName(id, name);
@@ -154,7 +154,7 @@ public class SectionController {
     public ResponseEntity<Void> updateDescription(
             @Parameter(description = "ID секции для обновления", example = "1")
             @PathVariable(name = "id") Integer id,
-            @Parameter(description = "Новое описание секции", example = "Спортивная"),
+            @Parameter(description = "Новое описание секции", example = "Спортивная")
             @PathVariable(name = "description") String description
     )throws EntityNotFoundException {
         sectionService.updateDescription(id, description);
