@@ -1,5 +1,6 @@
 package com.sport.project.controller.rest;
 
+import com.sport.project.dto.AttendanceInfo;
 import com.sport.project.dto.StudentDTO;
 import com.sport.project.dto.VisitCreationDTO;
 import com.sport.project.dto.VisitDTO;
@@ -139,6 +140,16 @@ public class VisitsController {
         List<StudentDTO> absentStudents = this.visitService.getAbsentStudentsForLesson(lessonId);
         return new ResponseEntity<>(
                 absentStudents,
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping(path = "/attendanceMap/{studentLogin}")
+    public ResponseEntity<?> getAttendanceMap(@PathVariable(name = "studentLogin") String studentLogin) throws EntityNotFoundException {
+        Map<LocalDate, List<AttendanceInfo>> attendanceMap = this.visitService.getStudentAttendanceMap(studentLogin);
+
+        return new ResponseEntity<>(
+                attendanceMap,
                 HttpStatus.OK
         );
     }

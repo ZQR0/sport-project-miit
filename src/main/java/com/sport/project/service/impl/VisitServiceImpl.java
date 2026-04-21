@@ -249,7 +249,7 @@ public class VisitServiceImpl implements VisitService,
                 .collect(Collectors.groupingBy(
                         AttendanceProjection::getLessonDate,
                         Collectors.mapping(
-                                proj -> new AttendanceInfo(proj.isExists(), proj.getStartAt(), proj.getEndAt()),
+                                proj -> new AttendanceInfo(proj.getIsExists(), proj.getStartAt(), proj.getEndAt()),
                                 Collectors.toList()
                         )
                 ));

@@ -13,7 +13,7 @@ import java.time.LocalTime;
  * */
 public interface AttendanceProjection {
     LocalDate getLessonDate();
-    Boolean isExists();
+    Boolean getIsExists();
     LocalTime getStartAt();
     LocalTime getEndAt();
 }
