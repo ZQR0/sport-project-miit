@@ -275,7 +275,20 @@ public class VisitServiceImpl implements VisitService,
 
     @Override
     public double getAttendancePercentage(String studentLogin) throws EntityNotFoundException {
-        return 0;
+        if (!this.studentRepository.existsByLogin(studentLogin)) {
+            log.info("Student with login {} not found [getAttendancePercentage Method]", studentLogin);
+            throw new EntityNotFoundException(String.format("Student with login %s not found", studentLogin));
+        }
+
+        List<VisitDTO> allVisits = this.findByStudent(studentLogin);
+        int total = allVisits.size();
+
+        // Посещенные занятия (isExists = true)
+        int visitedCount = Math.toIntExact(allVisits.stream()
+                .filter(VisitDTO::isExists)
+                .count());
+
+        return (double) visitedCount / total;
     }
 
     @Override
