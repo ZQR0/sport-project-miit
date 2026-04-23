@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: release/dml-01.sql
       relativeToChangeLogFile: true
+  - include:
+      file: release/dml-02.sql
+      relativeToChangeLogFile: true

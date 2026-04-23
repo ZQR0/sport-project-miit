@@ -2,6 +2,8 @@ package com.sport.project.service.impl;
 
 import com.sport.project.dao.entity.StudentEntity;
 import com.sport.project.dao.entity.TeacherEntity;
+import com.sport.project.dao.repository.StudentRepository;
+import com.sport.project.dao.repository.TeacherRepository;
 import com.sport.project.dao.repository.impl.StudentRepositoryImpl;
 import com.sport.project.dao.repository.impl.TeacherRepositoryImpl;
 import com.sport.project.mapper.Mapper;
@@ -24,25 +26,26 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final TeacherRepositoryImpl teacherRepo;
-    private final StudentRepositoryImpl studentRepo;
+//    private final TeacherRepositoryImpl teacherRepo;
+//    private final StudentRepositoryImpl studentRepo;
+
+    private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
 
-//        Optional<TeacherEntity> teacher_username = teacherRepo.findByLogin(username);
-//        if (teacher_username.isPresent()) {
-//            log.info("Teacher is present");
-//            return Mapper.mapUserDetails(teacher_username.get());
-//        } else {
-//            Optional<StudentEntity> student_username = studentRepo.findByLogin(username);
-//            if (student_username.isPresent()) {
-//                log.info("Student is present");
-//                return Mapper.mapUserDetails(student_username.get());
-//            }
-//        }
-//
-//        return null;
-        return null;
+        Optional<StudentEntity> student = this.studentRepository.findByLogin(login);
+        if (student.isPresent()) {
+            StudentEntity studentEntity = student.get();
+            return Mapper.mapUserDetails(studentEntity);
+        }
+        Optional<TeacherEntity> teacher = this.teacherRepository.findByLogin(login);
+        if (teacher.isPresent()) {
+            TeacherEntity teacherEntity = teacher.get();
+            return Mapper.mapUserDetails(teacherEntity);
+        }
+
+        throw new UsernameNotFoundException(String.format("User with login %s not found", login));
     }
 }

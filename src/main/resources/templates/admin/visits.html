@@ -40,7 +40,6 @@
                     </option>
                 </select>
             </div>
-
             <div class="form-row">
                 <label for="lessonId">Занятие:</label>
                 <select id="lessonId" name="lessonId" required>
@@ -51,12 +50,10 @@
                     </option>
                 </select>
             </div>
-
             <div class="form-row checkbox-row">
                 <input type="checkbox" id="isExists" name="isExists" checked>
                 <label for="isExists">Присутствовал</label>
             </div>
-
             <button type="submit" class="submit-button">Добавить посещение</button>
         </form>
     </div>
@@ -82,11 +79,14 @@
                     <span th:if="${visit.isExists}" class="status-present">Присутствовал</span>
                     <span th:if="${!visit.isExists}" class="status-absent">Отсутствовал</span>
                 </td>
-                <td>
+                <td class="actions-cell">
                     <form th:action="@{/admin/visits/update/{id}(id=${visit.id})}" method="post" class="inline-form">
                         <input type="hidden" name="isExists" th:value="${!visit.isExists}">
                         <button type="submit" class="toggle-button" th:if="${visit.isExists}">Отметить как отсутствовал</button>
                         <button type="submit" class="toggle-button present" th:if="${!visit.isExists}">Отметить как присутствовал</button>
+                    </form>
+                    <form th:action="@{/admin/visits/delete/{id}(id=${visit.id})}" method="post" class="inline-form" onsubmit="return confirm('Удалить запись о посещении?')">
+                        <button type="submit" class="delete-button">Удалить</button>
                     </form>
                 </td>
             </tr>
@@ -106,7 +106,6 @@
         color: rgba(29,108,255,1);
         margin-bottom: 30px;
     }
-
     .form-container, .table-container {
         background: white;
         border: 1px solid rgba(38,36,36,1);
@@ -116,23 +115,19 @@
         width: 90%;
         max-width: 800px;
     }
-
     .form-title, .table-title {
         font-family: 'K2D', sans-serif;
         color: #333;
         margin-bottom: 20px;
     }
-
     .form-row {
         margin-bottom: 15px;
     }
-
     .form-row label {
         display: block;
         margin-bottom: 5px;
         font-weight: 500;
     }
-
     .form-row input, .form-row select, .form-row textarea {
         width: 100%;
         padding: 10px;
@@ -141,21 +136,17 @@
         font-size: 14px;
         font-family: 'Inter', sans-serif;
     }
-
     .checkbox-row {
         display: flex;
         align-items: center;
         gap: 10px;
     }
-
     .checkbox-row input {
         width: auto;
     }
-
     .checkbox-row label {
         margin-bottom: 0;
     }
-
     .message {
         padding: 10px 20px;
         border-radius: 4px;
@@ -163,56 +154,53 @@
         width: 90%;
         max-width: 800px;
     }
-
     .message.success {
         background-color: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
-
     .message.error {
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
-
     .no-data {
         text-align: center;
         color: #666;
     }
-
     .status-present {
         color: #28a745;
         font-weight: 500;
     }
-
     .status-absent {
         color: #dc3545;
         font-weight: 500;
     }
-
-    .toggle-button {
+    .toggle-button, .delete-button {
         padding: 5px 10px;
-        background-color: #dc3545;
-        color: white;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         font-size: 12px;
+        color: white;
     }
-
+    .toggle-button {
+        background-color: #dc3545;
+    }
     .toggle-button.present {
         background-color: #28a745;
     }
-
-    .toggle-button:hover {
+    .toggle-button:hover, .delete-button:hover {
         opacity: 0.8;
     }
-
+    .delete-button {
+        background-color: #dc3545;
+        margin-left: 4px;
+    }
     .inline-form {
+        display: inline-block;
         margin: 0;
     }
-
     .back-link {
         display: inline-block;
         margin-top: 20px;
@@ -222,7 +210,6 @@
         text-decoration: none;
         border-radius: 5px;
     }
-
     .back-link:hover {
         background-color: #5a6268;
     }
