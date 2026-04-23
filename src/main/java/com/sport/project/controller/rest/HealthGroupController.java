@@ -101,6 +101,57 @@ public class HealthGroupController {
         return ResponseEntity.ok(exists);
     }
 
+    @Operation(summary = "Получить количество студентов с указанной медицинской группой",
+            description = "Возвращает количество студентов, относящихся к указанной медицинской группе")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Количество студентов успешно получено"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID медицинской группы"),
+            @ApiResponse(responseCode = "404", description = "Медицинская группа не найдена")
+    })
+    @GetMapping("/{id}/students/count")
+    public ResponseEntity<?> getStudentCount(
+            @Parameter(description = "ID медицинской группы", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        int count = healthGroupService.getStudentCount(id);
+
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(summary = "Проверить возможность удаления медицинской группы",
+            description = "Возвращает true, если медицинскую группу можно удалить (нет студентов)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Результат проверки успешно получен"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID медицинской группы"),
+            @ApiResponse(responseCode = "404", description = "Медицинская группа не найдена")
+    })
+    @GetMapping("/{id}/can-delete")
+    public ResponseEntity<?> canDelete(
+            @Parameter(description = "ID медицинской группы", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        boolean canDelete = healthGroupService.canDelete(id);
+
+        return ResponseEntity.ok(canDelete);
+    }
+
+    @Operation(summary = "Получить студентов медицинской группы с подробной информацией",
+            description = "Возвращает список студентов с полной информацией о них")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Список студентов успешно получен"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID медицинской группы"),
+            @ApiResponse(responseCode = "404", description = "Медицинская группа не найдена")
+    })
+    @GetMapping("/{id}/students/details")
+    public ResponseEntity<?> getStudentsWithDetails(
+            @Parameter(description = "ID медицинской группы", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        List<StudentDTO> students = healthGroupService.getStudentsWithDetails(id);
+
+        return ResponseEntity.ok(students);
+    }
+
     @Operation(summary = "Создать медицинскую группу", description = "Создаёт новую медицинскую группу")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Группа успешно создана"),
@@ -134,7 +185,7 @@ public class HealthGroupController {
     })
     @DeleteMapping("/delete/name/{name}")
     public ResponseEntity<Void> deleteByName(
-            @Parameter(description = "Название группы здоровья", example = "Основная")
+            @Parameter(description = "Название группы здоровья", example = "1")
             @PathVariable(name = "name") String name) throws EntityNotFoundException {
         healthGroupService.deleteByName(name);
         return ResponseEntity.noContent().build();
@@ -149,7 +200,7 @@ public class HealthGroupController {
     public ResponseEntity<Void> updateName(
             @Parameter(description = "ID записи о группе здоровья", example = "1")
             @PathVariable(name = "id") Integer health_id,
-            @Parameter(description = "Новое название группы здоровья", example = "Основная")
+            @Parameter(description = "Новое название группы здоровья", example = "1")
             @PathVariable(name = "name") String name
     ) throws EntityNotFoundException {
         healthGroupService.updateName(health_id, name);
@@ -165,7 +216,7 @@ public class HealthGroupController {
     public ResponseEntity<Void> updateDescription(
             @Parameter(description = "ID записи о группе здоровья", example = "1")
             @PathVariable(name = "id") Integer health_id,
-            @Parameter(description = "Новое описание группы здоровья", example = "Представляет собой...")
+            @Parameter(description = "Новое описание группы здоровья", example = "Основная")
             @PathVariable(name = "description") String description
     ) throws EntityNotFoundException {
         healthGroupService.updateDescription(health_id, description);

@@ -1,13 +1,7 @@
 package com.sport.project.service.impl;
 
-import com.sport.project.dao.entity.DisciplineEntity;
-import com.sport.project.dao.entity.LessonsEntity;
-import com.sport.project.dao.entity.TeacherEntity;
-import com.sport.project.dao.entity.VisitsEntity;
-import com.sport.project.dao.repository.DisciplineRepository;
-import com.sport.project.dao.repository.LessonsRepository;
-import com.sport.project.dao.repository.TeacherRepository;
-import com.sport.project.dao.repository.VisitsRepository;
+import com.sport.project.dao.entity.*;
+import com.sport.project.dao.repository.*;
 import com.sport.project.dto.LessonCreationDTO;
 import com.sport.project.dto.LessonDTO;
 import com.sport.project.dto.StudentDTO;
@@ -29,9 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +34,7 @@ public class LessonServiceImpl implements LessonService, LessonCreationService, 
     private final TeacherRepository teacherRepository;
     private final DisciplineRepository disciplineRepository;
     private final VisitsRepository visitsRepository;
+    private final StudentRepository studentRepository;
 
     @Override
     public LessonDTO findById(Integer id) throws EntityNotFoundException {
@@ -309,6 +302,7 @@ public class LessonServiceImpl implements LessonService, LessonCreationService, 
 
     @Override
     public List<VisitDTO> getAttendance(Integer lessonId) throws EntityNotFoundException {
+        log.info("Getting attendance for lesson ID {}", lessonId);
         if (lessonId <= 0) {
             throw new IllegalArgumentException("Lesson id cannot be less or equal zero");
         }
@@ -341,6 +335,8 @@ public class LessonServiceImpl implements LessonService, LessonCreationService, 
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void markAttendance(Integer lessonId, String studentLogin, boolean present) throws EntityNotFoundException {
+        log.info("Marking attendance for lesson ID: {}, student login: {}, present: {}", lessonId, studentLogin, present);
+
         if (lessonId <= 0) {
             throw new IllegalArgumentException("Lesson id cannot be less or equal zero");
         }
@@ -348,31 +344,201 @@ public class LessonServiceImpl implements LessonService, LessonCreationService, 
         if (studentLogin == null || studentLogin.isBlank()) {
             throw new IllegalArgumentException("Student login cannot be null or empty");
         }
+
+        if (!this.lessonsRepository.existsById(lessonId)) {
+            throw new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId));
+        }
+
+        StudentEntity student = this.studentRepository.findByLogin(studentLogin)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", studentLogin)));
+
+        Optional<VisitsEntity> existingVisit = this.visitsRepository.findByLessonAndStudentLogin(lessonId, studentLogin);
+
+        if (!existingVisit.isPresent()) {
+            log.info("No visits found for lesson {} and student login {}", lessonId, studentLogin);
+            return;
+        }
+
+        VisitsEntity visit = existingVisit.get();
+        boolean oldValue = visit.isExists();
+
+        if (oldValue == present) {
+            log.info("Attendance for student {} in lesson {} already marked as {}",
+                    studentLogin, lessonId, present);
+        }
+
+        visit.setExists(present);
+        this.visitsRepository.save(visit);
+
+        log.info("Updated attendance for student {} in lesson {}: {}",
+                studentLogin, lessonId, present);
     }
 
     @Override
     public List<StudentDTO> getExpectedStudents(Integer lessonId) throws EntityNotFoundException {
-        return List.of();
+        log.info("Getting expected students for lesson {}", lessonId);
+
+        if (lessonId <= 0) {
+            throw new IllegalArgumentException("Lesson id cannot be less or equal zero");
+        }
+
+        LessonsEntity lesson = this.lessonsRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId)));
+
+        LocalDate lessonDate = lesson.getDateOfLesson();
+
+        List<VisitsEntity> visits = this.visitsRepository.findByLessonIdWithStudent(lessonId);
+
+        if (visits.isEmpty()) {
+            log.info("No expected students found for lesson {}", lessonId);
+            return Collections.emptyList();
+        }
+
+        List<StudentDTO> students = visits.stream()
+                .map(visit -> {
+                    StudentEntity student = visit.getStudent();
+
+                    Map<LocalDate, Boolean> exist = new HashMap<>();
+                    exist.put(lessonDate, visit.isExists());
+
+                    return StudentDTO.builder()
+                            .id(student.getId())
+                            .firstName(student.getFullName().getFirstName())
+                            .lastName(student.getFullName().getLastName())
+                            .patronymic(student.getFullName().getPatronymic())
+                            .login(student.getLogin())
+                            .healthGroup(student.getHealthGroup().getId())
+                            .exist(exist)
+                            .build();
+                })
+                .toList();
+
+        log.info("Found {} expected students for lesson {}", students.size(), lessonId);
+        return students;
     }
 
     @Override
     public int getAttendanceCount(Integer lessonId) throws EntityNotFoundException {
-        return 0;
+        log.info("Getting attendance count for lesson {}", lessonId);
+
+        List<VisitDTO> attendance = getAttendance(lessonId);
+        int count = attendance.size();
+
+        log.info("Found {} attendance marks for lesson {}", count, lessonId);
+        return count;
     }
 
     @Override
     public boolean canDelete(Integer lessonId) throws EntityNotFoundException {
-        return true;
+        log.info("Checking if lesson {} can be deleted", lessonId);
+
+        if (lessonId <= 0) {
+            throw new IllegalArgumentException("Lesson id cannot be less or equal zero");
+        }
+
+        if (!this.lessonsRepository.existsById(lessonId)) {
+            throw new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId));
+        }
+
+        long visitCount = this.visitsRepository.countByLessons_Id(lessonId);
+
+        boolean canDelete = visitCount == 0;
+
+        if (canDelete) {
+            log.info("Lesson {} can be deleted - no visits found", lessonId);
+        } else {
+            log.info("Lesson {} cannot be deleted - has {} visits", lessonId, visitCount);
+        }
+
+        return canDelete;
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public LessonDTO getWithFullDetails(Integer lessonId) throws EntityNotFoundException {
-        return null;
+        log.info("Getting full details for lesson {}", lessonId);
+
+        if (lessonId <= 0) {
+            throw new IllegalArgumentException("Lesson id cannot be less or equal zero");
+        }
+
+        LessonsEntity lesson = this.lessonsRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId)));
+
+        DisciplineEntity discipline = lesson.getDiscipline();
+        TeacherEntity teacher = lesson.getTeacher();
+
+        LessonDTO lessonDTO = LessonDTO.builder()
+                .id(lesson.getId())
+                .dateOfLesson(lesson.getDateOfLesson())
+                .startAt(lesson.getStartAt())
+                .endAt(lesson.getEndAt())
+                .disciplineId(discipline != null ? discipline.getId() : null)
+                .disciplineName(discipline != null ? discipline.getName() : null)
+                .teacherId(teacher != null ? teacher.getId() : null)
+                .teacherFullName(teacher.getFullName().getFirstName() + " " +
+                        teacher.getFullName().getLastName() + " " +
+                        teacher.getFullName().getPatronymic())
+                .build();
+
+        log.info("Full details loaded for lesson {}", lessonId);
+        return lessonDTO;
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
     public void bulkMarkAttendance(Integer lessonId, Map<String, Boolean> attendanceMap) throws EntityNotFoundException {
-        log.info("Log-заглушка");
+        log.info("Bulk marking attendance for lesson {}, {} students", lessonId, attendanceMap.size());
+
+        if (lessonId <= 0) {
+            throw new IllegalArgumentException("Lesson id cannot be less or equal zero");
+        }
+
+        if (attendanceMap == null || attendanceMap.isEmpty()) {
+            throw new IllegalArgumentException("Attendance map cannot be null or empty");
+        }
+
+        if (!this.lessonsRepository.existsById(lessonId)) {
+            throw new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId));
+        }
+
+        LessonsEntity lesson = this.lessonsRepository.getReferenceById(lessonId);
+
+        List<String> logins = new ArrayList<>(attendanceMap.keySet());
+        List<StudentEntity> students = this.studentRepository.findByLoginIn(logins);
+        Map<String, StudentEntity> studentMap = new HashMap<>();
+        for (StudentEntity student : students) {
+            studentMap.put(student.getLogin(), student);
+        }
+
+        List<VisitsEntity> existingVisits = this.visitsRepository.findByLessonId(lessonId);
+        Map<Integer, VisitsEntity> visitMap = new HashMap<>();
+        for (VisitsEntity visit : existingVisits) {
+            Integer studentId = visit.getStudent().getId();
+            visitMap.put(studentId, visit);
+        }
+
+        List<VisitsEntity> markedVisited = new ArrayList<>();
+
+        for (Map.Entry<String, Boolean> entry : attendanceMap.entrySet()) {
+            String login = entry.getKey();
+            Boolean present = entry.getValue();
+
+            StudentEntity student = studentMap.get(login);
+            if (student == null) {
+                log.warn("Student with login {} not found, skipping", login);
+                continue;
+            }
+
+            VisitsEntity visit = visitMap.get(student.getId());
+            if (visit != null) {
+                visit.setExists(present);
+                markedVisited.add(visit);
+            }
+        }
+
+        this.visitsRepository.saveAll(markedVisited);
+        log.info("Bulk attendance completed for lesson {}", lessonId);
     }
 
     private static void validateTime(LocalTime startTime, LocalTime endTime) {

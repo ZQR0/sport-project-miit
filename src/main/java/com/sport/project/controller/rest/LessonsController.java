@@ -2,6 +2,8 @@ package com.sport.project.controller.rest;
 
 import com.sport.project.dto.LessonCreationDTO;
 import com.sport.project.dto.LessonDTO;
+import com.sport.project.dto.StudentDTO;
+import com.sport.project.dto.VisitDTO;
 import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.service.impl.LessonServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST контроллер для управления занятиями
@@ -130,10 +133,134 @@ public class LessonsController {
         return ResponseEntity.ok(exists);
     }
 
+    @Operation(summary = "Получить информацию о песещаемости студента", description = "Возвращает список записей о посещениях студента для указанного студента")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Информация о посещаемости студента успешно получена"),
+            @ApiResponse(responseCode = "400", description = "Некорретный ID занятия"),
+            @ApiResponse(responseCode = "404", description = "Занятие не найдено")
+    })
+    @GetMapping("/{id}/attendance")
+    public ResponseEntity<?> getAttendance(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+        List<VisitDTO> attendance = lessonService.getAttendance(id);
+
+        return ResponseEntity.ok(attendance);
+    }
+
+    @Operation(summary = "Отметить посещаемость студента",
+            description = "Отмечает присутствие или отсутствие студента на занятии")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Посещаемость успешно отмечена"),
+            @ApiResponse(responseCode = "400", description = "Некорректные параметры"),
+            @ApiResponse(responseCode = "404", description = "Занятие или студент не найдены")
+    })
+    @PostMapping("/{id}/attendance")
+    public ResponseEntity<?> markAttendance(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id,
+            @Parameter(description = "Логин студента", example = "tkachev")
+            @RequestParam(name = "studentLogin") String studentLogin,
+            @Parameter(description = "Флаг присутствия", example = "true")
+            @RequestParam(name = "present") boolean present)
+            throws EntityNotFoundException {
+
+        lessonService.markAttendance(id, studentLogin, present);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Получить список ожидаемых студентов",
+            description = "Возвращает список студентов, ожидаемых на занятии, с информацией о посещаемости")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Список ожидаемых студентов успешно получен"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID занятия"),
+            @ApiResponse(responseCode = "404", description = "Занятие не найдено")
+    })
+    @GetMapping("/{id}/expected-students")
+    public ResponseEntity<?> getExpectedStudents(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        List<StudentDTO> students = lessonService.getExpectedStudents(id);
+
+        return ResponseEntity.ok(students);
+    }
+
+    @Operation(summary = "Получить количество отметок о посещении",
+            description = "Возвращает количество записей о посещении для указанного занятия")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Количество отметок успешно получено"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID занятия"),
+            @ApiResponse(responseCode = "404", description = "Занятие не найдено")
+    })
+    @GetMapping("/{id}/attendance/count")
+    public ResponseEntity<?> getAttendanceCount(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        int count = lessonService.getAttendanceCount(id);
+
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(summary = "Проверить возможность удаления занятия",
+            description = "Возвращает true, если занятие можно удалить (нет записей о посещении)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Результат проверки успешно получен"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID занятия"),
+            @ApiResponse(responseCode = "404", description = "Занятие не найдено")
+    })
+    @GetMapping("/{id}/can-delete")
+    public ResponseEntity<?> canDelete(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        boolean canDelete = lessonService.canDelete(id);
+
+        return ResponseEntity.ok(canDelete);
+    }
+
+    @Operation(summary = "Получить полную информацию о занятии",
+            description = "Возвращает занятие с информацией о дисциплине и преподавателе")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Информация о занятии успешно получена"),
+            @ApiResponse(responseCode = "400", description = "Некорректный ID занятия"),
+            @ApiResponse(responseCode = "404", description = "Занятие не найдено")
+    })
+    @GetMapping("/{id}/details")
+    public ResponseEntity<?> getWithFullDetails(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+
+        LessonDTO lesson = lessonService.getWithFullDetails(id);
+
+        return ResponseEntity.ok(lesson);
+    }
+
+    @Operation(summary = "Массовая отметка посещаемости",
+            description = "Отмечает посещаемость для списка студентов на занятии")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Посещаемость успешно отмечена"),
+            @ApiResponse(responseCode = "400", description = "Некорректные параметры"),
+            @ApiResponse(responseCode = "404", description = "Занятие не найдено")
+    })
+    @PostMapping("/{id}/attendance/bulk")
+    public ResponseEntity<?> bulkMarkAttendance(
+            @Parameter(description = "ID занятия", example = "1")
+            @PathVariable(name = "id") Integer id,
+            @Parameter(description = "Мапа: логин студента - статус посещения",
+                    example = "{\"ivanov\": true, \"petrov\": false}")
+            @RequestBody Map<String, Boolean> attendanceMap) throws EntityNotFoundException {
+
+        lessonService.bulkMarkAttendance(id, attendanceMap);
+
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "Создать занятие", description = "Создаёт новое занятие")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Занятие успешно создано"),
-        @ApiResponse(responseCode = "400", description = "Ошибка при создании занятия")
+            @ApiResponse(responseCode = "201", description = "Занятие успешно создано"),
+            @ApiResponse(responseCode = "400", description = "Ошибка при создании занятия")
     })
     @PostMapping(path = "/create")
     public ResponseEntity<?> create(
@@ -242,6 +369,7 @@ public class LessonsController {
         lessonService.updateDiscipline(lessonsId, discipline_id);
         return ResponseEntity.accepted().build();
     }
+
 
 
 }
