@@ -176,4 +176,34 @@ public class GroupController {
         groupService.deleteByName(groupName);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Обновить название группы", description = "Обновляет название группы")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Название группы успешно обновлено"),
+            @ApiResponse(responseCode = "404", description = "Группа не найдена")
+    })
+    @PutMapping("/update/{groupId}/name")
+    public ResponseEntity<GroupDTO> updateName(
+            @Parameter(description = "ID группы", example = "1")
+            @PathVariable(name = "groupId") Integer groupId,
+            @Parameter(description = "Название группы", example = "УВП-211")
+            @RequestParam(name = "groupName") String groupName
+    ) throws EntityNotFoundException {
+        return ResponseEntity.ok(groupService.updateName(groupId, groupName));
+    }
+
+    @Operation(summary = "Обновить институт группы", description = "Обновляет институт группы")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Институт группы успешно обновлен"),
+            @ApiResponse(responseCode = "404", description = "Группа не найдена")
+    })
+    @PutMapping("/update/{groupId}/institute")
+    public ResponseEntity<GroupDTO> updateInstitute(
+            @Parameter(description = "ID группы", example = "1")
+            @PathVariable(name = "groupId") Integer groupId,
+            @Parameter(description = "Институт группы", example = "УВП-211")
+            @RequestParam(name = "groupInstitute") String groupInstitute
+    ) throws EntityNotFoundException {
+        return ResponseEntity.ok(groupService.updateInstitute(groupId, groupInstitute));
+    }
 }

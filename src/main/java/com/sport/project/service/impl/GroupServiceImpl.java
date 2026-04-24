@@ -13,6 +13,7 @@ import com.sport.project.service.GroupService;
 import com.sport.project.service.interfaces.group.GroupBusinessService;
 import com.sport.project.service.interfaces.group.GroupCreationService;
 import com.sport.project.service.interfaces.group.GroupDeletingService;
+import com.sport.project.service.interfaces.group.GroupUpdatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GroupServiceImpl implements GroupService, GroupCreationService, GroupBusinessService, GroupDeletingService {
+public class GroupServiceImpl implements GroupService, GroupCreationService, GroupBusinessService, GroupDeletingService, GroupUpdatingService {
 
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
@@ -177,5 +178,25 @@ public class GroupServiceImpl implements GroupService, GroupCreationService, Gro
             throw new EntityNotFoundException(String.format("Group with name %s not found", groupName));
         }
         this.groupRepository.deleteByName(groupName);
+    }
+    
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public GroupDTO updateName(Integer id, String name) throws EntityNotFoundException {
+        GroupEntity group = this.groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Group with id %s not found", id)));
+
+        group.setName(name);
+        return Mapper.map(group);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public GroupDTO updateInstitute(Integer id, String institute) throws EntityNotFoundException {
+        GroupEntity group = this.groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Group with id %s not found", id)));
+
+        group.setInstitute(institute);
+        return Mapper.map(group);
     }
 }
