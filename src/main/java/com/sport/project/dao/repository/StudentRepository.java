@@ -1,7 +1,6 @@
 package com.sport.project.dao.repository;
 
 import com.sport.project.dao.entity.StudentEntity;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -91,4 +90,10 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
             "JOIN FETCH lessons_entity l ON l.id = v.lessons.id " +
             "WHERE l.id = :lessonId AND v.exists = false")
     List<StudentEntity> findAbsentStudentsForLesson(Integer lessonId);
+
+    //Поиск студента по списку логинов
+    List<StudentEntity> findByLoginIn(List<String> logins);
+
+    //Подсчет студентов по группе здоровья
+    int countByHealthGroup_Id(Integer healthGroupId);
 }
