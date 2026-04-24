@@ -47,9 +47,14 @@ public class WebSecurityConfig {
         httpSecurity.authorizeHttpRequests(authz -> {
             authz.requestMatchers("/index", "/login").permitAll();
             authz.requestMatchers("/styles/**").permitAll();
+            authz.requestMatchers("/access-denied").permitAll();
             authz.requestMatchers("/admin/**").hasAuthority("moderator");
             authz.requestMatchers("/error").permitAll();
             authz.anyRequest().authenticated(); // для всех остальных страниц нужна авторизация
+        });
+
+        httpSecurity.exceptionHandling(handling -> {
+            handling.accessDeniedPage("/access-denied");
         });
 
         httpSecurity.logout(out -> {

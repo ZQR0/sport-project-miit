@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="ru">
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=K2D&display=swap" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/admin_style.css}">
+    <title>Доступ запрещён</title>
+</head>
+<body>
+<div class="header">
+    <a class="title" href="/index">ВСЕ НА СПОРТ</a>
+</div>
+
+<div class="content-container">
+    <div class="error-message">
+        <h1>Доступ запрещён</h1>
+        <p>У вас нет прав для просмотра этой страницы.</p>
+        <p>Обратитесь к администратору, если считаете, что это ошибка.</p>
+        <a href="/index" class="back-link">Вернуться на главную</a>
+    </div>
+</div>
+
+<style>
+    .content-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        min-height: 60vh;
+    }
+    .error-message {
+        background: white;
+        border: 1px solid rgba(38,36,36,1);
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        max-width: 500px;
+    }
+    .error-message h1 {
+        font-family: 'K2D', sans-serif;
+        color: rgba(29,108,255,1);
+        margin-bottom: 20px;
+    }
+    .error-message p {
+        font-family: 'Inter', sans-serif;
+        color: #333;
+        margin: 10px 0;
+    }
+    .back-link {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .back-link:hover {
+        background-color: #5a6268;
+    }
+</style>
+</body>
+</html>
