@@ -5,16 +5,30 @@ import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.*;
 import com.sport.project.service.interfaces.discipline.DisciplineCreationService;
+import com.sport.project.service.interfaces.discipline.DisciplineDeletingService;
+import com.sport.project.service.interfaces.discipline.DisciplineUpdatingService;
 import com.sport.project.service.interfaces.group.GroupCreationService;
 import com.sport.project.service.interfaces.healthgroup.HealthGroupCreationService;
+import com.sport.project.service.interfaces.healthgroup.HealthGroupDeletingService;
+import com.sport.project.service.interfaces.healthgroup.HealthGroupUpdatingService;
 import com.sport.project.service.interfaces.lesson.LessonCreationService;
+import com.sport.project.service.interfaces.lesson.LessonUpdatingService;
+import com.sport.project.service.interfaces.lesson.LessonDeletingService;
 import com.sport.project.service.interfaces.section.SectionCreationService;
+import com.sport.project.service.interfaces.section.SectionUpdatingService;
+import com.sport.project.service.interfaces.section.SectionDeletingService;
 import com.sport.project.service.interfaces.student.StudentCreationService;
+import com.sport.project.service.interfaces.student.StudentDeletingService;
+import com.sport.project.service.interfaces.student.StudentUpdatingService;
 import com.sport.project.service.interfaces.teacher.TeacherCreationService;
+import com.sport.project.service.interfaces.teacher.TeacherDeletingService;
+import com.sport.project.service.interfaces.teacher.TeacherUpdatingService;
 import com.sport.project.service.interfaces.visit.VisitCreationService;
+import com.sport.project.service.interfaces.visit.VisitDeletingService;
 import com.sport.project.service.interfaces.visit.VisitUpdatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,25 +44,37 @@ import java.util.List;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAuthority('moderator')")
 public class AdminController {
 
     private final StudentService studentService;
     private final StudentCreationService studentCreationService;
+    private final StudentUpdatingService studentUpdatingService;
+    private final StudentDeletingService studentDeletingService;
     private final TeacherService teacherService;
     private final TeacherCreationService teacherCreationService;
+    private final TeacherUpdatingService teacherUpdatingService;
+    private final TeacherDeletingService teacherDeletingService;
     private final GroupService groupService;
-//    private final GroupCreationService groupCreationService;
+    private final GroupCreationService groupCreationService;
     private final HealthGroupService healthGroupService;
     private final HealthGroupCreationService healthGroupCreationService;
+    private final HealthGroupUpdatingService healthGroupUpdatingService;
+    private final HealthGroupDeletingService healthGroupDeletingService;
     private final SectionService sectionService;
     private final SectionCreationService sectionCreationService;
+    private final SectionUpdatingService sectionUpdatingService;
+    private final SectionDeletingService sectionDeletingService;
     private final DisciplineService disciplineService;
     private final DisciplineCreationService disciplineCreationService;
+    private final DisciplineUpdatingService disciplineUpdatingService;
+    private final DisciplineDeletingService disciplineDeletingService;
     private final LessonService lessonService;
     private final LessonCreationService lessonCreationService;
     private final VisitService visitService;
     private final VisitCreationService visitCreationService;
     private final VisitUpdatingService visitUpdatingService;
+    private final VisitDeletingService visitDeletingService;
 
     // ==================== DASHBOARD ====================
     @GetMapping("/dashboard")
@@ -112,6 +138,47 @@ public class AdminController {
         return "redirect:/admin/students";
     }
 
+    @PostMapping("/students/update/{id}")
+    public String updateStudent(
+            @PathVariable Integer id,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam(required = false) String patronymic,
+            @RequestParam Integer healthGroupId,
+            @RequestParam Integer groupId,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            studentUpdatingService.updateFullName(firstName, lastName, patronymic,
+                    studentService.findById(id).getLogin());
+            studentUpdatingService.updateHealthGroup(healthGroupId, studentService.findById(id).getLogin());
+            redirectAttributes.addFlashAttribute("successMessage", "Студент успешно обновлен");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Студент не найден");
+        } catch (Exception e) {
+            log.error("Error updating student", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при обновлении студента: " + e.getMessage());
+        }
+        return "redirect:/admin/students";
+    }
+
+    @PostMapping("/students/delete/{id}")
+    public String deleteStudent(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            studentDeletingService.deleteByID(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Студент успешно удален");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Студент не найден");
+        } catch (Exception e) {
+            log.error("Error deleting student", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении студента: " + e.getMessage());
+        }
+        return "redirect:/admin/students";
+    }
+
     // ==================== TEACHERS ====================
     @GetMapping("/teachers")
     public String teachersPage(Model model) {
@@ -152,6 +219,46 @@ public class AdminController {
         return "redirect:/admin/teachers";
     }
 
+    @PostMapping("/teachers/update/{id}")
+    public String updateTeacher(
+            @PathVariable Integer id,
+            @RequestParam String firstName,
+            @RequestParam String lastName,
+            @RequestParam(required = false) String patronymic,
+            @RequestParam(defaultValue = "false") boolean moderator,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            String login = teacherService.findById(id).getLogin();
+            teacherUpdatingService.updateFullName(firstName, lastName, patronymic, login);
+            teacherUpdatingService.updateModerator(login, moderator);
+            redirectAttributes.addFlashAttribute("successMessage", "Преподаватель успешно обновлен");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Преподаватель не найден");
+        } catch (Exception e) {
+            log.error("Error updating teacher", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при обновлении преподавателя: " + e.getMessage());
+        }
+        return "redirect:/admin/teachers";
+    }
+
+    @PostMapping("/teachers/delete/{id}")
+    public String deleteTeacher(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            teacherDeletingService.deleteByID(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Преподаватель успешно удален");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Преподаватель не найден");
+        } catch (Exception e) {
+            log.error("Error deleting teacher", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении преподавателя: " + e.getMessage());
+        }
+        return "redirect:/admin/teachers";
+    }
+
     // ==================== GROUPS ====================
     @GetMapping("/groups")
     public String groupsPage(Model model) {
@@ -160,27 +267,27 @@ public class AdminController {
         return "admin/groups";
     }
 
-//    @PostMapping("/groups/create")
-//    public String createGroup(
-//            @RequestParam String name,
-//            @RequestParam String institute,
-//            RedirectAttributes redirectAttributes
-//    ) {
-//        try {
-//            GroupCreationDTO dto = GroupCreationDTO.builder()
-//                    .name(name)
-//                    .institute(institute)
-//                    .build();
-//            groupCreationService.create(dto);
-//            redirectAttributes.addFlashAttribute("successMessage", "Группа успешно создана");
-//        } catch (EntityAlreadyExistsException e) {
-//            redirectAttributes.addFlashAttribute("errorMessage", "Группа с таким названием уже существует");
-//        } catch (Exception e) {
-//            log.error("Error creating group", e);
-//            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при создании группы: " + e.getMessage());
-//        }
-//        return "redirect:/admin/groups";
-//    }
+    @PostMapping("/groups/create")
+    public String createGroup(
+            @RequestParam String name,
+            @RequestParam String institute,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            GroupCreationDTO dto = GroupCreationDTO.builder()
+                    .name(name)
+                    .institute(institute)
+                    .build();
+            groupCreationService.create(dto);
+            redirectAttributes.addFlashAttribute("successMessage", "Группа успешно создана");
+        } catch (EntityAlreadyExistsException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Группа с таким названием уже существует");
+        } catch (Exception e) {
+            log.error("Error creating group", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при создании группы: " + e.getMessage());
+        }
+        return "redirect:/admin/groups";
+    }
 
     // ==================== HEALTH GROUPS ====================
     @GetMapping("/health-groups")
@@ -208,6 +315,43 @@ public class AdminController {
         } catch (Exception e) {
             log.error("Error creating health group", e);
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при создании медицинской группы: " + e.getMessage());
+        }
+        return "redirect:/admin/health-groups";
+    }
+
+    @PostMapping("/health-groups/update/{id}")
+    public String updateHealthGroup(
+            @PathVariable Integer id,
+            @RequestParam String name,
+            @RequestParam String description,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            healthGroupUpdatingService.updateName(id, name);
+            healthGroupUpdatingService.updateDescription(id, description);
+            redirectAttributes.addFlashAttribute("successMessage", "Медицинская группа успешно обновлена");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Медицинская группа не найдена");
+        } catch (Exception e) {
+            log.error("Error updating health group", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при обновлении медицинской группы: " + e.getMessage());
+        }
+        return "redirect:/admin/health-groups";
+    }
+
+    @PostMapping("/health-groups/delete/{id}")
+    public String deleteHealthGroup(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            healthGroupDeletingService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Медицинская группа успешно удалена");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Медицинская группа не найдена");
+        } catch (Exception e) {
+            log.error("Error deleting health group", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении медицинской группы: " + e.getMessage());
         }
         return "redirect:/admin/health-groups";
     }
@@ -266,6 +410,41 @@ public class AdminController {
         } catch (Exception e) {
             log.error("Error creating discipline", e);
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при создании дисциплины: " + e.getMessage());
+        }
+        return "redirect:/admin/disciplines";
+    }
+
+    @PostMapping("/disciplines/update/{id}")
+    public String updateDiscipline(
+            @PathVariable Integer id,
+            @RequestParam String name,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            disciplineUpdatingService.updateName(id, name);
+            redirectAttributes.addFlashAttribute("successMessage", "Дисциплина успешно обновлена");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Дисциплина не найдена");
+        } catch (Exception e) {
+            log.error("Error updating discipline", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при обновлении дисциплины: " + e.getMessage());
+        }
+        return "redirect:/admin/disciplines";
+    }
+
+    @PostMapping("/disciplines/delete/{id}")
+    public String deleteDiscipline(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            disciplineDeletingService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Дисциплина успешно удалена");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Дисциплина не найдена");
+        } catch (Exception e) {
+            log.error("Error deleting discipline", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении дисциплины: " + e.getMessage());
         }
         return "redirect:/admin/disciplines";
     }
@@ -367,6 +546,23 @@ public class AdminController {
         } catch (Exception e) {
             log.error("Error updating visit", e);
             redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при обновлении посещения: " + e.getMessage());
+        }
+        return "redirect:/admin/visits";
+    }
+
+    @PostMapping("/visits/delete/{id}")
+    public String deleteVisit(
+            @PathVariable Integer id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            visitDeletingService.deleteById(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Посещение успешно удалено");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Посещение не найдено");
+        } catch (Exception e) {
+            log.error("Error deleting visit", e);
+            redirectAttributes.addFlashAttribute("errorMessage", "Ошибка при удалении посещения: " + e.getMessage());
         }
         return "redirect:/admin/visits";
     }

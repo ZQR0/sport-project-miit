@@ -1,5 +1,7 @@
 package com.sport.project.controller.rest;
 
+import com.sport.project.dto.AttendanceInfo;
+import com.sport.project.dto.StudentDTO;
 import com.sport.project.dto.VisitCreationDTO;
 import com.sport.project.dto.VisitDTO;
 import com.sport.project.exception.EntityAlreadyExistsException;
@@ -130,6 +132,48 @@ public class VisitsController {
             @PathVariable(name = "studentLogin") String studentLogin) {
         int count = this.visitService.getTotalAbsences(studentLogin);
         return Map.of("totalCount", count);
+    }
+
+    @Operation(summary = "Получение отсутствующих студентов на паре", description = "Возвращает список студентов, которых нет на паре")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Получены отсутствующие студенты на занятии"),
+            @ApiResponse(responseCode = "404", description = "Такого занятия не существует, проверьте данные")
+    })
+    @GetMapping("/students/absent/{lessonId}")
+    public ResponseEntity<?> getAbsentStudentsForLesson(@PathVariable(name = "lessonId") Integer lessonId) throws EntityNotFoundException {
+        List<StudentDTO> absentStudents = this.visitService.getAbsentStudentsForLesson(lessonId);
+        return new ResponseEntity<>(
+                absentStudents,
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(summary = "Получить карту посещаемости студента", description = "Возвращает хэш-таблицу посещений и данных о них")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Карта посещаемости успешно получена"),
+            @ApiResponse(responseCode = "404", description = "Такого студента не существует, проверьте данные")
+    })
+    @GetMapping(path = "/attendanceMap/{studentLogin}")
+    public ResponseEntity<?> getAttendanceMap(@PathVariable(name = "studentLogin") String studentLogin) throws EntityNotFoundException {
+        Map<LocalDate, List<AttendanceInfo>> attendanceMap = this.visitService.getStudentAttendanceMap(studentLogin);
+
+        return new ResponseEntity<>(
+                attendanceMap,
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(summary = "Получить процент посещений студента", description = "Возвращает процентное соотношение посещений и реальных присутствий")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Процент посещений успешно получен"),
+            @ApiResponse(responseCode = "404", description = "Такого студента не существует, проверьте данные")
+    })
+    @GetMapping(path = "/attendancePercentage/{studentLogin}")
+    public ResponseEntity<?> getAttendancePercentage(@PathVariable(name = "studentLogin") String studentLogin)
+    throws EntityNotFoundException
+    {
+        double attendancePercentage = this.visitService.getAttendancePercentage(studentLogin);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("percentage", attendancePercentage));
     }
 
     @Operation(summary = "Создать запись о посещении", description = "Создаёт новую запись о посещении занятия")

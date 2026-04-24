@@ -32,6 +32,11 @@ public class GroupController {
     private final GroupServiceImpl groupService;
     private final StudentService studentService;
 
+    @Operation(summary = "Создание группы", description = "Возвращает созданную группу в виде JSON")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Группа создана"),
+            @ApiResponse(responseCode = "400", description = "Группа не создана")
+    })
     @PostMapping("/create")
     public ResponseEntity<GroupDTO> create(@RequestBody GroupCreationDTO groupCreationDTO) {
         GroupDTO created = groupService.create(groupCreationDTO);

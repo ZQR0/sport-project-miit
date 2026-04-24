@@ -12,10 +12,13 @@ import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.SectionService;
 import com.sport.project.service.interfaces.section.SectionCreationService;
+import com.sport.project.service.interfaces.section.SectionDeletingService;
+import com.sport.project.service.interfaces.section.SectionUpdatingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +27,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class SectionServiceImpl implements SectionService,
-        SectionCreationService
+        SectionCreationService,
+        SectionDeletingService,
+        SectionUpdatingService
 {
 
     private final SectionRepository sectionRepository;
@@ -128,6 +133,48 @@ public class SectionServiceImpl implements SectionService,
 
         log.info("Section saved [2] {}", section.getId());
 
+        return Mapper.map(section);
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Integer id) throws EntityNotFoundException {
+        if (id < 0) throw new IllegalArgumentException("Section ID cannot be less or equal to zero");
+        this.sectionRepository.deleteById(id);
+        log.info("Deleting section by id {} completed", id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByName(String name) throws EntityNotFoundException {
+        if (name.isBlank()) throw new IllegalArgumentException();
+        this.sectionRepository.deleteByName(name);
+        log.info("Deleting section by name {} completed", name);
+    }
+
+    @Override
+    @Transactional
+    public SectionDTO updateName(Integer sectionId, String name) throws EntityNotFoundException {
+        log.info("Update name section started");
+        SectionEntity section = this.sectionRepository.findById(sectionId).
+                orElseThrow(() -> new EntityNotFoundException(String.format("Section with this id %s not found", sectionId)));
+
+        section.setName(name);
+
+        log.info("Section {} name updated to '{}'", sectionId, name);
+        return Mapper.map(section);
+    }
+
+    @Override
+    @Transactional
+    public SectionDTO updateDescription(Integer id, String description) throws EntityNotFoundException {
+        log.info("Update description section started");
+        SectionEntity section = this.sectionRepository.findById(id).
+                orElseThrow(() -> new EntityNotFoundException(String.format("Section with this id %s not found", id)));
+
+        section.setDescription(description);
+
+        log.info("Section {} description updated to '{}'", id, description);
         return Mapper.map(section);
     }
 }

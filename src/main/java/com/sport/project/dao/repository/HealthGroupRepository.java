@@ -3,6 +3,7 @@ package com.sport.project.dao.repository;
 import com.sport.project.dao.entity.HealthGroupsEntity;
 import com.sport.project.dao.entity.StudentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -27,4 +28,9 @@ public interface HealthGroupRepository extends JpaRepository<HealthGroupsEntity,
 
     //Проверка существоания группы здорвья по названию
     boolean existsByName(String name);
+
+    //Удаление группы здоровья по имени
+    @Modifying
+    @Query("DELETE FROM health_groups_entity h WHERE h.name = :name")
+    void deleteByName(@Param("name") String name);
 }

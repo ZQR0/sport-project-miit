@@ -65,6 +65,24 @@ public class Mapper {
     }
 
     /**
+     * Преобразование StudentEntity в StudentDTO, но без таблицы посещений
+     * */
+    public static StudentDTO mapWithoutExists(StudentEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return StudentDTO.builder()
+                .id(entity.getId())
+                .firstName(entity.getFullName().getFirstName())
+                .lastName(entity.getFullName().getLastName())
+                .patronymic(entity.getFullName().getPatronymic())
+                .login(entity.getLogin())
+                .healthGroup(entity.getHealthGroup().getId())
+                .build();
+    }
+
+    /**
      * Преобразование TeacherEntity в TeacherDTO.
      *
      * @param entity сущность преподавателя

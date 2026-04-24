@@ -43,6 +43,6 @@ public class StudentDTO {
     private Integer healthGroup;
 
     @Schema(description = "Статус посещения по датам (дата -> был ли студент)")
-    @JsonProperty(namespace = "exist", required = true)
+    @JsonProperty(namespace = "exist")
     private Map<LocalDate, Boolean> exist;
 }

@@ -10,13 +10,12 @@ import com.sport.project.exception.EntityNotFoundException;
 public interface StudentUpdatingService {
 
     /**
-     * Обновление FSP студента
+     * Обновление полного имени студента
      *
-     * @param newFSP новое FSP студента
      * @param login логин студента
      * @throws EntityNotFoundException если студент не найден
      */
-    void updateFSP(String newFSP, String login) throws EntityNotFoundException;
+    void updateFullName(String firstName, String lastName, String patronymic, String login) throws EntityNotFoundException;
 
     /**
      * Обновление логина студента
@@ -36,13 +35,4 @@ public interface StudentUpdatingService {
      * @throws EntityNotFoundException если студент не найден
      */
     void updateHealthGroup(int newHealthGroup, String login) throws EntityNotFoundException;
-
-    /**
-     * Привязка студента к преподавателю
-     *
-     * @param teacher сущность преподавателя
-     * @param login логин студента
-     * @throws EntityNotFoundException если студент или преподаватель не найден
-     */
-    void updateStudentTeacher(TeacherEntity teacher, String login) throws EntityNotFoundException;
 }

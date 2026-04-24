@@ -6,10 +6,8 @@ import com.sport.project.dao.entity.VisitsEntity;
 import com.sport.project.dao.repository.LessonsRepository;
 import com.sport.project.dao.repository.StudentRepository;
 import com.sport.project.dao.repository.VisitsRepository;
-import com.sport.project.dto.LessonDTO;
-import com.sport.project.dto.StudentDTO;
-import com.sport.project.dto.VisitCreationDTO;
-import com.sport.project.dto.VisitDTO;
+import com.sport.project.dao.repository.projection.AttendanceProjection;
+import com.sport.project.dto.*;
 import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
@@ -30,6 +28,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -230,15 +229,30 @@ public class VisitServiceImpl implements VisitService,
     }
 
     @Override
-    public Map<LocalDate, Boolean> getStudentAttendanceMap(String studentLogin) throws EntityNotFoundException {
-        StudentEntity student = this.studentRepository.findByLogin(studentLogin)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Student with login %s not found", studentLogin)));
+    @Transactional(
+            readOnly = true,
+            isolation = Isolation.READ_COMMITTED,
+            rollbackFor = {
+            jakarta.persistence.EntityNotFoundException.class,
+            EntityAlreadyExistsException.class,
+            EntityNotFoundException.class}
+    )
+    public Map<LocalDate, List<AttendanceInfo>> getStudentAttendanceMap(String studentLogin) throws EntityNotFoundException {
 
-        List<VisitsEntity> visits = student.getVisits();
+        if (!this.studentRepository.existsByLogin(studentLogin)) {
+            throw new EntityNotFoundException(String.format("Student with login %s not found", studentLogin));
+        }
 
+        List<AttendanceProjection> projections = this.visitsRepository.findAttendanceByStudentLogin(studentLogin);
 
-        // Временная заглушка
-        return null;
+        return projections.stream()
+                .collect(Collectors.groupingBy(
+                        AttendanceProjection::getLessonDate,
+                        Collectors.mapping(
+                                proj -> new AttendanceInfo(proj.getIsExists(), proj.getStartAt(), proj.getEndAt()),
+                                Collectors.toList()
+                        )
+                ));
     }
 
     @Override
@@ -261,12 +275,38 @@ public class VisitServiceImpl implements VisitService,
 
     @Override
     public double getAttendancePercentage(String studentLogin) throws EntityNotFoundException {
-        return 0;
+        if (!this.studentRepository.existsByLogin(studentLogin)) {
+            log.info("Student with login {} not found [getAttendancePercentage Method]", studentLogin);
+            throw new EntityNotFoundException(String.format("Student with login %s not found", studentLogin));
+        }
+
+        List<VisitDTO> allVisits = this.findByStudent(studentLogin);
+        int total = allVisits.size();
+
+        // Посещенные занятия (isExists = true)
+        int visitedCount = Math.toIntExact(allVisits.stream()
+                .filter(VisitDTO::isExists)
+                .count());
+
+        return (double) visitedCount / total;
     }
 
     @Override
     public List<StudentDTO> getAbsentStudentsForLesson(Integer lessonId) throws EntityNotFoundException {
-        return List.of();
+
+        if (!this.lessonsRepository.existsById(lessonId)) {
+            throw new EntityNotFoundException(String.format("Lesson with id %s not found", lessonId));
+        }
+
+        List<StudentEntity> absentStudents = this.studentRepository.findAbsentStudentsForLesson(lessonId);
+
+        if (absentStudents.isEmpty()) {
+            log.info("Absent student list is empty");
+        }
+
+        return absentStudents.stream()
+                .map(Mapper::mapWithoutExists)
+                .toList();
     }
 
     @Override

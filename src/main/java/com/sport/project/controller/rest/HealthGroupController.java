@@ -113,4 +113,62 @@ public class HealthGroupController {
         HealthGroupDTO healthGroup = healthGroupService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(healthGroup);
     }
+
+    @Operation(summary = "Удалить запись о группе здоровья по ID", description = "Удаляет запись о группе здоровья по её ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Запись успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteById(
+            @Parameter(description = "ID записи о группе здоровья", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+        healthGroupService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Удалить запись о группе здоровья по ее названию", description = "Удалить запись о группе здоровья по ее названию")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Записи успешно удалены"),
+            @ApiResponse(responseCode = "404", description = "Запись о группе здоровья с указанным названием не найдена")
+    })
+    @DeleteMapping("/delete/name/{name}")
+    public ResponseEntity<Void> deleteByName(
+            @Parameter(description = "Название группы здоровья", example = "Основная")
+            @PathVariable(name = "name") String name) throws EntityNotFoundException {
+        healthGroupService.deleteByName(name);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Обновить название группы здоровья", description = "Обновляет название группы здоровья")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Название группы здоровья успешно обновлёно"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/name/{name}")
+    public ResponseEntity<Void> updateName(
+            @Parameter(description = "ID записи о группе здоровья", example = "1")
+            @PathVariable(name = "id") Integer health_id,
+            @Parameter(description = "Новое название группы здоровья", example = "Основная")
+            @PathVariable(name = "name") String name
+    ) throws EntityNotFoundException {
+        healthGroupService.updateName(health_id, name);
+        return ResponseEntity.accepted().build();
+    }
+
+    @Operation(summary = "Обновить описание группы здоровья", description = "Обновляет описание группы здоровья")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Описание группы здоровья успешно обновлёно"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/description/{description}")
+    public ResponseEntity<Void> updateDescription(
+            @Parameter(description = "ID записи о группе здоровья", example = "1")
+            @PathVariable(name = "id") Integer health_id,
+            @Parameter(description = "Новое описание группы здоровья", example = "Представляет собой...")
+            @PathVariable(name = "description") String description
+    ) throws EntityNotFoundException {
+        healthGroupService.updateDescription(health_id, description);
+        return ResponseEntity.accepted().build();
+    }
 }

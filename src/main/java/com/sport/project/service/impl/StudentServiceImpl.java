@@ -1,8 +1,6 @@
 package com.sport.project.service.impl;
 
-import com.sport.project.dao.entity.GroupEntity;
-import com.sport.project.dao.entity.HealthGroupsEntity;
-import com.sport.project.dao.entity.StudentEntity;
+import com.sport.project.dao.entity.*;
 import com.sport.project.dao.repository.GroupRepository;
 import com.sport.project.dao.repository.HealthGroupRepository;
 import com.sport.project.dao.repository.StudentRepository;
@@ -11,20 +9,26 @@ import com.sport.project.dto.StudentDTO;
 import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
-import com.sport.project.service.HealthGroupService;
 import com.sport.project.service.StudentService;
+import com.sport.project.service.interfaces.student.StudentBusinessService;
 import com.sport.project.service.interfaces.student.StudentCreationService;
+import com.sport.project.service.interfaces.student.StudentDeletingService;
+import com.sport.project.service.interfaces.student.StudentUpdatingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class StudentServiceImpl implements StudentService, StudentCreationService {
+public class StudentServiceImpl implements
+        StudentService, StudentCreationService, StudentBusinessService, StudentDeletingService, StudentUpdatingService {
 
     private final StudentRepository studentRepository;
     private final HealthGroupRepository healthGroupRepository;
@@ -98,6 +102,7 @@ public class StudentServiceImpl implements StudentService, StudentCreationServic
     }
 
     @Override
+    @Transactional
     public StudentDTO create(StudentCreationDTO dto) throws EntityAlreadyExistsException {
 
         log.info("=== DEBUG CREATE STUDENT ===");
@@ -141,5 +146,99 @@ public class StudentServiceImpl implements StudentService, StudentCreationServic
         StudentEntity saved = studentRepository.save(entity);
 
         return Mapper.map(saved);
+    }
+
+    @Override
+    public Map<LocalDate, String> getStudentSchedule(String login) {
+        StudentEntity student = studentRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("Student with login " + login + " not found"));
+
+        Map<LocalDate, String> schedule = new HashMap<>();
+
+        for (VisitsEntity visit : student.getVisits()) {
+            LessonsEntity lesson = visit.getLessons();
+            LocalDate lessonDate = lesson.getDateOfLesson();
+
+            schedule.put(lessonDate, lesson.getDiscipline().getName());
+        }
+
+        return schedule;
+    }
+
+    @Override
+    @Transactional
+    public void deleteByID(int id) throws EntityNotFoundException {
+        StudentEntity student = studentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Student with ID " + id + " not found"));
+
+        studentRepository.delete(student);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByLogin(String login) throws EntityNotFoundException {
+        StudentEntity student = studentRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("Student with login " + login + " not found"));
+
+        studentRepository.delete(student);
+    }
+
+    @Override
+    @Transactional
+    public void updateFullName(String firstName, String lastName, String patronymic, String login) throws EntityNotFoundException {
+        StudentEntity student = studentRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("Student with login " + login + " not found"));
+
+        String oldFirstName = student.getFullName().getFirstName();
+        String oldLastName = student.getFullName().getLastName();
+        String oldPatronymic = student.getFullName().getPatronymic();
+        log.info("Updating student full name: {} {} {} (login: {}) -> new: {} {} {}",
+                oldLastName, oldFirstName, oldPatronymic != null ? oldPatronymic : "",
+                login,
+                lastName != null ? lastName : oldLastName,
+                firstName != null ? firstName : oldFirstName,
+                patronymic != null ? patronymic : (oldPatronymic != null ? oldPatronymic : ""));
+
+        if (firstName != null && !firstName.isBlank()) {
+            student.getFullName().setFirstName(firstName);
+        }
+        if (lastName != null && !lastName.isBlank()) {
+            student.getFullName().setLastName(lastName);
+        }
+        if (patronymic != null && !patronymic.isBlank()) {
+            student.getFullName().setPatronymic(patronymic);
+        }
+
+        log.info("Updated student full name: {} {} {} (login: {})",
+                student.getFullName().getLastName(),
+                student.getFullName().getFirstName(),
+                student.getFullName().getPatronymic() != null ? student.getFullName().getPatronymic() : "",
+                login);
+    }
+
+    @Override
+    @Transactional
+    public void updateLogin(String newLogin, String oldLogin) throws EntityNotFoundException, EntityAlreadyExistsException {
+        StudentEntity student = studentRepository.findByLogin(oldLogin)
+                .orElseThrow(() -> new EntityNotFoundException("Student with login " + oldLogin + " not found"));
+
+        if (existsByLogin(newLogin)) {
+            throw new EntityAlreadyExistsException("Login '" + newLogin + "' is already taken");
+        }
+
+        student.setLogin(newLogin);
+        log.info("Updated login for student: {} -> {}", oldLogin, newLogin);
+    }
+
+    @Override
+    @Transactional
+    public void updateHealthGroup(int newHealthGroup, String login) throws EntityNotFoundException {
+        StudentEntity student = studentRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException("Student with login '" + login + "' not found"));
+
+        HealthGroupsEntity healthGroup = healthGroupRepository.findById(newHealthGroup)
+                .orElseThrow(() -> new EntityNotFoundException("Health group with id '" + newHealthGroup + "' not found"));
+
+        student.setHealthGroup(healthGroup);
     }
 }

@@ -34,30 +34,25 @@
                 <label for="firstName">Имя:</label>
                 <input type="text" id="firstName" name="firstName" required>
             </div>
-
             <div class="form-row">
                 <label for="lastName">Фамилия:</label>
                 <input type="text" id="lastName" name="lastName" required>
             </div>
-
             <div class="form-row">
                 <label for="patronymic">Отчество:</label>
                 <input type="text" id="patronymic" name="patronymic">
             </div>
-
             <div class="form-row">
                 <label for="login">Логин:</label>
                 <input type="text" id="login" name="login" required>
             </div>
-
             <div class="form-row">
                 <label for="password">Пароль:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-
             <div class="form-row">
-                <label for="healthGroupId">Медицинская группа:</label>
-                <select id="healthGroupId" name="healthGroupId" required>
+                <label for="healthGroup">Медицинская группа:</label>
+                <select id="healthGroup" name="healthGroup" required>
                     <option value="">Выберите группу</option>
                     <option th:each="hg : ${healthGroups}"
                             th:value="${hg.id}"
@@ -65,7 +60,6 @@
                     </option>
                 </select>
             </div>
-
             <div class="form-row">
                 <label for="groupId">Учебная группа:</label>
                 <select id="groupId" name="groupId" required>
@@ -76,12 +70,10 @@
                     </option>
                 </select>
             </div>
-
             <div class="form-row">
                 <label for="birthday">Дата рождения:</label>
                 <input type="date" id="birthday" name="birthday">
             </div>
-
             <button type="submit" class="submit-button">Создать студента</button>
         </form>
     </div>
@@ -97,6 +89,7 @@
                 <th>Отчество</th>
                 <th>Логин</th>
                 <th>Мед. группа</th>
+                <th>Действия</th>
             </tr>
             </thead>
             <tbody>
@@ -107,9 +100,36 @@
                 <td th:text="${student.patronymic != null ? student.patronymic : '-'}"></td>
                 <td th:text="${student.login}"></td>
                 <td th:text="${student.healthGroup}"></td>
+                <td class="actions-cell">
+                    <form th:action="@{/admin/students/update/{id}(id=${student.id})}" method="post" class="inline-form update-form">
+                        <input type="text" name="firstName" th:value="${student.firstName}" required placeholder="Имя" class="inline-input">
+                        <input type="text" name="lastName" th:value="${student.lastName}" required placeholder="Фамилия" class="inline-input">
+                        <input type="text" name="patronymic" th:value="${student.patronymic}" placeholder="Отчество" class="inline-input">
+                        <select name="healthGroup" required class="inline-select">
+                            <option value="">Мед. группа</option>
+                            <option th:each="hg : ${healthGroups}"
+                                    th:value="${hg.id}"
+                                    th:text="${hg.name}"
+                                    th:selected="${hg.id == student.healthGroup}">
+                            </option>
+                        </select>
+                        <select name="groupId" required class="inline-select">
+                            <option value="">Учеб. группа</option>
+                            <option th:each="g : ${groups}"
+                                    th:value="${g.id}"
+                                    th:text="${g.name}"
+                                    th:selected="${g.id == student.groupId}">
+                            </option>
+                        </select>
+                        <button type="submit" class="save-button">Сохранить</button>
+                    </form>
+                    <form th:action="@{/admin/students/delete/{id}(id=${student.id})}" method="post" class="inline-form delete-form" onsubmit="return confirm('Удалить студента?')">
+                        <button type="submit" class="delete-button">Удалить</button>
+                    </form>
+                </td>
             </tr>
             <tr th:if="${#lists.isEmpty(students)}">
-                <td colspan="6" class="no-data">Студенты не найдены</td>
+                <td colspan="7" class="no-data">Студенты не найдены</td>
             </tr>
             </tbody>
         </table>
@@ -124,7 +144,6 @@
         color: rgba(29,108,255,1);
         margin-bottom: 30px;
     }
-
     .form-container, .table-container {
         background: white;
         border: 1px solid rgba(38,36,36,1);
@@ -132,25 +151,21 @@
         padding: 20px;
         margin-bottom: 20px;
         width: 90%;
-        max-width: 800px;
+        max-width: 1000px;
     }
-
     .form-title, .table-title {
         font-family: 'K2D', sans-serif;
         color: #333;
         margin-bottom: 20px;
     }
-
     .form-row {
         margin-bottom: 15px;
     }
-
     .form-row label {
         display: block;
         margin-bottom: 5px;
         font-weight: 500;
     }
-
     .form-row input, .form-row select {
         width: 100%;
         padding: 10px;
@@ -158,7 +173,6 @@
         border-radius: 4px;
         font-size: 14px;
     }
-
     .message {
         padding: 10px 20px;
         border-radius: 4px;
@@ -166,24 +180,20 @@
         width: 90%;
         max-width: 800px;
     }
-
     .message.success {
         background-color: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
-
     .message.error {
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
-
     .no-data {
         text-align: center;
         color: #666;
     }
-
     .back-link {
         display: inline-block;
         margin-top: 20px;
@@ -193,9 +203,51 @@
         text-decoration: none;
         border-radius: 5px;
     }
-
     .back-link:hover {
         background-color: #5a6268;
+    }
+    .actions-cell {
+        white-space: nowrap;
+    }
+    .inline-form {
+        display: inline-block;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    .inline-input, .inline-select {
+        padding: 4px 6px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-right: 3px;
+        width: auto;
+        max-width: 120px;
+    }
+    .inline-select {
+        max-width: 130px;
+    }
+    .save-button, .delete-button {
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: 3px;
+        border: none;
+        cursor: pointer;
+        color: white;
+    }
+    .save-button {
+        background-color: #28a745;
+    }
+    .save-button:hover {
+        background-color: #218838;
+    }
+    .delete-button {
+        background-color: #dc3545;
+    }
+    .delete-button:hover {
+        background-color: #c82333;
+    }
+    .delete-form {
+        margin-left: 5px;
     }
 </style>
 </body>

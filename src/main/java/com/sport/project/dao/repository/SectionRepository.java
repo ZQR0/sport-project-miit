@@ -12,4 +12,6 @@ public interface SectionRepository extends JpaRepository<SectionEntity, Integer>
 
     //Существование секции по названию
     boolean existsByName(String name);
+
+    void deleteByName(String name);
 }

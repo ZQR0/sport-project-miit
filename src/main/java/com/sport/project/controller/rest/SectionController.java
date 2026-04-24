@@ -3,6 +3,7 @@ package com.sport.project.controller.rest;
 import com.sport.project.dto.SectionCreationDTO;
 import com.sport.project.dto.SectionDTO;
 import com.sport.project.dto.StudentDTO;
+import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.service.SectionService;
 import com.sport.project.service.StudentService;
 import com.sport.project.service.impl.SectionServiceImpl;
@@ -96,5 +97,67 @@ public class SectionController {
             @RequestBody SectionCreationDTO dto) {
         SectionDTO section = sectionService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(section);
+    }
+
+
+    @Operation(summary = "Удалить секцию по ID", description = "Удаляет запись секции по её ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Запись успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteById (
+            @Parameter(description = "ID записи секции", example = "1")
+            @PathVariable(name = "id") Integer id) throws EntityNotFoundException {
+        sectionService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @Operation(summary = "Удалить секцию по названию", description = "Удаляет запись секции по её названию")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Запись успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @DeleteMapping("/delete/by-name")
+    public ResponseEntity<Void> deleteByName (
+            @Parameter(description = "Название записи секции", example = "Футбол")
+            @RequestParam(name = "name") String name) throws EntityNotFoundException {
+        sectionService.deleteByName(name);
+        return ResponseEntity.noContent().build();
+    }
+
+
+//  Не знаю, надо ли писать этот метод в контроллере
+    @Operation(summary = "Обновить секцию", description = "Обновляет название секции")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Название секции успешно обнавлено"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/name/{name}")
+    public ResponseEntity<Void> updateName(
+            @Parameter(description = "ID секции для обновления", example = "1")
+            @PathVariable(name = "id") Integer id,
+            @Parameter(description = "Новое название секции", example = "Гимнастика")
+            @PathVariable(name = "name") String name
+    )throws EntityNotFoundException {
+        sectionService.updateName(id, name);
+        return ResponseEntity.accepted().build();
+    }
+
+    @Operation(summary = "Обновить секцию", description = "Обновляет название секции")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Название секции успешно обнавлено"),
+            @ApiResponse(responseCode = "404", description = "Запись не найдена")
+    })
+    @PutMapping("/update/{id}/description/{description}")
+    public ResponseEntity<Void> updateDescription(
+            @Parameter(description = "ID секции для обновления", example = "1")
+            @PathVariable(name = "id") Integer id,
+            @Parameter(description = "Новое описание секции", example = "Спортивная")
+            @PathVariable(name = "description") String description
+    )throws EntityNotFoundException {
+        sectionService.updateDescription(id, description);
+        return ResponseEntity.accepted().build();
     }
 }

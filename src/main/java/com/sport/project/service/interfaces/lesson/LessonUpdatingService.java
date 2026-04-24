@@ -2,7 +2,9 @@ package com.sport.project.service.interfaces.lesson;
 
 import com.sport.project.dto.LessonDTO;
 import com.sport.project.exception.EntityNotFoundException;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -18,7 +20,7 @@ public interface LessonUpdatingService {
      * @return обновлённые данные занятия
      * @throws EntityNotFoundException если занятие не найдено
      */
-    LessonDTO updateDate(Integer lessonId, Date newDate) throws EntityNotFoundException;
+    LessonDTO updateDate(Integer lessonId, LocalDate newDate) throws EntityNotFoundException;
 
     /**
      * Обновление преподавателя занятия.

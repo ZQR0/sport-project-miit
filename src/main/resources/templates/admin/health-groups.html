@@ -34,12 +34,10 @@
                 <label for="name">Название:</label>
                 <input type="text" id="name" name="name" placeholder="Основная" required>
             </div>
-
             <div class="form-row">
                 <label for="description">Описание:</label>
                 <textarea id="description" name="description" rows="3" placeholder="Студенты без ограничений по здоровью" required></textarea>
             </div>
-
             <button type="submit" class="submit-button">Создать группу</button>
         </form>
     </div>
@@ -52,6 +50,7 @@
                 <th>ID</th>
                 <th>Название</th>
                 <th>Описание</th>
+                <th>Действия</th>
             </tr>
             </thead>
             <tbody>
@@ -59,9 +58,19 @@
                 <td th:text="${healthGroup.id}"></td>
                 <td th:text="${healthGroup.name}"></td>
                 <td th:text="${healthGroup.description}"></td>
+                <td class="actions-cell">
+                    <form th:action="@{/admin/health-groups/update/{id}(id=${healthGroup.id})}" method="post" class="inline-form update-form">
+                        <input type="text" name="name" th:value="${healthGroup.name}" required placeholder="Название" class="inline-input">
+                        <textarea name="description" rows="2" required placeholder="Описание" class="inline-textarea" th:text="${healthGroup.description}"></textarea>
+                        <button type="submit" class="save-button">Сохранить</button>
+                    </form>
+                    <form th:action="@{/admin/health-groups/delete/{id}(id=${healthGroup.id})}" method="post" class="inline-form delete-form" onsubmit="return confirm('Удалить медицинскую группу?')">
+                        <button type="submit" class="delete-button">Удалить</button>
+                    </form>
+                </td>
             </tr>
             <tr th:if="${#lists.isEmpty(healthGroups)}">
-                <td colspan="3" class="no-data">Медицинские группы не найдены</td>
+                <td colspan="4" class="no-data">Медицинские группы не найдены</td>
             </tr>
             </tbody>
         </table>
@@ -76,7 +85,6 @@
         color: rgba(29,108,255,1);
         margin-bottom: 30px;
     }
-
     .form-container, .table-container {
         background: white;
         border: 1px solid rgba(38,36,36,1);
@@ -84,25 +92,21 @@
         padding: 20px;
         margin-bottom: 20px;
         width: 90%;
-        max-width: 800px;
+        max-width: 1000px;
     }
-
     .form-title, .table-title {
         font-family: 'K2D', sans-serif;
         color: #333;
         margin-bottom: 20px;
     }
-
     .form-row {
         margin-bottom: 15px;
     }
-
     .form-row label {
         display: block;
         margin-bottom: 5px;
         font-weight: 500;
     }
-
     .form-row input, .form-row select, .form-row textarea {
         width: 100%;
         padding: 10px;
@@ -111,7 +115,6 @@
         font-size: 14px;
         font-family: 'Inter', sans-serif;
     }
-
     .message {
         padding: 10px 20px;
         border-radius: 4px;
@@ -119,24 +122,20 @@
         width: 90%;
         max-width: 800px;
     }
-
     .message.success {
         background-color: #d4edda;
         color: #155724;
         border: 1px solid #c3e6cb;
     }
-
     .message.error {
         background-color: #f8d7da;
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
-
     .no-data {
         text-align: center;
         color: #666;
     }
-
     .back-link {
         display: inline-block;
         margin-top: 20px;
@@ -146,9 +145,54 @@
         text-decoration: none;
         border-radius: 5px;
     }
-
     .back-link:hover {
         background-color: #5a6268;
+    }
+    .actions-cell {
+        white-space: nowrap;
+    }
+    .inline-form {
+        display: inline-block;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    .inline-input, .inline-textarea {
+        padding: 4px 6px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 12px;
+        margin-right: 3px;
+        width: auto;
+        max-width: 150px;
+        vertical-align: middle;
+    }
+    .inline-textarea {
+        resize: vertical;
+        max-width: 200px;
+    }
+    .save-button, .delete-button {
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: 3px;
+        border: none;
+        cursor: pointer;
+        color: white;
+        vertical-align: middle;
+    }
+    .save-button {
+        background-color: #28a745;
+    }
+    .save-button:hover {
+        background-color: #218838;
+    }
+    .delete-button {
+        background-color: #dc3545;
+    }
+    .delete-button:hover {
+        background-color: #c82333;
+    }
+    .delete-form {
+        margin-left: 5px;
     }
 </style>
 </body>
