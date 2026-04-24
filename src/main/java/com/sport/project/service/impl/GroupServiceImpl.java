@@ -10,17 +10,21 @@ import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.GroupService;
+import com.sport.project.service.interfaces.group.GroupBusinessService;
 import com.sport.project.service.interfaces.group.GroupCreationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GroupServiceImpl implements GroupService, GroupCreationService {
+public class GroupServiceImpl implements GroupService, GroupCreationService, GroupBusinessService {
 
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
@@ -111,5 +115,50 @@ public class GroupServiceImpl implements GroupService, GroupCreationService {
     public boolean existsByName(String name) {
         return this.groupRepository
                 .existsByName(name);
+    }
+
+    @Override
+    public int getStudentCount(Integer groupId) throws EntityNotFoundException {
+        GroupEntity group = this.groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Group with id %s not found", groupId)));
+
+        return group.getStudents().size();
+
+    }
+
+    @Override
+    public boolean isEmpty(Integer groupId) throws EntityNotFoundException {
+        GroupEntity group = this.groupRepository.findById(groupId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Group with id %s not found", groupId)));
+        return this.groupRepository.isEmpty(groupId);
+    }
+
+    @Override
+    public List<StudentDTO> getStudentsWithAttendance(Integer groupId, LocalDate from, LocalDate to) throws EntityNotFoundException {
+        if (!groupRepository.existsById(groupId)) {
+            throw new EntityNotFoundException(String.format("Group with id %s not found", groupId));
+        }
+
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Params of date cannot be null");
+        }
+
+        return this.groupRepository.getStudentsWithAttendance(groupId, from, to)
+                .stream()
+                .map(Mapper::map)
+                .toList();
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public void transferStudents(Integer fromGroupId, Integer toGroupId) throws EntityNotFoundException {
+        if (!groupRepository.existsById(fromGroupId)) {
+            throw new EntityNotFoundException(String.format("Group with id %s not found", fromGroupId));
+        }
+        if (!groupRepository.existsById(toGroupId)) {
+            throw new EntityNotFoundException(String.format("Group with id %s not found", toGroupId));
+        }
+
+        groupRepository.transferStudents(fromGroupId, toGroupId);
     }
 }
