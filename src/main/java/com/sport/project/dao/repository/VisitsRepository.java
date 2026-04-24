@@ -76,4 +76,13 @@ public interface VisitsRepository extends JpaRepository<VisitsEntity, Integer> {
             "FROM visits_entity v " +
             "WHERE v.student.login = :studentLogin")
     List<AttendanceProjection> findAttendanceByStudentLogin(@Param("studentLogin") String studentLogin);
+
+    //Поиск посещений по занятию и логину студента
+    @Query("SELECT v FROM visits_entity v " +
+            "WHERE v.lessons.id = :lessonId AND v.student.login = :studentLogin")
+    Optional<VisitsEntity> findByLessonAndStudentLogin(@Param("lessonId") Integer lessonId,
+                                                   @Param("studentLogin") String studentLogin);
+
+    //Подсчет всех посещений по id занятия
+    int countByLessons_Id(Integer lessonId);
 }

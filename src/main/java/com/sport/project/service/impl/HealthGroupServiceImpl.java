@@ -2,7 +2,9 @@ package com.sport.project.service.impl;
 
 
 import com.sport.project.dao.entity.HealthGroupsEntity;
+import com.sport.project.dao.entity.StudentEntity;
 import com.sport.project.dao.repository.HealthGroupRepository;
+import com.sport.project.dao.repository.StudentRepository;
 import com.sport.project.dto.HealthGroupCreationDTO;
 import com.sport.project.dto.HealthGroupDTO;
 import com.sport.project.dto.StudentDTO;
@@ -10,6 +12,7 @@ import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
 import com.sport.project.service.HealthGroupService;
+import com.sport.project.service.interfaces.healthgroup.HealthGroupBusinessService;
 import com.sport.project.service.interfaces.healthgroup.HealthGroupCreationService;
 import com.sport.project.service.interfaces.healthgroup.HealthGroupDeletingService;
 import com.sport.project.service.interfaces.healthgroup.HealthGroupUpdatingService;
@@ -20,14 +23,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HealthGroupServiceImpl implements HealthGroupService, HealthGroupCreationService, HealthGroupDeletingService, HealthGroupUpdatingService {
+public class HealthGroupServiceImpl implements HealthGroupService, HealthGroupCreationService, HealthGroupDeletingService, HealthGroupUpdatingService, HealthGroupBusinessService {
 
     private final HealthGroupRepository healthGroupRepository;
+    private final StudentRepository studentRepository;
 
     @Override
     public HealthGroupDTO findById(Integer id) throws EntityNotFoundException {
@@ -79,6 +85,84 @@ public class HealthGroupServiceImpl implements HealthGroupService, HealthGroupCr
     public boolean existsByName(String name) {
         return this.healthGroupRepository
                 .existsByName(name);
+    }
+
+    @Override
+    public int getStudentCount(Integer healthGroupId) throws EntityNotFoundException {
+        log.info("Getting student count for health group {}", healthGroupId);
+
+        if (healthGroupId <= 0) {
+            throw new IllegalArgumentException("Health group id cannot be less or equal zero");
+        }
+
+        if (!this.healthGroupRepository.existsById(healthGroupId)) {
+            throw new EntityNotFoundException(String.format("Health group with id %s not found", healthGroupId));
+        }
+
+        int count = this.studentRepository.countByHealthGroup_Id(healthGroupId);
+
+        log.info("Found {} students in health group {}", count, healthGroupId);
+        return count;
+    }
+
+    @Override
+    public boolean canDelete(Integer healthGroupId) throws EntityNotFoundException {
+        log.info("Checking if health group {} can be deleted", healthGroupId);
+
+        if (healthGroupId <= 0) {
+            throw new IllegalArgumentException("Health group id cannot be less or equal zero");
+        }
+
+        if (!this.healthGroupRepository.existsById(healthGroupId)) {
+            throw new EntityNotFoundException(String.format("Health group with id %s not found", healthGroupId));
+        }
+
+        int studentCount = this.studentRepository.countByHealthGroup_Id(healthGroupId);
+
+        boolean canDelete = studentCount == 0;
+
+        if (canDelete) {
+            log.info("Health group {} can be deleted - no students found", healthGroupId);
+        } else {
+            log.info("Health group {} cannot be deleted - has {} students", healthGroupId, studentCount);
+        }
+
+        return canDelete;
+    }
+
+    @Override
+    public List<StudentDTO> getStudentsWithDetails(Integer healthGroupId) throws EntityNotFoundException {
+        log.info("Getting students with details for health group {}", healthGroupId);
+
+        if (healthGroupId <= 0) {
+            throw new IllegalArgumentException("Health group id cannot be less or equal zero");
+        }
+
+        if (!this.healthGroupRepository.existsById(healthGroupId)) {
+            throw new EntityNotFoundException(String.format("Health group with id %s not found", healthGroupId));
+        }
+
+        List<StudentEntity> students = this.studentRepository.findByHealthGroupId(healthGroupId);
+
+        if (students.isEmpty()) {
+            log.info("No students found for health group {}", healthGroupId);
+            return Collections.emptyList();
+        }
+
+        List<StudentDTO> result = students.stream()
+                .map(student -> StudentDTO.builder()
+                        .id(student.getId())
+                        .firstName(student.getFullName().getFirstName())
+                        .lastName(student.getFullName().getLastName())
+                        .patronymic(student.getFullName().getPatronymic())
+                        .login(student.getLogin())
+                        .healthGroup(student.getHealthGroup().getId())
+                        .exist(new HashMap<>())
+                        .build())
+                .toList();
+
+        log.info("Found {} students with details for health group {}", result.size(), healthGroupId);
+        return result;
     }
 
     @Override
