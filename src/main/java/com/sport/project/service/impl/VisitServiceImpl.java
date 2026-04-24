@@ -11,8 +11,6 @@ import com.sport.project.dto.*;
 import com.sport.project.exception.EntityAlreadyExistsException;
 import com.sport.project.exception.EntityNotFoundException;
 import com.sport.project.mapper.Mapper;
-import com.sport.project.service.LessonService;
-import com.sport.project.service.StudentService;
 import com.sport.project.service.VisitService;
 import com.sport.project.service.interfaces.visit.VisitBusinessService;
 import com.sport.project.service.interfaces.visit.VisitCreationService;
@@ -28,7 +26,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +56,7 @@ public class VisitServiceImpl implements VisitService,
 
     @Override
     public VisitDTO findByStudentAndLesson(String studentLogin, Integer lessonId) throws EntityNotFoundException {
-        VisitsEntity entity = this.visitsRepository.findByStudentIdAndLessonId(studentLogin, lessonId)
+        VisitsEntity entity = this.visitsRepository.findByStudentLoginAndLessonId(studentLogin, lessonId)
                 .orElseThrow(() -> new EntityNotFoundException("Not found"));
         return Mapper.map(entity);
     }
