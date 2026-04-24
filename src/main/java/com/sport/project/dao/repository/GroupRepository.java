@@ -65,4 +65,9 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
     @Query("UPDATE student_entity s SET s.group.id = :toGroupId WHERE s.group.id = :fromGroupId")
     void transferStudents(@Param("fromGroupId") Integer fromGroupId, @Param("toGroupId") Integer toGroupId);
 
+    // Удаление группы по ее названию
+    @Modifying
+    @Query("DELETE FROM groups_entity g WHERE g.name = :groupName")
+    void deleteByName(@Param("groupName") String groupName);
+
 }

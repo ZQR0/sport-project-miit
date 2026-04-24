@@ -104,7 +104,6 @@ public class GroupController {
         return ResponseEntity.ok(groupService.getStudents(groupName));
     }
 
-    // проверено работает
     @Operation(summary = "Получить количество студентов в группе по айди группы", description = "Возвращает количество студентов в группе")
     @ApiResponse(responseCode = "200", description = "Количество студентов успешно получено")
     @GetMapping("/students-count/{groupId}")
@@ -150,5 +149,31 @@ public class GroupController {
     ) throws EntityNotFoundException {
         groupService.transferStudents(fromGroupId, toGroupId);
         return ResponseEntity.accepted().build();
+    }
+
+    @Operation(summary = "Удалить группу по ID", description = "Удаляет группу по её ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Группа успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Группа не найдена")
+    })
+    @DeleteMapping("/delete/{groupId}")
+    public ResponseEntity<Void> deleteById(
+            @Parameter(description = "ID группы", example = "1")
+            @PathVariable(name = "groupId") Integer groupId) throws EntityNotFoundException {
+        groupService.deleteById(groupId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Удалить группу по ее названию", description = "Удаляет группу по её названию")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Группа успешно удалена"),
+            @ApiResponse(responseCode = "404", description = "Группа не найдена")
+    })
+    @DeleteMapping("/delete-by-name")
+    public ResponseEntity<Void> deleteByName(
+            @Parameter(description = "Название группы", example = "УВП-111")
+            @RequestParam(name = "groupName") String groupName) throws EntityNotFoundException {
+        groupService.deleteByName(groupName);
+        return ResponseEntity.noContent().build();
     }
 }

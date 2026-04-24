@@ -12,6 +12,7 @@ import com.sport.project.mapper.Mapper;
 import com.sport.project.service.GroupService;
 import com.sport.project.service.interfaces.group.GroupBusinessService;
 import com.sport.project.service.interfaces.group.GroupCreationService;
+import com.sport.project.service.interfaces.group.GroupDeletingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GroupServiceImpl implements GroupService, GroupCreationService, GroupBusinessService {
+public class GroupServiceImpl implements GroupService, GroupCreationService, GroupBusinessService, GroupDeletingService {
 
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
@@ -160,5 +161,21 @@ public class GroupServiceImpl implements GroupService, GroupCreationService, Gro
         }
 
         groupRepository.transferStudents(fromGroupId, toGroupId);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public void deleteById(Integer id) throws EntityNotFoundException {
+        if (id <= 0) throw new IllegalArgumentException("ID cannot be less or equal zero");
+        this.groupRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class, jakarta.persistence.EntityNotFoundException.class})
+    public void deleteByName(String groupName) throws EntityNotFoundException {
+        if (!groupRepository.existsByName(groupName)) {
+            throw new EntityNotFoundException(String.format("Group with name %s not found", groupName));
+        }
+        this.groupRepository.deleteByName(groupName);
     }
 }
