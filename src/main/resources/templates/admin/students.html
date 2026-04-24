@@ -27,6 +27,7 @@
     <div th:if="${successMessage}" class="message success" th:text="${successMessage}"></div>
     <div th:if="${errorMessage}" class="message error" th:text="${errorMessage}"></div>
 
+    <!-- ФОРМА СОЗДАНИЯ -->
     <div class="form-container">
         <h2 class="form-title">Добавить студента</h2>
         <form th:action="@{/admin/students/create}" method="post" class="add-form">
@@ -51,8 +52,8 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="form-row">
-                <label for="healthGroup">Медицинская группа:</label>
-                <select id="healthGroup" name="healthGroup" required>
+                <label for="healthGroupId">Медицинская группа:</label>
+                <select id="healthGroupId" name="healthGroupId" required>
                     <option value="">Выберите группу</option>
                     <option th:each="hg : ${healthGroups}"
                             th:value="${hg.id}"
@@ -78,6 +79,7 @@
         </form>
     </div>
 
+    <!-- ТАБЛИЦА СТУДЕНТОВ -->
     <div class="table-container">
         <h2 class="table-title">Список студентов</h2>
         <table class="user-table">
@@ -89,6 +91,7 @@
                 <th>Отчество</th>
                 <th>Логин</th>
                 <th>Мед. группа</th>
+                <th>Группа</th>           <!-- новый столбец -->
                 <th>Действия</th>
             </tr>
             </thead>
@@ -100,12 +103,14 @@
                 <td th:text="${student.patronymic != null ? student.patronymic : '-'}"></td>
                 <td th:text="${student.login}"></td>
                 <td th:text="${student.healthGroup}"></td>
+                <td th:text="${student.groupName}"></td>   <!-- показываем название группы -->
                 <td class="actions-cell">
+                    <!-- Форма обновления -->
                     <form th:action="@{/admin/students/update/{id}(id=${student.id})}" method="post" class="inline-form update-form">
                         <input type="text" name="firstName" th:value="${student.firstName}" required placeholder="Имя" class="inline-input">
                         <input type="text" name="lastName" th:value="${student.lastName}" required placeholder="Фамилия" class="inline-input">
                         <input type="text" name="patronymic" th:value="${student.patronymic}" placeholder="Отчество" class="inline-input">
-                        <select name="healthGroup" required class="inline-select">
+                        <select name="healthGroupId" required class="inline-select">
                             <option value="">Мед. группа</option>
                             <option th:each="hg : ${healthGroups}"
                                     th:value="${hg.id}"
@@ -117,19 +122,19 @@
                             <option value="">Учеб. группа</option>
                             <option th:each="g : ${groups}"
                                     th:value="${g.id}"
-                                    th:text="${g.name}"
-                                    th:selected="${g.id == student.groupId}">
+                                    th:text="${g.name}">
                             </option>
                         </select>
                         <button type="submit" class="save-button">Сохранить</button>
                     </form>
+                    <!-- Форма удаления -->
                     <form th:action="@{/admin/students/delete/{id}(id=${student.id})}" method="post" class="inline-form delete-form" onsubmit="return confirm('Удалить студента?')">
                         <button type="submit" class="delete-button">Удалить</button>
                     </form>
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(students)}">
-                <td colspan="7" class="no-data">Студенты не найдены</td>
+                <td colspan="8" class="no-data">Студенты не найдены</td>
             </tr>
             </tbody>
         </table>
@@ -151,7 +156,7 @@
         padding: 20px;
         margin-bottom: 20px;
         width: 90%;
-        max-width: 1000px;
+        max-width: 1100px;
     }
     .form-title, .table-title {
         font-family: 'K2D', sans-serif;

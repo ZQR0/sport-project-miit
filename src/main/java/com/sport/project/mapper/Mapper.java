@@ -60,6 +60,7 @@ public class Mapper {
                 .patronymic(entity.getFullName().getPatronymic())
                 .login(entity.getLogin())
                 .healthGroup(entity.getHealthGroup().getId())
+                .groupName(entity.getGroup().getName())
                 .exist(exist)
                 .build();
     }

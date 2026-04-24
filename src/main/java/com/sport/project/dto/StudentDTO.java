@@ -42,6 +42,9 @@ public class StudentDTO {
     @JsonProperty(namespace = "health_group", required = true)
     private Integer healthGroup;
 
+    @Schema(description = "Учебная группа", example = "УВП-211")
+    private String groupName;
+
     @Schema(description = "Статус посещения по датам (дата -> был ли студент)")
     @JsonProperty(namespace = "exist")
     private Map<LocalDate, Boolean> exist;
